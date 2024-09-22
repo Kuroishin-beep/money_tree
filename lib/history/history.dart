@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:budget_tracker/edit_transaction/edit_expenses.dart';
-import 'package:budget_tracker/dashboard/dashboard.dart';
-import 'package:budget_tracker/budget/budget.dart';
-import 'package:budget_tracker/settings/settings.dart';
-import 'package:budget_tracker/add_transaction/new_income.dart';
-import 'package:budget_tracker/edit_transaction/edit_income.dart';
+import 'package:money_tree/edit_transaction/edit_expenses.dart';
+import 'package:money_tree/dashboard/dashboard.dart';
+import 'package:money_tree/budget/budget.dart';
+import 'package:money_tree/settings/settings.dart';
+import 'package:money_tree/add_transaction/new_income.dart';
+import 'package:money_tree/edit_transaction/edit_income.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override

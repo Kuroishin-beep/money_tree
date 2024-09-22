@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:budget_tracker/dashboard/dashboard.dart';
-import 'package:budget_tracker/signup/signup.dart';
+import 'package:money_tree/dashboard/dashboard.dart';
+import 'package:money_tree/signup/signup.dart';
 
 class Login extends StatelessWidget {
   @override

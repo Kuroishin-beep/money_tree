@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:budget_tracker/add_transaction/new_income.dart';
-import 'package:budget_tracker/dashboard/dashboard.dart';
-import 'package:budget_tracker/history/history.dart';
-import 'package:budget_tracker/settings/settings.dart';
+import 'package:money_tree/add_transaction/new_income.dart';
+import 'package:money_tree/dashboard/dashboard.dart';
+import 'package:money_tree/history/history.dart';
+import 'package:money_tree/settings/settings.dart';
 
 class BudgetScreen extends StatelessWidget {
   @override

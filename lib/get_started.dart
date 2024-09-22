@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:budget_tracker/login/login.dart';
 
 class GetStarted extends StatelessWidget {
+  const GetStarted({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Get screen dimensions

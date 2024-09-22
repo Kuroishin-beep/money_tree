@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:budget_tracker/edit_transaction/edit_transaction.dart';
+import 'package:budget_tracker/edit_transaction/edit_expenses.dart';
 import 'package:budget_tracker/dashboard/dashboard.dart';
-import 'package:budget_tracker/history/history.dart';
 import 'package:budget_tracker/budget/budget.dart';
 import 'package:budget_tracker/settings/settings.dart';
 import 'package:budget_tracker/add_transaction/new_income.dart';
+import 'package:budget_tracker/edit_transaction/edit_income.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
-
   @override
   HistoryDataListState createState() => HistoryDataListState();
 }
@@ -32,9 +30,29 @@ class HistoryDataListState extends State<HistoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('HISTORY'),
+        title: Text(
+          'HISTORY',
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Inter Regular'
+          ),
+        ),
         centerTitle: true,
-        actions: const [
+        iconTheme: IconThemeData(
+            color: Colors.white
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard()), // Replace with the Dashboard page
+            );
+          },
+        ),
+        backgroundColor: Color(0xff0A9396),
+        actions: [
           CircleAvatar(
             backgroundImage: NetworkImage(
                 'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg'),
@@ -44,13 +62,13 @@ class HistoryDataListState extends State<HistoryScreen> {
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromRGBO(10, 147, 150, .6),
-              Color.fromRGBO(243, 249, 250, .1),
+              Color(0xff0A9396),
+              Color(0xffF3F9FA),
             ],
           ),
         ),
@@ -60,12 +78,12 @@ class HistoryDataListState extends State<HistoryScreen> {
 // Search Bar
             Container(
               width: screenWidth * 0.9,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.search),
                   SizedBox(width: 10),
@@ -80,11 +98,11 @@ class HistoryDataListState extends State<HistoryScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
-// Expenses section
+            // Expenses section
             _buildSectionTitle('EXPENSES'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: expenseList.length,
@@ -105,12 +123,12 @@ class HistoryDataListState extends State<HistoryScreen> {
                   ]);
                 });
               },
-              child: const Text('See all'),
+              child: Text('See all'),
             ),
 
-// Income section
+            // Income section
             _buildSectionTitle('INCOME'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: incomeList.length,
@@ -130,7 +148,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                   ]);
                 });
               },
-              child: const Text('See all'),
+              child: Text('See all'),
             ),
           ],
         ),
@@ -144,26 +162,26 @@ class HistoryDataListState extends State<HistoryScreen> {
               MaterialPageRoute(
                   builder: (context) => NewIncomeScreen()));
         },
-        backgroundColor: Colors.white,
-        shape: const CircleBorder(),
-        child: const Icon(
+        child: Icon(
           Icons.add,
           size: 40,
           color: Color(0xff03045E),
         ),
+        backgroundColor: Colors.white,
+        shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Stack(
         children: [
           BottomAppBar(
-            shape: const CircularNotchedRectangle(),
+            shape: CircularNotchedRectangle(),
             notchMargin: 15.0,
-            color: const Color(0xff001219),
+            color: Color(0xff001219),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
-                  icon: const Icon(Icons.home_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -171,9 +189,9 @@ class HistoryDataListState extends State<HistoryScreen> {
                             builder: (context) => Dashboard()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.savings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -181,9 +199,9 @@ class HistoryDataListState extends State<HistoryScreen> {
                             builder: (context) => BudgetScreen()));
                   },
                 ),
-                const SizedBox(width: 80),
+                SizedBox(width: 80),
                 IconButton(
-                  icon: const Icon(Icons.history, color: Colors.white, size: 40),
+                  icon: Icon(Icons.history, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -191,9 +209,9 @@ class HistoryDataListState extends State<HistoryScreen> {
                             builder: (context) => HistoryScreen()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -214,7 +232,7 @@ class HistoryDataListState extends State<HistoryScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 18,
           color: Colors.teal,
@@ -232,16 +250,16 @@ class HistoryDataListState extends State<HistoryScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EditTransactionScreen(),
+            builder: (context) => EditExpensesScreen(),
           ),
         );
       },
       child: Card(
         child: ListTile(
           leading: Icon(expense.icon, size: 40, color: Colors.teal),
-          title: Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(expense.title, style: TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text(expense.date),
-          trailing: Text(expense.amount, style: const TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(expense.amount, style: TextStyle(fontWeight: FontWeight.bold)),
         ),
       ),
     );
@@ -256,16 +274,16 @@ class HistoryDataListState extends State<HistoryScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EditTransactionScreen(),
+            builder: (context) => EditIncomeScreen(),
           ),
         );
       },
       child: Card(
         child: ListTile(
           leading: Icon(income.icon, size: 40, color: Colors.teal),
-          title: Text(income.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(income.title, style: TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text(income.date),
-          trailing: Text(income.amount, style: const TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(income.amount, style: TextStyle(fontWeight: FontWeight.bold)),
         ),
       ),
     );

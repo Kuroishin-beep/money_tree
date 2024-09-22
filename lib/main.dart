@@ -1,6 +1,4 @@
-import 'package:budget_tracker/signup/signup.dart';
 import 'package:flutter/material.dart';
-import 'account/account.dart';
 import 'login/login.dart';
 import 'dashboard/dashboard.dart';
 import 'get_started.dart';
@@ -10,6 +8,7 @@ import 'history/history.dart';
 import 'settings/settings.dart';
 import 'add_transaction/new_income.dart';
 import 'add_transaction/new_expenses.dart';
+import 'financial_report/monthly.dart';
 
 void main() {
   runApp(BudgetTracker());
@@ -24,16 +23,18 @@ class BudgetTracker extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       initialRoute: 'get_started.dart',
+
       routes: {
         'get_started.dart': (context) => GetStarted(),
-        'signup/signup.dart': (context) => SignUp(),
-        'login/login.dart': (context) => Login(),
-        'dashboard/dashboard.dart': (context) => Dashboard(),
-        // 'budget/budget.dart': (context) => BudgetScreen(),
-        // '/history': (context) => HistoryScreen(),
-        '/account': (context) => AccountScreen(),
-        // 'add_transaction/new_income.dart': (context) => NewIncomeScreen(),
-        // 'add_transaction/new_expenses.dart': (context) => NewExpenseScreen(),
+        '/signup': (context) => SignUp(),
+        '/login': (context) => Login(),
+        '/dashboard': (context) => Dashboard(),
+        '/budget': (context) => BudgetScreen(),
+        '/history': (context) => HistoryScreen(),
+        '/settings': (context) => SettingsScreen(),
+        '/add_transaction': (context) => NewIncomeScreen(),
+        '/add_transaction ': (context) => NewExpenseScreen(),
+        '/financial_report': (context) => MonthlyReport(),
       },
     );
   }

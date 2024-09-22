@@ -6,13 +6,7 @@ import 'package:budget_tracker/budget/budget.dart';
 import 'package:budget_tracker/settings/settings.dart';
 
 
-void main() {
-  runApp(MaterialApp(
-    home: EditTransactionScreen(),
-  ));
-}
-
-class EditTransactionScreen extends StatelessWidget {
+class EditExpensesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

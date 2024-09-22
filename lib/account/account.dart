@@ -6,8 +6,6 @@ import 'package:budget_tracker/settings/settings.dart';
 import 'package:budget_tracker/add_transaction/new_income.dart';
 
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -17,13 +15,33 @@ class AccountScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context); // Navigates back to the previous screen
           },
         ),
-        title: const Text('Hello, Andrei!'),
+        title: Text(
+          'Hello, Andrei!',
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Inter Regular'
+          ),
+        ),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xff00B9BD),
+                    Color(0xff005557)
+                  ]
+              )
+          ),
+        ),
+        toolbarHeight: screenWidth * 0.2,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -35,7 +53,7 @@ class AccountScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: screenWidth * 0.15,
-                    backgroundImage: const NetworkImage(
+                    backgroundImage: NetworkImage(
                       'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg', // Replace with your image URL or asset
                     ),
                   ),
@@ -44,11 +62,11 @@ class AccountScreen extends StatelessWidget {
               ),
             ),
             // Account Details Section
-            const SectionTitle(title: 'ACCOUNT DETAILS'),
-            const AccountDetail(icon: Icons.person, title: 'Name'),
-            const AccountDetail(icon: Icons.calendar_today, title: 'Birthdate'),
-            const AccountDetail(icon: Icons.email, title: 'Email'),
-            const AccountDetail(icon: Icons.phone, title: 'Mobile No.'),
+            SectionTitle(title: 'ACCOUNT DETAILS'),
+            AccountDetail(icon: Icons.person, title: 'Name'),
+            AccountDetail(icon: Icons.calendar_today, title: 'Birthdate'),
+            AccountDetail(icon: Icons.email, title: 'Email'),
+            AccountDetail(icon: Icons.phone, title: 'Mobile No.'),
           ],
         ),
       ),
@@ -61,36 +79,36 @@ class AccountScreen extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => NewIncomeScreen()));
         },
-        backgroundColor: Colors.white,
-        shape: CircleBorder(),
-        child: const Icon(
+        child: Icon(
           Icons.add,
           size: 40,
           color: Color(0xff03045E),
         ),
+        backgroundColor: Colors.white,
+        shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Stack(
         children: [
           BottomAppBar(
-            shape: const CircularNotchedRectangle(),
+            shape: CircularNotchedRectangle(),
             notchMargin: 15.0,
-            color: const Color(0xff001219),
+            color: Color(0xff001219),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
-                  icon: const Icon(Icons.home_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Dashboard()));
+                            builder: (context) => Dashboard()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.savings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -98,9 +116,9 @@ class AccountScreen extends StatelessWidget {
                             builder: (context) => BudgetScreen()));
                   },
                 ),
-                const SizedBox(width: 80),
+                SizedBox(width: 80),
                 IconButton(
-                  icon: const Icon(Icons.history, color: Colors.white, size: 40),
+                  icon: Icon(Icons.history, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -108,14 +126,14 @@ class AccountScreen extends StatelessWidget {
                             builder: (context) => HistoryScreen()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const SettingsScreen()));
+                            builder: (context) => SettingsScreen()));
                   },
                 ),
               ],
@@ -129,7 +147,7 @@ class AccountScreen extends StatelessWidget {
 
 class SectionTitle extends StatelessWidget {
   final String title;
-  const SectionTitle({super.key, required this.title});
+  const SectionTitle({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +157,7 @@ class SectionTitle extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.grey,
@@ -155,14 +173,15 @@ class AccountDetail extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const AccountDetail({super.key, required this.icon, required this.title});
+  const AccountDetail({Key? key, required this.icon, required this.title})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      trailing: const Icon(Icons.arrow_forward_ios),
+      trailing: Icon(Icons.arrow_forward_ios),
       onTap: () {
         // Handle navigation or action
       },

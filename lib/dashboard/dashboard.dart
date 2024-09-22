@@ -1,3 +1,4 @@
+import 'package:budget_tracker/financial_report/monthly.dart';
 import 'package:budget_tracker/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:budget_tracker/budget/budget.dart';
@@ -5,7 +6,6 @@ import 'package:budget_tracker/add_transaction/new_income.dart';
 import 'package:budget_tracker/history/history.dart';
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -370,75 +370,83 @@ class Dashboard extends StatelessWidget {
                                   children: [
 
                                     // Income Section
-                                    Container(
-                                      // Income Gradient Box
-                                      width: sw * 0.45,
-                                      height: sw * 0.45,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Color(0xff199C2D),
-                                            Color(0xff022127),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => MonthlyReport()));
+                                      },
+                                      child:  Container(
+                                        // Income Gradient Box
+                                        width: sw * 0.45,
+                                        height: sw * 0.45,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Color(0xff199C2D),
+                                              Color(0xff022127),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(25.0),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.2),
+                                              spreadRadius: 6,
+                                              blurRadius: 10,
+                                              offset: Offset(0, 3),
+                                            ),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(25.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.2),
-                                            spreadRadius: 6,
-                                            blurRadius: 10,
-                                            offset: Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
 
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.topLeft,
-                                              child: Container(
-                                                width: sw * 0.1,
-                                                height: sw * 0.1,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Container(
+                                                  width: sw * 0.1,
+                                                  height: sw * 0.1,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    shape: BoxShape.circle,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
 
-                                            Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      '\$25,000.00',
-                                                      style: TextStyle(
-                                                        fontSize: fs * 0.04,
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.w600,
-                                                        fontFamily: 'Inter Regular',
+                                              Align(
+                                                  alignment: Alignment.bottomLeft,
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        '\$25,000.00',
+                                                        style: TextStyle(
+                                                          fontSize: fs * 0.04,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontFamily: 'Inter Regular',
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      'Income',
-                                                      style: TextStyle(
-                                                        fontSize: fs * 0.033,
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.w200,
-                                                        fontFamily: 'Inter Regular',
+                                                      Text(
+                                                        'Income',
+                                                        style: TextStyle(
+                                                          fontSize: fs * 0.033,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w200,
+                                                          fontFamily: 'Inter Regular',
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                )
-                                            )
+                                                    ],
+                                                  )
+                                              )
 
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -446,75 +454,83 @@ class Dashboard extends StatelessWidget {
                                     SizedBox(height: 10),
 
                                     // Expenses Section
-                                    Container(
-                                      // Income Gradient Box
-                                      width: sw * 0.45,
-                                      height: sw * 0.45,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Color(0xffE42626),
-                                            Color(0xff022329),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => MonthlyReport()));
+                                      },
+                                      child: Container(
+                                        // Income Gradient Box
+                                        width: sw * 0.45,
+                                        height: sw * 0.45,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Color(0xffE42626),
+                                              Color(0xff022329),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(25.0),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.2),
+                                              spreadRadius: 6,
+                                              blurRadius: 10,
+                                              offset: Offset(0, 3),
+                                            ),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(25.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.2),
-                                            spreadRadius: 6,
-                                            blurRadius: 10,
-                                            offset: Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
 
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.topLeft,
-                                              child: Container(
-                                                width: sw * 0.1,
-                                                height: sw * 0.1,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Container(
+                                                  width: sw * 0.1,
+                                                  height: sw * 0.1,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    shape: BoxShape.circle,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
 
-                                            Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      '\$10,800.00',
-                                                      style: TextStyle(
-                                                        fontSize: fs * 0.04,
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.w600,
-                                                        fontFamily: 'Inter Regular',
+                                              Align(
+                                                  alignment: Alignment.bottomLeft,
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        '\$10,800.00',
+                                                        style: TextStyle(
+                                                          fontSize: fs * 0.04,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontFamily: 'Inter Regular',
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      'Expenses',
-                                                      style: TextStyle(
-                                                        fontSize: fs * 0.033,
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.w200,
-                                                        fontFamily: 'Inter Regular',
+                                                      Text(
+                                                        'Expenses',
+                                                        style: TextStyle(
+                                                          fontSize: fs * 0.033,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w200,
+                                                          fontFamily: 'Inter Regular',
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                )
-                                            )
+                                                    ],
+                                                  )
+                                              )
 
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     )
@@ -527,64 +543,64 @@ class Dashboard extends StatelessWidget {
                               // Budget Section
                               Expanded(
                                   flex: 3,
-                                  child: Container(
-                                    height: 2 * (sw * 0.45) + 10,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          Color(0xff001219),
-                                          Color(0xff0A9396),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => BudgetScreen()));
+                                    },
+                                    child: Container(
+                                      height: 2 * (sw * 0.45) + 10,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            Color(0xff001219),
+                                            Color(0xff0A9396),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(25.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.2),
+                                            spreadRadius: 6,
+                                            blurRadius: 10,
+                                            offset: Offset(0, 3),
+                                          ),
                                         ],
                                       ),
-                                      borderRadius: BorderRadius.circular(25.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          spreadRadius: 6,
-                                          blurRadius: 10,
-                                          offset: Offset(0, 3),
-                                        ),
-                                      ],
-                                    ),
 
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.symmetric(vertical: sw * 0.06),
-                                          child: Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => BudgetScreen()));
-                                              },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(vertical: sw * 0.06),
+                                            child: Align(
+                                              alignment: Alignment.bottomCenter,
                                               child: Text(
-                                                  'Budget',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: fs * 0.04,
-                                                      fontWeight: FontWeight.w200,
-                                                      fontFamily: 'Inter Regular',
-                                                    ),
+                                                'Budget',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: fs * 0.04,
+                                                  fontWeight: FontWeight.w200,
+                                                  fontFamily: 'Inter Regular',
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
 
-                                        // Progress Bar
-                                        Container(
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: ProgressBar(
-                                              progress: 150.0,
+                                          // Progress Bar
+                                          Container(
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: ProgressBar(
+                                                progress: 150.0,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   )
                               )
@@ -644,23 +660,28 @@ class Dashboard extends StatelessWidget {
                                       children: [
                                         RecentPurchaseCard(
                                             date: 'September 5, 2024',
-                                            category: 'Starbucks',
+                                            category: 'Grocery',
                                             amount: 32.5
                                         ),
                                         RecentPurchaseCard(
                                             date: 'September 4, 2024',
-                                            category: 'Petron',
+                                            category: 'Car',
                                             amount: 70
                                         ),
                                         RecentPurchaseCard(
                                             date: 'September 3, 2024',
-                                            category: 'Starbucks',
+                                            category: 'Grocery',
                                             amount: 15.5
                                         ),
                                         RecentPurchaseCard(
                                             date: 'September 3, 2024',
-                                            category: 'Watson',
+                                            category: 'Shopping',
                                             amount: 15.5
+                                        ),
+                                        RecentPurchaseCard(
+                                            date: 'September 2, 2024',
+                                            category: 'Grocery',
+                                            amount: 10
                                         ),
                                       ],
                                     )
@@ -668,7 +689,9 @@ class Dashboard extends StatelessWidget {
                               ],
                             ),
                           ),
-                        )
+                        ),
+
+                        SizedBox(height: 25),
                       ],
                     ),
                   )
@@ -693,6 +716,7 @@ class Dashboard extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         shape: CircleBorder(),
+
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Stack(

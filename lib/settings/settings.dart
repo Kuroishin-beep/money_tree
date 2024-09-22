@@ -6,39 +6,48 @@ import 'package:budget_tracker/add_transaction/new_income.dart';
 import 'package:budget_tracker/account/account.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    double sw = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Navigates back to the previous screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard()),
+            );
           },
         ),
-        title: const Text('Hello, Andrei!'),
-        centerTitle: true,
+        title: Text(
+          'Settings',
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Inter Regular'
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xff00B9BD),
+                    Color(0xff005557)
+                  ]
+              )
+          ),
+        ),
+        toolbarHeight: sw * 0.3,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Profile Picture and Account Details
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                      'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg', // Replace with your image URL or asset
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                ],
-              ),
-            ),
+
             // GENERAL Section
             SectionTitle(title: 'GENERAL'),
             AccountDetail(icon: Icons.person, title: 'Account',
@@ -76,36 +85,36 @@ class SettingsScreen extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => NewIncomeScreen()));
         },
-        backgroundColor: Colors.white,
-        shape: const CircleBorder(),
-        child: const Icon(
+        child: Icon(
           Icons.add,
           size: 40,
           color: Color(0xff03045E),
         ),
+        backgroundColor: Colors.white,
+        shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Stack(
         children: [
           BottomAppBar(
-            shape: const CircularNotchedRectangle(),
+            shape: CircularNotchedRectangle(),
             notchMargin: 15.0,
-            color: const Color(0xff001219),
+            color: Color(0xff001219),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
-                  icon: const Icon(Icons.home_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Dashboard()));
+                            builder: (context) => Dashboard()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.savings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -113,9 +122,9 @@ class SettingsScreen extends StatelessWidget {
                             builder: (context) => BudgetScreen()));
                   },
                 ),
-                const SizedBox(width: 80),
+                SizedBox(width: 80),
                 IconButton(
-                  icon: const Icon(Icons.history, color: Colors.white, size: 40),
+                  icon: Icon(Icons.history, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -123,9 +132,9 @@ class SettingsScreen extends StatelessWidget {
                             builder: (context) => HistoryScreen()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -155,7 +164,7 @@ class SectionTitle extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ],
       ),

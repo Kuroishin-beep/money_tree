@@ -5,12 +5,6 @@ import 'package:budget_tracker/history/history.dart';
 import 'package:budget_tracker/budget/budget.dart';
 import 'package:budget_tracker/settings/settings.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: NewIncomeScreen(),
-  ));
-}
-
 class NewIncomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,21 +13,18 @@ class NewIncomeScreen extends StatelessWidget {
         preferredSize: Size.fromHeight(50.0),
         child: AppBar(
           elevation: 0,
-          leading: Padding(
-            padding: EdgeInsets.only(left: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Dashboard()));
-              },
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-            ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        Dashboard()), // Replace with the Dashboard page
+              );
+            },
           ),
+          iconTheme: IconThemeData(color: Colors.white),
           centerTitle: true,
           title: Text(
             "ADD TRANSACTION",
@@ -78,23 +69,19 @@ class NewIncomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     // First Column for "NEW INCOME"
                     Expanded(
                       child: Column(
-
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(height: 10),
-
                           Text(
                             "NEW INCOME",
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black,
-                              height: .4
-                            ),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                                height: .4),
                           ),
                           SizedBox(height: 0),
                           Row(
@@ -121,21 +108,23 @@ class NewIncomeScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(height: 10),
-
                           TextButton(
-                              onPressed: () {Navigator.push(
+                            onPressed: () {
+                              Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => NewExpenseScreen()));},
-                              child: Text(
-                                "NEW EXPENSE",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black.withOpacity(0.7),
-                                  height: 0.4,
-                                ),
+                                      builder: (context) =>
+                                          NewExpenseScreen()));
+                            },
+                            child: Text(
+                              "NEW EXPENSE",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black.withOpacity(0.7),
+                                height: 0.4,
                               ),
+                            ),
                           ),
                           SizedBox(height: 0),
                           Row(
@@ -196,7 +185,11 @@ class NewIncomeScreen extends StatelessWidget {
 
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('To account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                  child: Text('To account',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          fontSize: 17)),
                 ),
                 SizedBox(height: 8),
                 Row(
@@ -211,7 +204,11 @@ class NewIncomeScreen extends StatelessWidget {
 
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                  child: Text('From category',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          fontSize: 17)),
                 ),
                 SizedBox(height: 8),
 
@@ -260,10 +257,8 @@ class NewIncomeScreen extends StatelessWidget {
       // Navigation Bar
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NewIncomeScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => NewIncomeScreen()));
         },
         child: Icon(
           Icons.add,
@@ -284,17 +279,17 @@ class NewIncomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
+                  icon:
+                  Icon(Icons.home_outlined, color: Colors.white, size: 40),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dashboard()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Dashboard()));
                   },
                 ),
                 SizedBox(width: 5),
                 IconButton(
-                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.savings_outlined,
+                      color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -314,7 +309,8 @@ class NewIncomeScreen extends StatelessWidget {
                 ),
                 SizedBox(width: 5),
                 IconButton(
-                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.settings_outlined,
+                      color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -344,7 +340,8 @@ class NewIncomeScreen extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 24),
+        style: TextStyle(
+            fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 24),
       ),
     );
   }

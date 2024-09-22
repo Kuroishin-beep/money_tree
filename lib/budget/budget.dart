@@ -2,35 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:budget_tracker/add_transaction/new_income.dart';
 import 'package:budget_tracker/dashboard/dashboard.dart';
 import 'package:budget_tracker/history/history.dart';
-import 'package:budget_tracker/budget/budget.dart';
 import 'package:budget_tracker/settings/settings.dart';
 
 class BudgetScreen extends StatelessWidget {
-  const BudgetScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Budget'),
-        backgroundColor: Colors.teal.shade600,
-        actions: const [
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-                'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg'),
-            radius: 20,
+          title: Text(
+            'BUDGET',
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontFamily: 'Inter Regular'
+            ),
           ),
-          SizedBox(width: 16),
-        ],
+          centerTitle: true,
+          backgroundColor: Color(0xff0A9396),
+          iconTheme: IconThemeData(
+              color: Colors.white
+          ),
+          actions: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(
+                  'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg'),
+              radius: 20,
+            ),
+            SizedBox(width: 16),
+          ],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Dashboard()), // Replace with the Dashboard page
+              );
+            },
+          )
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromRGBO(10, 147, 150, .6),
-              Color.fromRGBO(243, 249, 250, .1),
+              Color(0xff0A9396),
+              Color(0xffF3F9FA),
             ],
           ),
         ),
@@ -38,14 +55,14 @@ class BudgetScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-// Budget Summary Card
+              // Budget Summary Card
               Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 elevation: 5,
                 color: Colors.teal.shade100,
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       Text('September', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -101,13 +118,13 @@ class BudgetScreen extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => NewIncomeScreen()));
         },
-        backgroundColor: Colors.white,
-        shape: const CircleBorder(),
-        child: const Icon(
+        child: Icon(
           Icons.add,
           size: 40,
           color: Color(0xff03045E),
         ),
+        backgroundColor: Colors.white,
+        shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Stack(
@@ -128,9 +145,9 @@ class BudgetScreen extends StatelessWidget {
                             builder: (context) => Dashboard()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.savings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -138,9 +155,9 @@ class BudgetScreen extends StatelessWidget {
                             builder: (context) => BudgetScreen()));
                   },
                 ),
-                const SizedBox(width: 80),
+                SizedBox(width: 80),
                 IconButton(
-                  icon: const Icon(Icons.history, color: Colors.white, size: 40),
+                  icon: Icon(Icons.history, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -148,9 +165,9 @@ class BudgetScreen extends StatelessWidget {
                             builder: (context) => HistoryScreen()));
                   },
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 40),
+                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -183,16 +200,16 @@ class BudgetScreen extends StatelessWidget {
                   backgroundColor: Colors.teal.shade100,
                   child: Icon(icon, color: Colors.teal.shade700),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    const Text('Description'),
+                    Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    Text('Description'),
                   ],
                 ),
-                const Spacer(),
+                Spacer(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -201,7 +218,7 @@ class BudgetScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             LinearProgressIndicator(
               value: progress,
               backgroundColor: Colors.grey.shade300,

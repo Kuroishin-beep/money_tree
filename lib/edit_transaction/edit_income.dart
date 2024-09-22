@@ -6,7 +6,7 @@ import 'package:budget_tracker/budget/budget.dart';
 import 'package:budget_tracker/settings/settings.dart';
 
 
-class NewExpenseScreen extends StatelessWidget {
+class EditIncomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,21 +14,21 @@ class NewExpenseScreen extends StatelessWidget {
         preferredSize: Size.fromHeight(50.0),
         child: AppBar(
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Dashboard()), // Replace with the Dashboard page
-              );
-            },
-          ),
-          iconTheme: IconThemeData(
-              color: Colors.white
+          leading: Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+            ),
           ),
           centerTitle: true,
           title: Text(
-            "ADD TRANSACTION",
+            "EDIT TRANSACTION",
             style: TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.w800,
@@ -67,92 +67,174 @@ class NewExpenseScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // First Column for "NEW INCOME"
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: 10),
-
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => NewIncomeScreen()));
-                            },
-                            child: Text(
-                              "NEW INCOME",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black.withOpacity(0.7),
-                                height: 0.4,
-                              ),
+                // "EXPENSES" with lines and dots
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF093f40),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 4,
                             ),
-                          ),
-                          SizedBox(height: 0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              DiamondShape(size: 7.0, opacity: 0.3),
-                              SizedBox(
-                                width: 149,
-                                child: Divider(
-                                  color: Colors.black.withOpacity(0.3),
-                                  thickness: 1,
-                                ),
-                              ),
-                              DiamondShape(size: 7.0, opacity: 0.3),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 20), // Space between the two columns
-                    // Second Column for "NEW EXPENSE"
-                    Expanded(
-                      child: Column(
-
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: 10),
-
-                          Text(
-                            "NEW EXPENSE",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.black,
-                                height: .4
+                      SizedBox(
+                        width: 60,
+                        child: Divider(
+                          color: Color(0xFF093f40),
+                          thickness: 1,
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'INCOME',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.black,
+                          shadows: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 4,
                             ),
-                          ),
-                          SizedBox(height: 0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              DiamondShape(size: 10.0, opacity: 1.0),
-                              SizedBox(
-                                width: 150,
-                                child: Divider(
-                                  color: Color(0xFF093F40),
-                                  thickness: 1.5,
-                                ),
-                              ),
-                              DiamondShape(size: 10.0, opacity: 1.0),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 5),
+                      SizedBox(
+                        width: 60,
+                        child: Divider(
+                          color: Color(0xFF093f40),
+                          thickness: 1,
+                        ),
+                      ),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF093f40),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                // Original content follows below...
-                SizedBox(height: 20), // Add spacing before next section
+                SizedBox(height: 5),
 
+                // Car description container
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Material(
+                            elevation: 6,
+                            shape: CircleBorder(),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.teal,
+                              radius: 30,
+                              child: Icon(Icons.person, color: Colors.white, size: 50),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'PERSONAL',
+                                            style: TextStyle(
+                                              fontSize: 28,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              shadows: [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 4,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Text(
+                                            'Description',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.grey,
+                                              height: 0.2,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8.0, top: 20.0),
+                                      child: Text(
+                                        '\$467 of \$500',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: LinearProgressIndicator(
+                                    value: 467 / 500,
+                                    backgroundColor: Colors.grey[300],
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                                    minHeight: 5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // $1000 Container matching the size of Car Description container
                 Container(
                   padding: EdgeInsets.all(8.0),
                   width: double.infinity,
@@ -169,7 +251,7 @@ class NewExpenseScreen extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      '\$5,000',
+                      '\$1,000',
                       style: TextStyle(
                         fontSize: 50,
                         fontWeight: FontWeight.bold,
@@ -189,7 +271,7 @@ class NewExpenseScreen extends StatelessWidget {
 
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                  child: Text('To account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                 ),
                 SizedBox(height: 8),
                 Row(
@@ -207,7 +289,6 @@ class NewExpenseScreen extends StatelessWidget {
                   child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                 ),
                 SizedBox(height: 8),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -225,14 +306,12 @@ class NewExpenseScreen extends StatelessWidget {
                     Spacer(),
                     _buildCategoryButton(Icons.local_grocery_store),
                     Spacer(flex: 2),
-                    _buildCategoryButton(Icons.book),
-                    Spacer(flex: 2),
                     _buildCategoryButton(Icons.add, faded: true),
                     Spacer(),
                   ],
                 ),
 
-                SizedBox(height: 30),
+                SizedBox(height: 10),
 
                 ElevatedButton(
                   onPressed: () {},
@@ -361,26 +440,6 @@ class NewExpenseScreen extends StatelessWidget {
         radius: 60,
         backgroundColor: faded ? Colors.teal.withOpacity(0.3) : Colors.teal,
         child: Icon(icon, size: 90, color: Colors.white),
-      ),
-    );
-  }
-}
-
-// Custom widget to create diamond shape
-class DiamondShape extends StatelessWidget {
-  final double size;
-  final double opacity;
-
-  DiamondShape({required this.size, required this.opacity});
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 0.785398, // 45 degrees to rotate the square to a diamond
-      child: Container(
-        width: size,
-        height: size,
-        color: Color(0xFF093F40).withOpacity(opacity),
       ),
     );
   }

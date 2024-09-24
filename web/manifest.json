@@ -1,6 +1,6 @@
 {
-    "name": "budget_tracker1",
-    "short_name": "budget_tracker1",
+    "name": "money_tree",
+    "short_name": "money_tree",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

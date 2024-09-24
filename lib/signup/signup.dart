@@ -94,6 +94,7 @@ class SignUp extends StatelessWidget {
                       ),
                     ),
                     keyboardType: TextInputType.visiblePassword,
+                    obscureText: true,
                   ),
                   SizedBox(height: 30),
                   Text(
@@ -125,6 +126,7 @@ class SignUp extends StatelessWidget {
                       ),
                     ),
                     keyboardType: TextInputType.visiblePassword,
+                    obscureText: true,
                   ),
 
                   // Sign up Button Section

@@ -58,7 +58,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 30),
 
-// Password Section
+              // Password Section
               Text(
                 'Password',
                 style: TextStyle(

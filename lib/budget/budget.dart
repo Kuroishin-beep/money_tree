@@ -22,10 +22,10 @@ class BudgetScreen extends StatelessWidget {
           iconTheme: IconThemeData(
               color: Colors.white
           ),
-          actions: [
+          actions: const [
             CircleAvatar(
-              backgroundImage: NetworkImage(
-                  'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg'),
+              backgroundImage: AssetImage(
+                  'images/pfp.jpg'),
               radius: 20,
             ),
             SizedBox(width: 16),

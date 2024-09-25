@@ -53,8 +53,8 @@ class AccountScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: screenWidth * 0.15,
-                    backgroundImage: NetworkImage(
-                      'https://i.pinimg.com/564x/0a/1d/5a/0a1d5aa8670073bc742f056d7a03b8ea.jpg', // Replace with your image URL or asset
+                    backgroundImage: const AssetImage(
+                      'images/pfp.jpg', // Replace with your image URL or asset
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.02),

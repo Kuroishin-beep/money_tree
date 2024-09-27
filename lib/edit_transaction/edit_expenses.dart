@@ -6,7 +6,12 @@ import 'package:money_tree/budget/budget.dart';
 import 'package:money_tree/settings/settings.dart';
 
 
-class EditExpensesScreen extends StatelessWidget {
+class EditExpensesScreen extends StatefulWidget {
+  @override
+  State<EditExpensesScreen> createState() => _EditExpensesScreenState();
+}
+
+class _EditExpensesScreenState extends State<EditExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

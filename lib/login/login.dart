@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:money_tree/dashboard/dashboard.dart';
 import 'package:money_tree/signup/signup.dart';
 
-class Login extends StatelessWidget {
+
+class Login extends StatefulWidget {
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -16,7 +22,7 @@ class Login extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
 
-// Header
+              // Header
               Container(
                 padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
                 child: Text(
@@ -30,7 +36,7 @@ class Login extends StatelessWidget {
                 ),
               ),
 
-// Email Section
+              // Email Section
               Text(
                 'Email',
                 style: TextStyle(
@@ -87,7 +93,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 30),
 
-// Login Button Section
+              // Login Button Section
               Container(
                 height: 70,
                 child: ElevatedButton(
@@ -117,7 +123,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 20),
 
-// Forgot password Section
+              // Forgot password Section
               Center(
                 child: TextButton(
                   onPressed: () {},
@@ -136,7 +142,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 20),
 
-// Divider for other Login Options
+              // Divider for other Login Options
               Row(
                 children: <Widget>[
                   Expanded(
@@ -162,7 +168,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 30),
 
-// Google Button Section
+              // Google Button Section
               Container(
                 height: 70,
                 child: ElevatedButton(
@@ -187,7 +193,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 30),
 
-// Facebook Button Section
+              // Facebook Button Section
               Container(
                 height: 70,
                 child: ElevatedButton(
@@ -212,7 +218,7 @@ class Login extends StatelessWidget {
 
               SizedBox(height: 30),
 
-// Sign up Button if user does not have an account yet
+              // Sign up Button if user does not have an account yet
               Center(
                 child: TextButton(
                   onPressed: () {

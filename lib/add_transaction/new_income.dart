@@ -5,7 +5,12 @@ import 'package:money_tree/history/history.dart';
 import 'package:money_tree/budget/budget.dart';
 import 'package:money_tree/settings/settings.dart';
 
-class NewIncomeScreen extends StatelessWidget {
+class NewIncomeScreen extends StatefulWidget {
+  @override
+  State<NewIncomeScreen> createState() => _NewIncomeScreenState();
+}
+
+class _NewIncomeScreenState extends State<NewIncomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

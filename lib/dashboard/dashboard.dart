@@ -5,8 +5,13 @@ import 'package:money_tree/budget/budget.dart';
 import 'package:money_tree/add_transaction/new_income.dart';
 import 'package:money_tree/history/history.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
 
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     // Get screen dimensions

@@ -8,8 +8,13 @@ import 'package:pie_chart/pie_chart.dart';
 import 'weekly.dart';
 import 'yearly.dart';
 
-class MonthlyReport extends StatelessWidget {
+class MonthlyReport extends StatefulWidget {
 
+  @override
+  State<MonthlyReport> createState() => _MonthlyReportState();
+}
+
+class _MonthlyReportState extends State<MonthlyReport> {
   Map<String, double> expenses = {
     "CAR": 5,
     "SCHOOL": 2,

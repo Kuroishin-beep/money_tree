@@ -5,7 +5,12 @@ import 'package:money_tree/history/history.dart';
 import 'package:money_tree/budget/budget.dart';
 import 'package:money_tree/settings/settings.dart';
 
-class NewExpenseScreen extends StatelessWidget {
+class NewExpenseScreen extends StatefulWidget {
+  @override
+  State<NewExpenseScreen> createState() => _NewExpenseScreenState();
+}
+
+class _NewExpenseScreenState extends State<NewExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

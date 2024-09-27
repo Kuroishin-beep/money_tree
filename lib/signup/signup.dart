@@ -2,7 +2,12 @@ import 'package:money_tree/login/login.dart';
 import 'package:flutter/material.dart';
 
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
+  @override
+  State<SignUp> createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;

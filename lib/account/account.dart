@@ -5,7 +5,12 @@ import 'package:money_tree/budget/budget.dart';
 import 'package:money_tree/settings/settings.dart';
 import 'package:money_tree/add_transaction/new_income.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);

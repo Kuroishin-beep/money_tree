@@ -4,7 +4,12 @@ import 'package:money_tree/dashboard/dashboard.dart';
 import 'package:money_tree/history/history.dart';
 import 'package:money_tree/settings/settings.dart';
 
-class BudgetScreen extends StatelessWidget {
+class BudgetScreen extends StatefulWidget {
+  @override
+  State<BudgetScreen> createState() => _BudgetScreenState();
+}
+
+class _BudgetScreenState extends State<BudgetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

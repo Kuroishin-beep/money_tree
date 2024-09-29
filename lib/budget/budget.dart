@@ -30,7 +30,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
           actions: const [
             CircleAvatar(
               backgroundImage: AssetImage(
-                  'images/pfp.jpg'),
+                  'lib/images/pfp.jpg'),
               radius: 20,
             ),
             SizedBox(width: 16),

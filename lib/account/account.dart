@@ -59,7 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   CircleAvatar(
                     radius: screenWidth * 0.15,
                     backgroundImage: const AssetImage(
-                      'images/pfp.jpg', // Replace with your image URL or asset
+                      'lib/images/pfp.jpg', // Replace with your image URL or asset
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.02),

@@ -55,7 +55,7 @@ class HistoryDataListState extends State<HistoryScreen> {
         actions: const [
           CircleAvatar(
             backgroundImage: AssetImage(
-                'images/pfp.jpg'),
+                'lib/images/pfp.jpg'),
             radius: 20,
           ),
           SizedBox(width: 16),

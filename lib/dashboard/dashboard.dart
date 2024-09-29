@@ -16,7 +16,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     // Get screen dimensions
     double sw = MediaQuery.of(context).size.width;
-    double sh = MediaQuery.of(context).size.height;
+
     // for font size
     double fs = sw;
 
@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
 
                   // header box
                   Container(
-                    child: Image.asset('images/header_design.png'),
+                    child: Image.asset('lib/images/header_design.png'),
                   ),
 
                   Padding(
@@ -276,7 +276,7 @@ class _DashboardState extends State<Dashboard> {
                                     top: -(sw * 0.18 + 10),
                                     child: CircleAvatar(
                                       radius: sw * 0.1,
-                                      backgroundImage: AssetImage('images/pfp.jpg'),
+                                      backgroundImage: AssetImage('lib/images/pfp.jpg'),
                                     ),
                                   )
                                 ],
@@ -417,7 +417,7 @@ class _DashboardState extends State<Dashboard> {
                                                   width: sw * 0.1,
                                                   height: sw * 0.1,
                                                   decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: Color(0xffDAFFD1),
                                                     shape: BoxShape.circle,
                                                   ),
                                                 ),

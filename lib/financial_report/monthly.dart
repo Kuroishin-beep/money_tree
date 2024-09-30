@@ -3,7 +3,6 @@ import 'package:money_tree/add_transaction/new_income.dart';
 import 'package:money_tree/dashboard/dashboard.dart';
 import 'package:money_tree/history/history.dart';
 import 'package:money_tree/settings/settings.dart';
-import 'package:money_tree/budget/budget.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'weekly.dart';
 import 'yearly.dart';
@@ -37,24 +36,32 @@ class _MonthlyReportState extends State<MonthlyReport> {
     double fs = sw;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+
       appBar: AppBar(
+          backgroundColor: Color(0xffFFF8ED),
           title: Text(
             'FINANCIAL REPORT',
             style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Inter Regular'
+                color: Color(0XFF639DF0),
+                fontFamily: 'Inter Regular',
+                fontWeight: FontWeight.w700
             ),
           ),
           centerTitle: true,
-          backgroundColor: Color(0xff0A9396),
-          iconTheme: IconThemeData(
-            color: Colors.white,
-          ),
+          actions: const [
+            CircleAvatar(
+              backgroundImage: AssetImage(
+                  'lib/images/pfp.jpg'),
+              radius: 20,
+            ),
+            SizedBox(width: 16),
+          ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
             onPressed: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => Dashboard()),
               );
@@ -73,8 +80,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xff0A9396),
-                  Color(0xffF3F9FA),
+                  Color(0xffFFF8ED),
+                  Color(0xffABC5EA),
                 ],
               ),
             ),
@@ -85,6 +92,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
               padding: EdgeInsets.symmetric(horizontal: sw * 0.04, vertical: sw * 0.01),
               child: Column(
                 children: [
+                  SizedBox(height: sw * 0.2),
+
                   // CATEGORIES
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -188,7 +197,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     height: sw * 0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25.0),
-                      color: Color(0xff231F20),
+                      color: Color(0xffFFF8ED),
                     ),
 
                     child: Container(
@@ -200,16 +209,18 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             child: Text(
                               'FINANCIAL ADVICE',
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: fs * 0.04
+                                  color: Color(0xff9A9BEB),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: fs * 0.05
                               ),
                             ),
                           )
                         ],
                       ),
                     ),
-                  )
+                  ),
+
+                  SizedBox(height: sw * 0.2),
 
 
                 ],
@@ -230,64 +241,55 @@ class _MonthlyReportState extends State<MonthlyReport> {
         child: Icon(
           Icons.add,
           size: 40,
-          color: Color(0xff03045E),
+          color: Color(0xffE63636),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xffFFF8ED),
         shape: CircleBorder(),
+
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Stack(
-        children: [
-          BottomAppBar(
-            shape: CircularNotchedRectangle(),
-            notchMargin: 15.0,
-            color: Color(0xff001219),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dashboard()));
-                  },
-                ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BudgetScreen()));
-                  },
-                ),
-                SizedBox(width: 80),
-                IconButton(
-                  icon: Icon(Icons.history, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HistoryScreen()));
-                  },
-                ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsScreen()));
-                  },
-                ),
-              ],
-            ),
+      bottomNavigationBar: SizedBox(
+        height: 70,
+        child: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          notchMargin: 15.0,
+          color: Color(0xff231F20),
+          elevation: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Dashboard()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => MonthlyReport()));
+                },
+              ),
+              SizedBox(width: 80), // Spacer for FAB
+              IconButton(
+                icon: Icon(Icons.history, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -323,22 +325,13 @@ class ProgressBar extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                  width: progress1,
-                  height: sw * 0.8,
-                  decoration: BoxDecoration(
-                      color: Color(0xffCA498C),
-                      borderRadius: BorderRadius.circular(20.0)),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.02),
-                    child: Text(
-                      'EXPENSES ${progress1-170} %',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700
-                      ),
-                    ),
-                  )
-              ),
+                width: progress1,
+                height: sw * 0.8,
+                decoration: BoxDecoration(
+                  color: Color(0xff9A386B),
+                  borderRadius: BorderRadius.circular(20.0)
+                ),
+              )
             )
         ),
 
@@ -376,3 +369,4 @@ class ProgressBar extends StatelessWidget {
     );
   }
 }
+

@@ -10,7 +10,6 @@ import 'add_transaction/new_income.dart';
 import 'add_transaction/new_expenses.dart';
 import 'financial_report/monthly.dart';
 import 'loading_screen.dart';
-import 'dashboard/dashboard2.dart';
 
 void main() {
   runApp(BudgetTracker());
@@ -24,17 +23,14 @@ class BudgetTracker extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      home: Dashboard2(),
-
-      //initialRoute: 'dashboard2.dart',
+      initialRoute: 'get_started.dart',
 
       routes: {
         'get_started.dart': (context) => GetStarted(),
         '/signup': (context) => SignUp(),
         '/login': (context) => Login(),
         'loading_screen.dart': (context) => LoadingScreen(),
-        '/dashboard': (context) => Dashboard2(),
-        //'/dashboard': (context) => Dashboard2(),
+        '/dashboard': (context) => Dashboard(),
         '/budget': (context) => BudgetScreen(),
         '/history': (context) => HistoryScreen(),
         '/settings': (context) => SettingsScreen(),

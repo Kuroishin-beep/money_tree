@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:money_tree/budget/budget.dart';
 import 'package:money_tree/add_transaction/new_income.dart';
 import 'package:money_tree/history/history.dart';
+import 'package:money_tree/income/income.dart';
+import 'package:money_tree/expenses/expenses.dart';
+import 'package:intl/intl.dart';
+import 'budget_bar.dart';
+import 'recent_purchase.dart';
 
 class Dashboard extends StatefulWidget {
 
@@ -12,701 +17,179 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final formatter = NumberFormat('#,###');
+
+  int balance = 700000;
+  int cash = 200000;
+  int card = 250000;
+  int gcash = 250000;
+
+  String month = 'September';
+
+  double income = 25000;
+  double expenses = 25000;
+
+
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions
     double sw = MediaQuery.of(context).size.width;
-
-    // for font size
     double fs = sw;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+
       body: Stack(
         children: [
-          // Gradient Background Container
+          // Gradient Background
           Container(
-            width: double.infinity,
-            height: double.infinity,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.center,
-                colors: [
-                  Color(0xff0A9396),
-                  Color(0xffF3F9FA),
-                ],
-              ),
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xffffffff),
+                      Color(0xffFFF5E4)
+                    ]
+                )
             ),
           ),
 
-          // Main Content
           SingleChildScrollView(
-              child: Stack(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: sw * 0.08, horizontal: sw * 0.05),
+              child: Column(
                 children: [
-
-                  // header box
+                  // Hello, User!
                   Container(
-                    child: Image.asset('lib/images/header_design.png'),
+                    padding: EdgeInsets.only(top: sw * 0.05, left: sw * 0.2),
+                    child: Text(
+                      'Hello, Andrei!',
+                      style: TextStyle(
+                        color: Color(0xff020202),
+                        fontSize: fs * 0.08,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Inter Regular',
+                      ),
+                    ),
                   ),
 
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: sw * 0.05), // Parent Padding
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  SizedBox(height: sw * 0.07),
 
-                        // Hello, User!
-                        Container(
-                          padding: EdgeInsets.only(top: sw * 0.15, left: sw * 0.25),
-                          child: Text(
-                            'Hello, Andrei!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: fs * 0.07,
-                              fontWeight: FontWeight.w800,
-                              fontFamily: 'Inter Regular',
-                            ),
-                          ),
-                        ),
+                  // Pfp and Account Summary Section
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Account Summary (Balance, Cash, Card, Gcash)
+                      _accountSummaryBox(),
 
-                        // User Profile Picture and Account Summary
-                        Container(
-
-                          // Account Summary Box
-                            width: double.infinity,
-                            height: sw * 0.35,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.center,
-                                colors: [
-                                  Color(0xffC2F8FA),
-                                  Color(0xffE2F6F6),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(35),
-                                bottomLeft: Radius.circular(35),
-                                bottomRight: Radius.circular(35),
+                      // Profile Picture
+                      Positioned(
+                        top: -(sw * 0.2 + 14),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xffABC5EA),
+                                width: 4.0,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 8,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3), // Shadow offset
-                                ),
-                              ],
-                            ),
-
-                            // Parent Padding for Account Summary Content (Balance, Cash, Card, Gcash)
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: sw * 0.04, vertical: sw * 0.05),
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-
-                                  // Balance Section
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        child: Align(
-                                          alignment: Alignment.topLeft,
-                                          child: Text(
-                                            'BALANCE',
-                                            style: TextStyle(
-                                              color: Colors.black.withOpacity(0.84),
-                                              fontFamily: 'Inter Regular',
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: fs * 0.047,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: Align(
-                                          alignment: Alignment.topRight,
-                                          child: Text(
-                                            '\$700,000',
-                                            style: TextStyle(
-                                              color: Colors.black.withOpacity(0.68),
-                                              fontFamily: 'Inter Regular',
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: fs * 0.047,
-                                              fontStyle: FontStyle.italic,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  Divider(
-                                    color: Color(0xff093F40),
-                                    thickness: 2,
-                                    height: sw * 0.14,
-                                  ),
-
-                                  // Cash , Card, Gcash
-                                  Padding(
-                                    padding: EdgeInsets.only(top: sw * 0.08),
-                                    child: Column(
-                                      children: [
-
-                                        // Cash Section
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  'Cash',
-                                                  style: TextStyle(
-                                                    fontSize: fs * 0.038,
-                                                    color: Colors.black.withOpacity(0.84),
-                                                    fontFamily: 'Inter Regular',
-                                                    fontWeight: FontWeight.w800,
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Divider(
-                                                  color: Colors.black,
-                                                  indent: sw * 0.02,
-                                                  endIndent: sw * 0.02,
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Text(
-                                                  '\$200,00',
-                                                  style: TextStyle(
-                                                      fontSize: fs * 0.038,
-                                                      color: Colors.black.withOpacity(0.68),
-                                                      fontFamily: 'Inter Regular',
-                                                      fontWeight: FontWeight.w800,
-                                                      fontStyle: FontStyle.italic
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Card Section
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  'Card',
-                                                  style: TextStyle(
-                                                    fontSize: fs * 0.038,
-                                                    color: Colors.black.withOpacity(0.84),
-                                                    fontFamily: 'Inter Regular',
-                                                    fontWeight: FontWeight.w800,
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Divider(
-                                                  color: Colors.black,
-                                                  indent: sw * 0.02,
-                                                  endIndent: sw * 0.02,
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Text(
-                                                  '\$250,00',
-                                                  style: TextStyle(
-                                                      fontSize: fs * 0.038,
-                                                      color: Colors.black.withOpacity(0.68),
-                                                      fontFamily: 'Inter Regular',
-                                                      fontWeight: FontWeight.w800,
-                                                      fontStyle: FontStyle.italic
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Gcash Section
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  'Gcash',
-                                                  style: TextStyle(
-                                                    fontSize: fs * 0.038,
-                                                    color: Colors.black.withOpacity(0.84),
-                                                    fontFamily: 'Inter Regular',
-                                                    fontWeight: FontWeight.w800,
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Divider(
-                                                  color: Colors.black,
-                                                  indent: sw * 0.02,
-                                                  endIndent: sw * 0.02,
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Text(
-                                                  '\$250,00',
-                                                  style: TextStyle(
-                                                      fontSize: fs * 0.038,
-                                                      color: Colors.black.withOpacity(0.68),
-                                                      fontFamily: 'Inter Regular',
-                                                      fontWeight: FontWeight.w800,
-                                                      fontStyle: FontStyle.italic
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // Profile Picture Section
-                                  Positioned(
-                                    top: -(sw * 0.18 + 10),
-                                    child: CircleAvatar(
-                                      radius: sw * 0.1,
-                                      backgroundImage: AssetImage('lib/images/pfp.jpg'),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Divider Month
-                        Container(
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Circle before line
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF093f40),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 4,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Left line (1 inch = 96 pixels)
-                                SizedBox(
-                                  width: 60,
-                                  child: Divider(
-                                    color: Color(0xFF093f40),
-                                    thickness: 1,
-                                  ),
-                                ),
-                                SizedBox(width: 5),
-                                // "EXPENSES" text
-                                Text(
-                                  'September',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: fs * 0.035,
-                                    color: Colors.black,
-                                    shadows: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 4,  // Shadow for the text
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 5),
-                                // Right line (1 inch = 96 pixels)
-                                SizedBox(
-                                  width: 60,
-                                  child: Divider(
-                                    color: Color(0xFF093f40),
-                                    thickness: 1,
-                                  ),
-                                ),
-                                // Circle after line
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF093f40),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 4,  // Shadow for circles
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                                    color: Color(0xff8296B2).withOpacity(0.3),
+                                    spreadRadius: 4,
+                                    blurRadius: 5
+                                )
+                              ]
+                          ),
+                          child: CircleAvatar(
+                            radius: sw * 0.12,
+                            backgroundImage: AssetImage('lib/images/pfp.jpg'),
                           ),
                         ),
+                      )
 
-                        SizedBox(height: 25),
+                    ],
+                  ),
 
-                        // Income, Expense, Budget
-                        Container(
-                          width: double.infinity,
-                          child: Row(
-                            children: [
+                  SizedBox(height: sw * 0.07),
 
-                              // Income, Expense
-                              Expanded(
-                                flex: 3,
-                                child: Column(
-                                  children: [
-
-                                    // Income Section
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => MonthlyReport()));
-                                      },
-                                      child:  Container(
-                                        // Income Gradient Box
-                                        width: sw * 0.45,
-                                        height: sw * 0.45,
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Color(0xff199C2D),
-                                              Color(0xff022127),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(25.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.2),
-                                              spreadRadius: 6,
-                                              blurRadius: 10,
-                                              offset: Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Container(
-                                                  width: sw * 0.1,
-                                                  height: sw * 0.1,
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xffDAFFD1),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                ),
-                                              ),
-
-                                              Align(
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        '\$25,000.00',
-                                                        style: TextStyle(
-                                                          fontSize: fs * 0.04,
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.w600,
-                                                          fontFamily: 'Inter Regular',
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Income',
-                                                        style: TextStyle(
-                                                          fontSize: fs * 0.033,
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.w200,
-                                                          fontFamily: 'Inter Regular',
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                              )
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    SizedBox(height: 10),
-
-                                    // Expenses Section
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => MonthlyReport()));
-                                      },
-                                      child: Container(
-                                        // Income Gradient Box
-                                        width: sw * 0.45,
-                                        height: sw * 0.45,
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Color(0xffE42626),
-                                              Color(0xff022329),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(25.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.2),
-                                              spreadRadius: 6,
-                                              blurRadius: 10,
-                                              offset: Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Container(
-                                                  width: sw * 0.1,
-                                                  height: sw * 0.1,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                ),
-                                              ),
-
-                                              Align(
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        '\$10,800.00',
-                                                        style: TextStyle(
-                                                          fontSize: fs * 0.04,
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.w600,
-                                                          fontFamily: 'Inter Regular',
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        'Expenses',
-                                                        style: TextStyle(
-                                                          fontSize: fs * 0.033,
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.w200,
-                                                          fontFamily: 'Inter Regular',
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                              )
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-
-                              SizedBox(width: 10),
-
-                              // Budget Section
-                              Expanded(
-                                  flex: 3,
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => BudgetScreen()));
-                                    },
-                                    child: Container(
-                                      height: 2 * (sw * 0.45) + 10,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [
-                                            Color(0xff001219),
-                                            Color(0xff0A9396),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(25.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.2),
-                                            spreadRadius: 6,
-                                            blurRadius: 10,
-                                            offset: Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.symmetric(vertical: sw * 0.06),
-                                            child: Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Text(
-                                                'Budget',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: fs * 0.04,
-                                                  fontWeight: FontWeight.w200,
-                                                  fontFamily: 'Inter Regular',
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          // Progress Bar
-                                          Container(
-                                            child: Align(
-                                              alignment: Alignment.center,
-                                              child: ProgressBar(
-                                                progress: 150.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                              )
-
-                            ],
-                          ),
+                  // Month Divider
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xff093F40),
+                          thickness: 2.0,
+                          endIndent: 20.0,
                         ),
+                      ),
+                      Text(
+                        '$month',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: fs * 0.04,
+                            fontWeight: FontWeight.w500
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xff093F40),
+                          thickness: 2.0,
+                          indent: 20.0,
+                        ),
+                      ),
+                    ],
+                  ),
 
-                        SizedBox(height: 25),
+                  SizedBox(height: sw * 0.07),
 
-                        // Recent Purchase
-                        Container(
-                          width: double.infinity,
-                          height: sw * 0.9,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color(0xff9FFADB),
-                                Color(0xff02262C),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(25.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 6,
-                                blurRadius: 10,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
+                  //Income, Expenses, Budget Sections
+                  Container(
+                    width: double.infinity,
+                    child: Row(
+                      children: [
 
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.04),
+                        //Income and Expenses
+                        Expanded(
+                            flex: 3,
                             child: Column(
                               children: [
 
-                                // Recent Purchase Text
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'RECENT PURCHASE',
-                                    style: TextStyle(
-                                      color: Color(0xff202828),
-                                      fontSize: fs * 0.05,
-                                      fontWeight: FontWeight.w800,
-                                      fontFamily: 'Inter Regular',
-                                    ),
-                                  ),
-                                ),
+                                // Income Section
+                                _incomeBox(),
 
-                                // Recent Purchase List
-                                Expanded(
-                                    child: ListView(
-                                      children: [
-                                        RecentPurchaseCard(
-                                            date: 'September 5, 2024',
-                                            category: 'Grocery',
-                                            amount: 32.5
-                                        ),
-                                        RecentPurchaseCard(
-                                            date: 'September 4, 2024',
-                                            category: 'Car',
-                                            amount: 70
-                                        ),
-                                        RecentPurchaseCard(
-                                            date: 'September 3, 2024',
-                                            category: 'Grocery',
-                                            amount: 15.5
-                                        ),
-                                        RecentPurchaseCard(
-                                            date: 'September 3, 2024',
-                                            category: 'Shopping',
-                                            amount: 15.5
-                                        ),
-                                        RecentPurchaseCard(
-                                            date: 'September 2, 2024',
-                                            category: 'Grocery',
-                                            amount: 10
-                                        ),
-                                      ],
-                                    )
-                                )
+                                SizedBox(height: sw * 0.03),
+
+                                // Expenses Section
+                                _expensesBox()
                               ],
-                            ),
-                          ),
+                            )
                         ),
 
-                        SizedBox(height: 25),
+                        SizedBox(width: sw * 0.03),
+
+                        // Budget Section
+                        Expanded(
+                            flex: 3,
+                            child: _budgetBox()
+                        )
                       ],
                     ),
-                  )
+                  ),
+
+                  SizedBox(height: sw * 0.04),
+
+                  // Recent Purchase Section
+                  _recentPurchaseBox(),
+
+                  SizedBox(height: sw * 0.15),
                 ],
-              )
-          ),
+              ),
+            ),
+          )
         ],
       ),
 
-      // Navigation Bar
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -717,173 +200,623 @@ class _DashboardState extends State<Dashboard> {
         child: Icon(
           Icons.add,
           size: 40,
-          color: Color(0xff03045E),
+          color: Color(0xffE63636),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xffFFF8ED),
         shape: CircleBorder(),
 
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Stack(
-        children: [
-          BottomAppBar(
-            shape: CircularNotchedRectangle(),
-            notchMargin: 15.0,
-            color: Color(0xff001219),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dashboard()));
-                  },
-                ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BudgetScreen()));
-                  },
-                ),
-                SizedBox(width: 80),
-                IconButton(
-                  icon: Icon(Icons.history, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HistoryScreen()));
-                  },
-                ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsScreen()));
-                  },
-                ),
-              ],
-            ),
+      bottomNavigationBar: SizedBox(
+        height: 70,
+        child: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          notchMargin: 15.0,
+          color: Color(0xff231F20),
+          elevation: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Dashboard()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => MonthlyReport()));
+                },
+              ),
+              SizedBox(width: 80), // Spacer for FAB
+              IconButton(
+                icon: Icon(Icons.history, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
-}
 
-// Class for Progress Bar
-class ProgressBar extends StatelessWidget {
-  final double progress;
-
-  ProgressBar({required this.progress});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _accountSummaryBox() {
     double sw = MediaQuery.of(context).size.width;
-
-    // for font size
     double fs = sw;
 
     return Container(
-      width: sw * 0.02,
-      height: sw * 0.65,
+      width: double.infinity,
+      height: sw * 0.35,
       decoration: BoxDecoration(
-          color: Color(0xff5C5C5C),
-          borderRadius: BorderRadius.circular(20.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 6,
-              blurRadius: 10,
-              offset: Offset(0, 3),
-            )
-          ]),
+        color: Color(0xff8296B2),
+        borderRadius: BorderRadius.circular(30.0),
+      ),
       child: Stack(
         children: [
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              width: sw * 0.02,
-              height: progress,
+              width: sw * 0.87,
+              height: sw * 0.32,
               decoration: BoxDecoration(
-                  color: Color(0xffEDF2F7),
-                  borderRadius: BorderRadius.circular(20.0)),
+                color: Color(0xffABC5EA),
+                borderRadius: BorderRadius.circular(30.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xffABC5EA),
+                    blurRadius: 3,
+                    spreadRadius: 5,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+
+
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: sw * 0.01, horizontal: sw * 0.02),
+                child: Column(
+                  children: [
+
+                    // Balance Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'BALANCE',
+                            style: TextStyle(
+                              color: Color(0xffFFF5E4),
+                              fontFamily: 'Inter Regular',
+                              fontWeight: FontWeight.w800,
+                              fontSize: fs * 0.05,
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            '₱${formatter.format(balance)}',
+                            style: TextStyle(
+                                color: Color(0xffFFF5E4),
+                                fontFamily: 'Inter Regular',
+                                fontWeight: FontWeight.w800,
+                                fontSize: fs * 0.05,
+                                fontStyle: FontStyle.italic
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+
+                    Divider(
+                      color: Colors.white,
+                      thickness: 2,
+
+                    ),
+
+                    // Cash Section
+                    Row(
+                        children: [
+                          Text(
+                            'Cash',
+                            style: TextStyle(
+                              fontSize: fs * 0.038,
+                              color: Color(0xffFFF5E4),
+                              fontFamily: 'Inter Regular',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+
+                          Expanded(
+                            child: Divider(
+                              color: Colors.white,
+                              indent: sw * 0.02,
+                              endIndent: sw * 0.02,
+                            ),
+                          ),
+
+                          Text(
+                            '₱${formatter.format(cash)}',
+                            style: TextStyle(
+                                fontSize: fs * 0.038,
+                                color: Color(0xffFFF5E4),
+                                fontFamily: 'Inter Regular',
+                                fontWeight: FontWeight.w800,
+                                fontStyle: FontStyle.italic
+                            ),
+                          ),
+                        ]
+                    ),
+
+                    // Card Section
+                    Row(
+                        children: [
+                          Text(
+                            'Card',
+                            style: TextStyle(
+                              fontSize: fs * 0.038,
+                              color: Color(0xffFFF5E4),
+                              fontFamily: 'Inter Regular',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+
+                          Expanded(
+                            child: Divider(
+                              color: Colors.white,
+                              indent: sw * 0.02,
+                              endIndent: sw * 0.02,
+                            ),
+                          ),
+
+                          Text(
+                            '₱${formatter.format(card)}',
+                            style: TextStyle(
+                                fontSize: fs * 0.038,
+                                color: Color(0xffFFF5E4),
+                                fontFamily: 'Inter Regular',
+                                fontWeight: FontWeight.w800,
+                                fontStyle: FontStyle.italic
+                            ),
+                          ),
+                        ]
+                    ),
+
+                    // Gcash Section
+                    Row(
+                        children: [
+                          Text(
+                            'GCash',
+                            style: TextStyle(
+                              fontSize: fs * 0.038,
+                              color: Color(0xffFFF5E4),
+                              fontFamily: 'Inter Regular',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+
+                          Expanded(
+                            child: Divider(
+                              color: Colors.white,
+                              indent: sw * 0.02,
+                              endIndent: sw * 0.02,
+                            ),
+                          ),
+
+                          Text(
+                            '₱${formatter.format(gcash)}',
+                            style: TextStyle(
+                                fontSize: fs * 0.038,
+                                color: Color(0xffFFF5E4),
+                                fontFamily: 'Inter Regular',
+                                fontWeight: FontWeight.w800,
+                                fontStyle: FontStyle.italic
+                            ),
+                          ),
+                        ]
+                    )
+
+                  ],
+                ),
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
-}
 
-class RecentPurchaseCard extends StatelessWidget {
-  final Color color;
-  final String date;
-  final String category;
-  final double amount;
+  Widget _incomeBox() {
+    double sw = MediaQuery.of(context).size.width;
+    double fs = sw;
 
-  RecentPurchaseCard({
-    this.color = Colors.black,
-    required this.date,
-    required this.category,
-    required this.amount,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Card(
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => IncomeScreen()));
+      },
       child: Container(
+        width: double.infinity,
+        height: sw * 0.45,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xffC2F8FA),
-              Color(0xffE2F6F6),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 8,
-              blurRadius: 5,
-              offset: Offset(0, 3), // Shadow offset
-            ),
-          ],
+          color: Color(0xffBFBFBF),
+          borderRadius: BorderRadius.circular(30.0),
         ),
-        child: ListTile(
-          title: Text(
-            date,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontFamily: 'Inter Regular',
-            ),
-          ),
-          subtitle: Text(category),
-          trailing: Text(
-            '\$$amount',
-            style: TextStyle(
-              color: Colors.black.withOpacity(0.68),
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Inter Regular',
-              fontStyle: FontStyle.italic,
-            ),
-          ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: sw * 0.424,
+                height: sw * 0.43,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white,
+                      blurRadius: 1,
+                      spreadRadius: 2,
+                      offset: Offset(0, -3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          width: sw * 0.1,
+                          height: sw * 0.1,
+                          decoration: BoxDecoration(
+                            color: Color(0xffA9C6A2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  width: sw * 0.3,
+                                  height: sw * 0.09,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffDAFFD1),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xffDAFFD1),
+                                        blurRadius: 1,
+                                        spreadRadius: 1,
+                                        offset: Offset(0, -1),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '₱${formatter.format(income)}',
+                                style: TextStyle(
+                                  fontSize: fs * 0.04,
+                                  color: Color(0xff080C1A),
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Inter Regular',
+                                ),
+                              ),
+                              Text(
+                                'Income',
+                                style: TextStyle(
+                                  fontSize: fs * 0.033,
+                                  color: Color(0xff65AD53),
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Inter Regular',
+                                ),
+                              ),
+                            ],
+                          )
+                      )
+
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
   }
+
+  Widget _expensesBox() {
+    double sw = MediaQuery.of(context).size.width;
+    double fs = sw;
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ExpensesScreen()));
+      },
+      child: Container(
+        width: double.infinity,
+        height: sw * 0.45,
+        decoration: BoxDecoration(
+          color: Color(0xffBFBFBF),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: sw * 0.424,
+                height: sw * 0.43,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white,
+                      blurRadius: 1,
+                      spreadRadius: 2,
+                      offset: Offset(0, -3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          width: sw * 0.1,
+                          height: sw * 0.1,
+                          decoration: BoxDecoration(
+                            color: Color(0xffC7997B),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  width: sw * 0.3,
+                                  height: sw * 0.09,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffFBC29C),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xffFBC29C),
+                                        blurRadius: 1,
+                                        spreadRadius: 1,
+                                        offset: Offset(0, -1),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '₱${formatter.format(expenses)}',
+                                style: TextStyle(
+                                  fontSize: fs * 0.04,
+                                  color: Color(0xff080C1A),
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Inter Regular',
+                                ),
+                              ),
+                              Text(
+                                'Expenses',
+                                style: TextStyle(
+                                  fontSize: fs * 0.033,
+                                  color: Color(0xffC68051),
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Inter Regular',
+                                ),
+                              ),
+                            ],
+                          )
+                      )
+
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _budgetBox() {
+    double sw = MediaQuery.of(context).size.width;
+    double fs = sw;
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BudgetScreen()));
+      },
+      child: Container(
+          height: 2 * (sw * 0.45) + 10,
+          decoration: BoxDecoration(
+            color: Color(0xffBFBFBF),
+            borderRadius: BorderRadius.circular(25.0),
+            border: Border.all(
+              color: Colors.white,
+              width: 2.0,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 3,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 2 * (sw * 0.435) + 10,
+                  width: sw * 0.42,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white,
+                        spreadRadius: 2,
+                        blurRadius: 1,
+                        offset: Offset(0, -3),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: sw * 0.07),
+
+                      BudgetBar(
+                          progress: 150.0
+                      ),
+
+                      SizedBox(height: sw * 0.07),
+
+                      Text(
+                        "Budget",
+                        style: TextStyle(
+                            fontFamily: 'Inter Regular',
+                            fontSize: fs * 0.04,
+                            color: Color(0xffF4A26B),
+                            fontWeight: FontWeight.w600
+                        ),
+                      )
+
+                    ],
+                  ),
+                ),
+              )
+            ],
+          )
+      ),
+    );
+  }
+
+  Widget _recentPurchaseBox() {
+    double sw = MediaQuery.of(context).size.width;
+
+    return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+            color: Color(0xffABC5EA),
+            borderRadius: BorderRadius.circular(25.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                spreadRadius: 3,
+              )
+            ]
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: sw * 0.04, horizontal: sw * 0.05),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'RECENT PURCHASE',
+                  style: TextStyle(
+                      color: Color(0xff202828),
+                      fontSize: sw * 0.055,
+                      fontFamily: 'Inter Regular',
+                      fontWeight: FontWeight.w700
+                  ),
+                ),
+              ),
+
+              RecentPurchaseCard(
+                  date: 'September 5, 2024',
+                  item: 'Starbucks',
+                  amount: 150
+              ),
+
+              RecentPurchaseCard(
+                  date: 'September 4, 2024',
+                  item: 'Watson',
+                  amount: 300
+              ),
+
+              RecentPurchaseCard(
+                  date: 'September 4, 2024',
+                  item: 'Jollibee',
+                  amount: 215
+              ),
+
+              RecentPurchaseCard(
+                  date: 'September 3, 2024',
+                  item: 'KFC',
+                  amount: 175
+              ),
+
+              RecentPurchaseCard(
+                  date: 'September 3, 2024',
+                  item: 'Shopee',
+                  amount: 1000
+              )
+            ],
+          ),
+        )
+    );
+  }
 }
+

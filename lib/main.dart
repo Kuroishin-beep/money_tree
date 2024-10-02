@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'login/login.dart';
-import 'dashboard/dashboard.dart';
-import 'get_started.dart';
-import 'signup/signup.dart';
+import 'login/login_screen.dart';
+import 'dashboard/dashboard_screen.dart';
+import 'get_started_screen.dart';
+import 'signup/signup_screen.dart';
 import 'budget/budget.dart';
-import 'history/history.dart';
+import 'history/history_screen.dart';
 import 'settings/settings.dart';
-import 'add_transaction/new_income.dart';
-import 'add_transaction/new_expenses.dart';
-import 'financial_report/monthly.dart';
+import 'add_transaction/new_income_screen.dart';
+import 'add_transaction/new_expenses_screen.dart';
+import 'financial_report/monthly_screen.dart';
 import 'loading_screen.dart';
 
 void main() {
@@ -23,10 +23,10 @@ class BudgetTracker extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      initialRoute: 'get_started.dart',
+      initialRoute: 'get_started_screen.dart',
 
       routes: {
-        'get_started.dart': (context) => GetStarted(),
+        'get_started_screen.dart': (context) => GetStarted(),
         '/signup': (context) => SignUp(),
         '/login': (context) => Login(),
         'loading_screen.dart': (context) => LoadingScreen(),

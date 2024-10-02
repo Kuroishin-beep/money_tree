@@ -1,14 +1,15 @@
-import 'package:money_tree/financial_report/monthly.dart';
+import 'package:money_tree/financial_report/monthly_screen.dart';
 import 'package:money_tree/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tree/budget/budget.dart';
-import 'package:money_tree/add_transaction/new_income.dart';
-import 'package:money_tree/history/history.dart';
-import 'package:money_tree/income/income.dart';
-import 'package:money_tree/expenses/expenses.dart';
+import 'package:money_tree/add_transaction/new_income_screen.dart';
+import 'package:money_tree/history/history_screen.dart';
+import 'package:money_tree/income/income_screen.dart';
+import 'package:money_tree/expenses/expenses_screen.dart';
 import 'package:intl/intl.dart';
 import 'budget_bar.dart';
 import 'recent_purchase.dart';
+
 
 class Dashboard extends StatefulWidget {
 
@@ -29,6 +30,10 @@ class _DashboardState extends State<Dashboard> {
   double income = 25000;
   double expenses = 25000;
 
+  bool _isIncomePressed = false;
+  bool _isExpensesPressed = false;
+  bool _isBudgetPressed = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +41,6 @@ class _DashboardState extends State<Dashboard> {
     double fs = sw;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
 
       body: Stack(
         children: [
@@ -182,7 +185,7 @@ class _DashboardState extends State<Dashboard> {
                   // Recent Purchase Section
                   _recentPurchaseBox(),
 
-                  SizedBox(height: sw * 0.15),
+                  SizedBox(height: sw * 0.01),
                 ],
               ),
             ),
@@ -190,35 +193,39 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NewIncomeScreen()));
-        },
-        child: Icon(
-          Icons.add,
-          size: 40,
-          color: Color(0xffE63636),
+      // Navigation bar
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(top: sw * 0.04), // Adjust the value as needed
+        child: SizedBox(
+          height: 70, // Set height
+          width: 70,  // Set width
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewIncomeScreen()));
+            },
+            child: Icon(
+              Icons.add,
+              size: 40, // Icon size
+              color: Color(0xffE63636),
+            ),
+            backgroundColor: Color(0xffFFF8ED),
+            shape: CircleBorder(),
+          ),
         ),
-        backgroundColor: Color(0xffFFF8ED),
-        shape: CircleBorder(),
-
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: SizedBox(
         height: 70,
         child: BottomAppBar(
-          shape: CircularNotchedRectangle(),
-          notchMargin: 15.0,
           color: Color(0xff231F20),
-          elevation: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
+                icon: Icon(Icons.home_filled, color: Color(0xffFE5D26), size: 33),
                 onPressed: () {
                   Navigator.push(
                       context, MaterialPageRoute(builder: (context) => Dashboard()));
@@ -450,16 +457,38 @@ class _DashboardState extends State<Dashboard> {
       onTap: () {
         Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => IncomeScreen()));
+            MaterialPageRoute(builder: (context) => IncomeScreen()));
       },
-      child: Container(
+      onTapDown: (_) {
+        setState(() {
+          _isIncomePressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isIncomePressed = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          _isIncomePressed = false;
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 150),
         width: double.infinity,
         height: sw * 0.45,
         decoration: BoxDecoration(
-          color: Color(0xffBFBFBF),
+          boxShadow: _isIncomePressed
+            ? []
+            : [
+              BoxShadow(
+                color: Color(0xffBFBFBF)
+              )
+          ],
           borderRadius: BorderRadius.circular(30.0),
         ),
+        transform: Matrix4.translationValues(0, _isIncomePressed ? 5 : 0, 0),
         child: Stack(
           children: [
             Align(
@@ -513,44 +542,42 @@ class _DashboardState extends State<Dashboard> {
                                     ],
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
                       ),
-
                       Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '₱${formatter.format(income)}',
-                                style: TextStyle(
-                                  fontSize: fs * 0.04,
-                                  color: Color(0xff080C1A),
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Inter Regular',
-                                ),
+                        alignment: Alignment.bottomLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '₱${formatter.format(income)}',
+                              style: TextStyle(
+                                fontSize: fs * 0.04,
+                                color: Color(0xff080C1A),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter Regular',
                               ),
-                              Text(
-                                'Income',
-                                style: TextStyle(
-                                  fontSize: fs * 0.033,
-                                  color: Color(0xff65AD53),
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter Regular',
-                                ),
+                            ),
+                            Text(
+                              'Income',
+                              style: TextStyle(
+                                fontSize: fs * 0.033,
+                                color: Color(0xff65AD53),
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Inter Regular',
                               ),
-                            ],
-                          )
-                      )
-
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -564,17 +591,38 @@ class _DashboardState extends State<Dashboard> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ExpensesScreen()));
+            context, MaterialPageRoute(builder: (context) => ExpensesScreen()));
       },
-      child: Container(
+      onTapDown: (_) {
+        setState(() {
+          _isExpensesPressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isExpensesPressed = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          _isExpensesPressed = false;
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 100),
         width: double.infinity,
         height: sw * 0.45,
         decoration: BoxDecoration(
-          color: Color(0xffBFBFBF),
+          boxShadow: _isExpensesPressed
+              ? []
+              : [
+            BoxShadow(
+                color: Color(0xffBFBFBF)
+            )
+          ],
           borderRadius: BorderRadius.circular(30.0),
         ),
+        transform: Matrix4.translationValues(0, _isExpensesPressed ? 5 : 0, 0),
         child: Stack(
           children: [
             Align(
@@ -628,44 +676,42 @@ class _DashboardState extends State<Dashboard> {
                                     ],
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
                       ),
-
                       Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '₱${formatter.format(expenses)}',
-                                style: TextStyle(
-                                  fontSize: fs * 0.04,
-                                  color: Color(0xff080C1A),
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Inter Regular',
-                                ),
+                        alignment: Alignment.bottomLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '₱${formatter.format(expenses)}',
+                              style: TextStyle(
+                                fontSize: fs * 0.04,
+                                color: Color(0xff080C1A),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter Regular',
                               ),
-                              Text(
-                                'Expenses',
-                                style: TextStyle(
-                                  fontSize: fs * 0.033,
-                                  color: Color(0xffC68051),
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Inter Regular',
-                                ),
+                            ),
+                            Text(
+                              'Expenses',
+                              style: TextStyle(
+                                fontSize: fs * 0.033,
+                                color: Color(0xffC68051),
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Inter Regular',
                               ),
-                            ],
-                          )
-                      )
-
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -679,74 +725,86 @@ class _DashboardState extends State<Dashboard> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BudgetScreen()));
+          context,
+          MaterialPageRoute(builder: (context) => BudgetScreen()),
+        );
       },
-      child: Container(
-          height: 2 * (sw * 0.45) + 10,
-          decoration: BoxDecoration(
-            color: Color(0xffBFBFBF),
-            borderRadius: BorderRadius.circular(25.0),
-            border: Border.all(
-              color: Colors.white,
-              width: 2.0,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 3,
-                offset: Offset(0, 4),
-              ),
-            ],
+      onTapDown: (_) {
+        setState(() {
+          _isBudgetPressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isBudgetPressed = false;
+        });
+      },
+      onTapCancel: () {
+        setState(() {
+          _isBudgetPressed = false;
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 100),
+        height: 2 * (sw * 0.45) + 10,
+        decoration: BoxDecoration(
+          color: Color(0xffBFBFBF),
+          borderRadius: BorderRadius.circular(25.0),
+          border: Border.all(
+            color: Colors.white,
+            width: 2.0,
           ),
-
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: 2 * (sw * 0.435) + 10,
-                  width: sw * 0.42,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white,
-                        spreadRadius: 2,
-                        blurRadius: 1,
-                        offset: Offset(0, -3),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: sw * 0.07),
-
-                      BudgetBar(
-                          progress: 150.0
-                      ),
-
-                      SizedBox(height: sw * 0.07),
-
-                      Text(
-                        "Budget",
-                        style: TextStyle(
-                            fontFamily: 'Inter Regular',
-                            fontSize: fs * 0.04,
-                            color: Color(0xffF4A26B),
-                            fontWeight: FontWeight.w600
-                        ),
-                      )
-
-                    ],
-                  ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: Offset(0, _isBudgetPressed ? 2 : 4), // Adjust the offset when pressed
+            ),
+          ],
+        ),
+        transform: Matrix4.translationValues(0, _isBudgetPressed ? 5 : 0, 0), // Moves the box down when pressed
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 2 * (sw * 0.435) + 10,
+                width: sw * 0.42,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white,
+                      spreadRadius: 2,
+                      blurRadius: 1,
+                      offset: Offset(0, -3),
+                    ),
+                  ],
                 ),
-              )
-            ],
-          )
+                child: Column(
+                  children: [
+                    SizedBox(height: sw * 0.07),
+                    BudgetBar(
+                      progress: 150.0,
+                    ),
+                    SizedBox(height: sw * 0.07),
+                    Text(
+                      "Budget",
+                      style: TextStyle(
+                        fontFamily: 'Inter Regular',
+                        fontSize: fs * 0.04,
+                        color: Color(0xffF4A26B),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

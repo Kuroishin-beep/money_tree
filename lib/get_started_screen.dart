@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/login/login.dart';
+import 'package:money_tree/login/login_screen.dart';
 
 class GetStarted extends StatelessWidget {
   @override

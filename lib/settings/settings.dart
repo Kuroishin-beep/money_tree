@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/dashboard/dashboard.dart';
-import 'package:money_tree/history/history.dart';
+import 'package:money_tree/dashboard/dashboard_screen.dart';
+import 'package:money_tree/history/history_screen.dart';
 import 'package:money_tree/budget/budget.dart';
-import 'package:money_tree/add_transaction/new_income.dart';
+import 'package:money_tree/add_transaction/new_income_screen.dart';
 import 'package:money_tree/account/account.dart';
 
 class SettingsScreen extends StatefulWidget {

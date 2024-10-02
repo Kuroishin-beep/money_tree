@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/add_transaction/new_income.dart';
-import 'package:money_tree/dashboard/dashboard.dart';
-import 'package:money_tree/history/history.dart';
+import 'package:money_tree/add_transaction/new_income_screen.dart';
+import 'package:money_tree/dashboard/dashboard_screen.dart';
+import 'package:money_tree/history/history_screen.dart';
 import 'package:money_tree/settings/settings.dart';
+import 'package:money_tree/budget/budget.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'weekly.dart';
-import 'yearly.dart';
+import 'weekly_screen.dart';
+import 'monthly_screen.dart';
+import 'progress_bar.dart';
 
-class MonthlyReport extends StatefulWidget {
+class YearlyReport extends StatefulWidget {
 
   @override
-  State<MonthlyReport> createState() => _MonthlyReportState();
+  State<YearlyReport> createState() => _YearlyReportState();
 }
 
-class _MonthlyReportState extends State<MonthlyReport> {
+class _YearlyReportState extends State<YearlyReport> {
   Map<String, double> expenses = {
     "CAR": 5,
-    "SCHOOL": 2,
-    "HOUSE": 3,
-    "GROCERY": 2
+    "SCHOOL": 6,
+    "HOUSE": 7,
+    "GROCERY": 8
   };
 
   Map<String, double> income = {
@@ -77,7 +79,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
             height: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
+                begin: Alignment.center,
                 end: Alignment.bottomCenter,
                 colors: [
                   Color(0xffFFF8ED),
@@ -112,6 +114,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             color: Colors.black,
                             fontWeight: FontWeight.w300,
                             fontFamily: 'Inter Regular',
+                            fontSize: fs * 0.04
                           ),
                         ),
                       ),
@@ -128,8 +131,9 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           'MONTHLY',
                           style: TextStyle(
                             color: Colors.black,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w300,
                             fontFamily: 'Inter Regular',
+                            fontSize: fs * 0.04
                           ),
                         ),
                       ),
@@ -146,8 +150,9 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           'YEARLY',
                           style: TextStyle(
                             color: Colors.black,
-                            fontWeight: FontWeight.w300,
+                            fontWeight: FontWeight.w800,
                             fontFamily: 'Inter Regular',
+                            fontSize: fs * 0.04
                           ),
                         ),
                       ),
@@ -167,15 +172,12 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     chartValuesOptions: ChartValuesOptions(),
                   ),
 
-                  SizedBox(height: sw * 0.1),
+                  SizedBox(height: sw * 0.05),
 
                   //INCOME & EXPENSES Bar Chart
-                  ProgressBar(
-                    progress1: 200,
-                    progress2: 270,
-                  ),
+                  ProgressBar(progress1: 200, progress2: 270),
 
-                  SizedBox(height: sw * 0.1),
+                  SizedBox(height: sw * 0.05),
 
                   // INCOME Pie Chart
                   PieChart(
@@ -194,10 +196,16 @@ class _MonthlyReportState extends State<MonthlyReport> {
                   // Financial Advice Section
                   Container(
                     width: double.infinity,
-                    height: sw * 0.9,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Color(0xffFFF8ED),
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Color(0xffFFF8ED),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              spreadRadius: 6,
+                              blurRadius: 10
+                          )
+                        ]
                     ),
 
                     child: Container(
@@ -222,7 +230,6 @@ class _MonthlyReportState extends State<MonthlyReport> {
 
                   SizedBox(height: sw * 0.2),
 
-
                 ],
               ),
             ),
@@ -230,31 +237,34 @@ class _MonthlyReportState extends State<MonthlyReport> {
         ],
       ),
 
-      // Navigation Bar
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NewIncomeScreen()));
-        },
-        child: Icon(
-          Icons.add,
-          size: 40,
-          color: Color(0xffE63636),
+      // Navigation bar
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(top: sw * 0.04), // Adjust the value as needed
+        child: SizedBox(
+          height: 70, // Set height
+          width: 70,  // Set width
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewIncomeScreen()));
+            },
+            child: Icon(
+              Icons.add,
+              size: 40, // Icon size
+              color: Color(0xffE63636),
+            ),
+            backgroundColor: Color(0xffFFF8ED),
+            shape: CircleBorder(),
+          ),
         ),
-        backgroundColor: Color(0xffFFF8ED),
-        shape: CircleBorder(),
-
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: SizedBox(
         height: 70,
         child: BottomAppBar(
-          shape: CircularNotchedRectangle(),
-          notchMargin: 15.0,
           color: Color(0xff231F20),
-          elevation: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -266,7 +276,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
+                icon: Icon(Icons.bar_chart, color: Color(0xffFE5D26), size: 33),
                 onPressed: () {
                   Navigator.push(
                       context, MaterialPageRoute(builder: (context) => MonthlyReport()));
@@ -291,81 +301,6 @@ class _MonthlyReportState extends State<MonthlyReport> {
           ),
         ),
       ),
-    );
-  }
-}
-
-// Class for Progress Bar
-class ProgressBar extends StatelessWidget {
-  final double progress1;
-  final double progress2;
-
-  ProgressBar({
-    required this.progress1,
-    required this.progress2,
-
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    double sw = MediaQuery.of(context).size.width;
-
-    // for font size
-    double fs = sw;
-
-    return Column(
-      children: [
-        Container(
-            width: sw * 0.8,
-            height: sw * 0.09,
-            decoration: BoxDecoration(
-              color: Color(0xffE6BFCE),
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                width: progress1,
-                height: sw * 0.8,
-                decoration: BoxDecoration(
-                  color: Color(0xff9A386B),
-                  borderRadius: BorderRadius.circular(20.0)
-                ),
-              )
-            )
-        ),
-
-        SizedBox(height: sw * 0.02),
-
-        Container(
-          width: sw * 0.8,
-          height: sw * 0.09,
-          decoration: BoxDecoration(
-            color: Color(0xffC8C9E9),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child:Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-                width: progress2,
-                height: sw * 0.8,
-                decoration: BoxDecoration(
-                    color: Color(0xff03045E),
-                    borderRadius: BorderRadius.circular(20.0)),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.02),
-                  child: Text(
-                    'INCOME ${progress2-200} %',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700
-                    ),
-                  ),
-                )
-            ),
-          ),
-        )
-      ],
     );
   }
 }

@@ -1,13 +1,17 @@
-import 'package:money_tree/login/login.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tree/dashboard/dashboard_screen.dart';
+import 'package:money_tree/loading_screen.dart';
+import 'package:money_tree/signup/signup_screen.dart';
 
 
-class SignUp extends StatefulWidget {
+class Login extends StatefulWidget {
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<Login> createState() => _LoginState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _LoginState extends State<Login> {
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -24,7 +28,7 @@ class _SignUpState extends State<SignUp> {
               // Header
               SizedBox(height: sw * 0.07),
               Text(
-                'Sign up to track',
+                'Log into your',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
                   fontSize: fs * 0.08,
@@ -33,7 +37,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               Text(
-                'your budget',
+                'account',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
                   fontSize: fs * 0.08,
@@ -58,9 +62,9 @@ class _SignUpState extends State<SignUp> {
 
               SizedBox(height: sw * 0.07),
 
-              // Create Password Section
+              // Password Section
               Text(
-                'Create Password',
+                'Password',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
                   fontSize: 18.0,
@@ -68,26 +72,23 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               SizedBox(height: sw * 0.02),
-              _createPassTextField(),
+              _passwordTextField(),
 
               SizedBox(height: sw * 0.07),
 
-              // Confirm Password Section
-              Text(
-                'Confirm Password',
-                style: TextStyle(
-                  color: Color(0xfffff5e4),
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w100,
-                ),
+              // Login Button
+              Container(
+                child: isLoading
+                    ? LoadingScreen()
+                    : _loginButton(),
               ),
-              SizedBox(height: sw * 0.02),
-              _confirmPassTextField(),
 
-              SizedBox(height: sw * 0.07),
+              SizedBox(height: sw * 0.05),
 
-              // Signup Button
-              _signupButton(),
+              // Forgot your password Section
+              Center(
+                child: _forgotPassButton(),
+              ),
 
               SizedBox(height: sw * 0.08),
 
@@ -126,6 +127,11 @@ class _SignUpState extends State<SignUp> {
               _facebookButton(),
 
               SizedBox(height: sw * 0.08),
+
+              // Signup option Button
+              Center(
+                child: _signupButton(),
+              )
             ],
           ),
         ),
@@ -156,7 +162,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _createPassTextField() {
+  Widget _passwordTextField() {
     return TextField(
       onChanged: (value) {
         setState(() {
@@ -180,39 +186,29 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _confirmPassTextField() {
-    return TextField(
-      onChanged: (value) {
-        setState(() {
-          Placeholder();
-        });
-      },
-      style: TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        filled: false,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
-        ),
-      ),
-      keyboardType: TextInputType.visiblePassword,
-      obscureText: true,
-    );
-  }
-
-  Widget _signupButton() {
+  Widget _loginButton() {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
+        setState(() {
+          isLoading = true;
+        });
+
+        // Navigate to the LoadingScreen
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Login()),
+          MaterialPageRoute(builder: (context) => LoadingScreen()),
         );
+
+        await Future.delayed(Duration(seconds: 2));
+
+        // Navigate to the Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Dashboard()),
+        );
+
         setState(() {
-          Placeholder();
+          isLoading = false;
         });
       },
       style: ButtonStyle(
@@ -223,7 +219,7 @@ class _SignUpState extends State<SignUp> {
         minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
       ),
       child: Text(
-        'Sign Up',
+        'Log In',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -233,10 +229,30 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  Widget _forgotPassButton() {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          Placeholder();
+        });
+      },
+      child: Text(
+        "Forgot your password?",
+        style: TextStyle(
+          color: Colors.white,
+          fontFamily: "Inter Regular",
+          fontSize: 20.0,
+          fontWeight: FontWeight.w300,
+          decoration: TextDecoration.underline,
+          decorationColor: Colors.white
+        ),
+      )
+    );
+  }
+
   Widget _googleButton() {
     return ElevatedButton(
       onPressed: () {
-
         setState(() {
           Placeholder();
         });
@@ -284,4 +300,29 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  Widget _signupButton() {
+    return TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignUp()),
+          );
+          setState(() {
+            Placeholder();
+          });
+
+        },
+        child: Text(
+          "Need an account? Sign up",
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: "Inter Regular",
+              fontSize: 20.0,
+              fontWeight: FontWeight.w300,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.white
+          ),
+        )
+    );
+  }
 }

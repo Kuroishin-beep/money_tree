@@ -1,17 +1,13 @@
+import 'package:money_tree/login/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:money_tree/dashboard/dashboard.dart';
-import 'package:money_tree/loading_screen.dart';
-import 'package:money_tree/signup/signup.dart';
 
 
-class Login extends StatefulWidget {
+class SignUp extends StatefulWidget {
   @override
-  State<Login> createState() => _LoginState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _LoginState extends State<Login> {
-  bool isLoading = false;
-
+class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -28,7 +24,7 @@ class _LoginState extends State<Login> {
               // Header
               SizedBox(height: sw * 0.07),
               Text(
-                'Log into your',
+                'Sign up to track',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
                   fontSize: fs * 0.08,
@@ -37,7 +33,7 @@ class _LoginState extends State<Login> {
                 ),
               ),
               Text(
-                'account',
+                'your budget',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
                   fontSize: fs * 0.08,
@@ -62,9 +58,9 @@ class _LoginState extends State<Login> {
 
               SizedBox(height: sw * 0.07),
 
-              // Password Section
+              // Create Password Section
               Text(
-                'Password',
+                'Create Password',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
                   fontSize: 18.0,
@@ -72,23 +68,26 @@ class _LoginState extends State<Login> {
                 ),
               ),
               SizedBox(height: sw * 0.02),
-              _passwordTextField(),
+              _createPassTextField(),
 
               SizedBox(height: sw * 0.07),
 
-              // Login Button
-              Container(
-                child: isLoading
-                    ? LoadingScreen()
-                    : _loginButton(),
+              // Confirm Password Section
+              Text(
+                'Confirm Password',
+                style: TextStyle(
+                  color: Color(0xfffff5e4),
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w100,
+                ),
               ),
+              SizedBox(height: sw * 0.02),
+              _confirmPassTextField(),
 
-              SizedBox(height: sw * 0.05),
+              SizedBox(height: sw * 0.07),
 
-              // Forgot your password Section
-              Center(
-                child: _forgotPassButton(),
-              ),
+              // Signup Button
+              _signupButton(),
 
               SizedBox(height: sw * 0.08),
 
@@ -127,11 +126,6 @@ class _LoginState extends State<Login> {
               _facebookButton(),
 
               SizedBox(height: sw * 0.08),
-
-              // Signup option Button
-              Center(
-                child: _signupButton(),
-              )
             ],
           ),
         ),
@@ -162,7 +156,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _passwordTextField() {
+  Widget _createPassTextField() {
     return TextField(
       onChanged: (value) {
         setState(() {
@@ -186,29 +180,39 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _loginButton() {
-    return ElevatedButton(
-      onPressed: () async {
+  Widget _confirmPassTextField() {
+    return TextField(
+      onChanged: (value) {
         setState(() {
-          isLoading = true;
+          Placeholder();
         });
+      },
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        filled: false,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(color: Colors.white, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(color: Colors.white, width: 1.5),
+        ),
+      ),
+      keyboardType: TextInputType.visiblePassword,
+      obscureText: true,
+    );
+  }
 
-        // Navigate to the LoadingScreen
+  Widget _signupButton() {
+    return ElevatedButton(
+      onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => LoadingScreen()),
+          MaterialPageRoute(builder: (context) => Login()),
         );
-
-        await Future.delayed(Duration(seconds: 2));
-
-        // Navigate to the Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Dashboard()),
-        );
-
         setState(() {
-          isLoading = false;
+          Placeholder();
         });
       },
       style: ButtonStyle(
@@ -219,7 +223,7 @@ class _LoginState extends State<Login> {
         minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
       ),
       child: Text(
-        'Log In',
+        'Sign Up',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -229,30 +233,10 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _forgotPassButton() {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          Placeholder();
-        });
-      },
-      child: Text(
-        "Forgot your password?",
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: "Inter Regular",
-          fontSize: 20.0,
-          fontWeight: FontWeight.w300,
-          decoration: TextDecoration.underline,
-          decorationColor: Colors.white
-        ),
-      )
-    );
-  }
-
   Widget _googleButton() {
     return ElevatedButton(
       onPressed: () {
+
         setState(() {
           Placeholder();
         });
@@ -300,29 +284,4 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _signupButton() {
-    return TextButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignUp()),
-          );
-          setState(() {
-            Placeholder();
-          });
-
-        },
-        child: Text(
-          "Need an account? Sign up",
-          style: TextStyle(
-              color: Colors.white,
-              fontFamily: "Inter Regular",
-              fontSize: 20.0,
-              fontWeight: FontWeight.w300,
-              decoration: TextDecoration.underline,
-              decorationColor: Colors.white
-          ),
-        )
-    );
-  }
 }

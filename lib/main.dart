@@ -3,7 +3,7 @@ import 'login/login_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'get_started_screen.dart';
 import 'signup/signup_screen.dart';
-import 'budget/budget.dart';
+import 'budget/budget_screen.dart';
 import 'history/history_screen.dart';
 import 'settings/settings.dart';
 import 'add_transaction/new_income_screen.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tree/dashboard/dashboard_screen.dart';
 import 'package:money_tree/history/history_screen.dart';
-import 'package:money_tree/budget/budget.dart';
+import 'package:money_tree/budget/budget_screen.dart';
 import 'package:money_tree/settings/settings.dart';
 import 'package:money_tree/add_transaction/new_income_screen.dart';
 
@@ -11,6 +11,10 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  final double _paddingFactor = 0.04;
+  final double _avatarRadiusFactor = 0.15;
+  final double _toolbarHeightFactor = 0.2;
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -22,52 +26,48 @@ class _AccountScreenState extends State<AccountScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Navigates back to the previous screen
+            Navigator.pop(context);
           },
         ),
         title: Text(
           'Hello, Andrei!',
           style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Inter Regular'
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Inter Regular',
           ),
         ),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xff00B9BD),
-                    Color(0xff005557)
-                  ]
-              )
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xff00B9BD), Color(0xff005557)],
+            ),
           ),
         ),
-        toolbarHeight: screenWidth * 0.2,
+        toolbarHeight: screenWidth * _toolbarHeightFactor,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Profile Picture and Account Details
             Padding(
-              padding: EdgeInsets.all(screenWidth * 0.04),
+              padding: EdgeInsets.all(screenWidth * _paddingFactor),
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: screenWidth * 0.15,
-                    backgroundImage: const AssetImage(
-                      'lib/images/pfp.jpg', // Replace with your image URL or asset
-                    ),
+                    radius: screenWidth * _avatarRadiusFactor,
+                    backgroundImage: AssetImage('lib/images/pfp.jpg'),
+                    onBackgroundImageError: (exception, stackTrace) {
+                      // Handle error here
+                    },
                   ),
                   SizedBox(height: screenHeight * 0.02),
                 ],
               ),
             ),
-            // Account Details Section
-            SectionTitle(title: 'ACCOUNT DETAILS'),
+            SectionTitle(title: 'ACCOUNT DETAILS'), // Ensure the SectionTitle widget is defined
             AccountDetail(icon: Icons.person, title: 'Name'),
             AccountDetail(icon: Icons.calendar_today, title: 'Birthdate'),
             AccountDetail(icon: Icons.email, title: 'Email'),
@@ -75,7 +75,6 @@ class _AccountScreenState extends State<AccountScreen> {
           ],
         ),
       ),
-
       // Navigation Bar
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -87,64 +86,50 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Icon(
           Icons.add,
           size: 40,
-          color: Color(0xff03045E),
+          color: Color(0xffE63636),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xffFFF8ED),
         shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Stack(
-        children: [
-          BottomAppBar(
-            shape: CircularNotchedRectangle(),
-            notchMargin: 15.0,
-            color: Color(0xff001219),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.home_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Dashboard()));
-                  },
-                ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.savings_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BudgetScreen()));
-                  },
-                ),
-                SizedBox(width: 80),
-                IconButton(
-                  icon: Icon(Icons.history, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HistoryScreen()));
-                  },
-                ),
-                SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.settings_outlined, color: Colors.white, size: 40),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsScreen()));
-                  },
-                ),
-              ],
-            ),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 15.0,
+        color: Color(0xff231F20),
+        elevation: 0,
+        child: SizedBox(
+          height: 70,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetScreen())); // Updated to BudgetScreen
+                },
+              ),
+              SizedBox(width: 80), // Spacer for FAB
+              IconButton(
+                icon: Icon(Icons.history, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -152,6 +137,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
 class SectionTitle extends StatelessWidget {
   final String title;
+
   const SectionTitle({Key? key, required this.title}) : super(key: key);
 
   @override
@@ -178,8 +164,7 @@ class AccountDetail extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const AccountDetail({Key? key, required this.icon, required this.title})
-      : super(key: key);
+  const AccountDetail({Key? key, required this.icon, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +173,8 @@ class AccountDetail extends StatelessWidget {
       title: Text(title),
       trailing: Icon(Icons.arrow_forward_ios),
       onTap: () {
-        // Handle navigation or action
+        // Handle navigation or action, for example:
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => EditDetailScreen(title: title)));
       },
     );
   }

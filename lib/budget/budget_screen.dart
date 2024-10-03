@@ -3,7 +3,7 @@ import '../add_transaction/new_income_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../financial_report/monthly_screen.dart';
 import '../history/history_screen.dart';
-import '../settings/settings.dart';
+import '../settings/settings_screen.dart';
 import 'package:intl/intl.dart';
 
 class BudgetScreen extends StatefulWidget {

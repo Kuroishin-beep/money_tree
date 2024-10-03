@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tree/add_transaction/new_income_screen.dart';
 import 'package:money_tree/dashboard/dashboard_screen.dart';
 import 'package:money_tree/history/history_screen.dart';
-import 'package:money_tree/settings/settings.dart';
+import 'package:money_tree/settings/settings_screen.dart';
 import 'package:money_tree/budget/budget_screen.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'weekly_screen.dart';

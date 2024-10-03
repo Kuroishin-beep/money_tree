@@ -8,7 +8,7 @@ import 'get_started_screen.dart';
 import 'signup/signup_screen.dart';
 import 'budget/budget_screen.dart';
 import 'history/history_screen.dart';
-import 'settings/settings.dart';
+import 'settings/settings_screen.dart';
 import 'add_transaction/new_income_screen.dart';
 import 'add_transaction/new_expenses_screen.dart';
 import 'financial_report/monthly_screen.dart';

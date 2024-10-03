@@ -11,6 +11,16 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool notificationsPaused = false; // On/off state for notifications
+  bool darkMode = false; // On/off state for screen mode
+
+  void navigateTo(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -20,18 +30,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Dashboard()),
-            );
+            navigateTo(context, Dashboard());
           },
         ),
-        title: Text(
+        title: const Text(
           'Settings',
           style: TextStyle(
+            fontSize: 100,
             color: Colors.white,
             fontWeight: FontWeight.w700,
             fontFamily: 'Inter Regular',
+
           ),
         ),
         flexibleSpace: Container(
@@ -49,54 +58,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           children: [
             // GENERAL Section
-            SectionTitle(title: 'GENERAL'),
-            AccountDetail(
+            CustomSectionTitle(title: 'GENERAL'),
+
+            CustomListTile(
               icon: Icons.person,
               title: 'Account',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AccountScreen()),
-                );
+                navigateTo(context, AccountScreen());
               },
             ),
-            AccountDetail(
-              icon: Icons.notifications,
-              title: 'Notifications',
-              onTap: () {},
+
+            // Notifications
+            ExpansionTile(
+              leading: Icon(Icons.notifications, color: Colors.black, size: 25),
+              title: Text(
+                'Notifications',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.arrow_forward_ios, size: 18),
+              children: [
+                SwitchListTile(
+                  title: Text("Pause all"),
+                  subtitle: Text('Indefinitely pause notifications'),
+                  value: notificationsPaused,
+                  onChanged: (bool value) {
+                    setState(() {
+                      notificationsPaused = value;
+                    });
+                  },
+                ),
+              ],
             ),
-            AccountDetail(
-              icon: Icons.room_preferences,
-              title: 'Preferences',
-              onTap: () {},
+
+            // Preferences
+            ExpansionTile(
+              leading: Icon(Icons.room_preferences, color: Colors.black, size: 25),
+              title: Text(
+                'Preferences',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.arrow_forward_ios, size: 18),
+              children: [
+                ListTile(
+                  title: Text("Screen Mode"),
+                  subtitle: Text('Light mode or Dark mode'),
+                  trailing: Switch(
+                    value: darkMode,
+                    onChanged: (bool value) {
+                      setState(() {
+                        darkMode = value;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
-            AccountDetail(
+
+            CustomListTile(
               icon: Icons.security,
               title: 'Security',
               onTap: () {},
             ),
+
             // FEEDBACK Section
-            SectionTitle(title: 'FEEDBACK'),
-            AccountDetail(
+            CustomSectionTitle(title: 'FEEDBACK'),
+            CustomListTile(
               icon: Icons.notification_important,
               title: 'Report a bug',
               onTap: () {},
             ),
-            AccountDetail(
+            CustomListTile(
               icon: Icons.chat_rounded,
-              title: 'Send Feedback',
+              title: 'Send feedback',
               onTap: () {},
             ),
           ],
         ),
       ),
-      // Floating Action Button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewIncomeScreen()),
-          );
+          navigateTo(context, NewIncomeScreen());
         },
         child: Icon(
           Icons.add,
@@ -120,26 +161,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               IconButton(
                 icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
+                  navigateTo(context, Dashboard());
                 },
               ),
               IconButton(
                 icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetScreen()));
+                  navigateTo(context, BudgetScreen());
                 },
               ),
               SizedBox(width: 80), // Spacer for FAB
               IconButton(
                 icon: Icon(Icons.history, color: Colors.white, size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                  navigateTo(context, HistoryScreen());
                 },
               ),
               IconButton(
                 icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
                 onPressed: () {
-                  // Typically this leads back to the same screen, consider changing the behavior
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('You are already in Settings.')),
+                  );
                 },
               ),
             ],
@@ -150,20 +193,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-class SectionTitle extends StatelessWidget {
+// Custom section title to match the image design
+class CustomSectionTitle extends StatelessWidget {
   final String title;
 
-  SectionTitle({required this.title});
+  CustomSectionTitle({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
       child: Row(
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              decoration: TextDecoration.underline, // Underline to match design
+            ),
           ),
         ],
       ),
@@ -171,19 +220,29 @@ class SectionTitle extends StatelessWidget {
   }
 }
 
-class AccountDetail extends StatelessWidget {
+// Custom ListTile to style list items according to the provided design
+class CustomListTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback? onTap;
 
-  AccountDetail({required this.icon, required this.title, this.onTap});
+  CustomListTile({required this.icon, required this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.teal.shade600),
-      title: Text(title),
-      onTap: onTap, // Handle tap actions for each entry
+      leading: Icon(icon, color: Colors.black, size: 25), // Matching icon size
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: Icon(Icons.arrow_forward_ios, size: 18), // Small forward arrow
+      onTap: onTap,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Adjust padding
+      tileColor: Colors.grey.shade200, // Optional: background color for each item
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:money_tree/add_transaction/new_income_screen.dart';
 import 'package:money_tree/dashboard/dashboard_screen.dart';
 import 'package:money_tree/history/history_screen.dart';
 import 'package:money_tree/financial_report/monthly_screen.dart';
-import 'package:money_tree/settings/settings.dart';
+import 'package:money_tree/settings/settings_screen.dart';
 
 
 class EditIncomeScreen extends StatefulWidget {

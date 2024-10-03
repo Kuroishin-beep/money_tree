@@ -193,7 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-// Custom section title to match the image design
+
 class CustomSectionTitle extends StatelessWidget {
   final String title;
 
@@ -211,7 +211,7 @@ class CustomSectionTitle extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              decoration: TextDecoration.underline, // Underline to match design
+              decoration: TextDecoration.underline,
             ),
           ),
         ],
@@ -220,7 +220,7 @@ class CustomSectionTitle extends StatelessWidget {
   }
 }
 
-// Custom ListTile to style list items according to the provided design
+
 class CustomListTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -231,7 +231,7 @@ class CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black, size: 25), // Matching icon size
+      leading: Icon(icon, color: Colors.black, size: 25),
       title: Text(
         title,
         style: TextStyle(
@@ -239,10 +239,10 @@ class CustomListTile extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 18), // Small forward arrow
+      trailing: Icon(Icons.arrow_forward_ios, size: 18),
       onTap: onTap,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Adjust padding
-      tileColor: Colors.grey.shade200, // Optional: background color for each item
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      tileColor: Colors.grey.shade200,
     );
   }
 }

@@ -24,13 +24,13 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Set the back arrow
+          icon: Icon(Icons.arrow_back, color: Colors.white), 
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Colors.black, // Make app bar solid color
-        elevation: 4, // Add elevation for shadow
+        backgroundColor: Colors.black,
+        elevation: 4,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -42,7 +42,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 // Handle error here
               },
             ),
-            SizedBox(height: 20), // Space between avatar and text
+            SizedBox(height: 20),
             Text(
               'Hello, Andrei!',
               textAlign: TextAlign.center,

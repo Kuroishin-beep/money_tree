@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_tree/account/account_birthdate_screen.dart';
+import 'package:money_tree/account/account_email_screen.dart';
+import 'package:money_tree/account/account_mobileno_screen.dart';
 import 'login/login_screen.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'get_started_screen.dart';
@@ -10,6 +13,9 @@ import 'add_transaction/new_income_screen.dart';
 import 'add_transaction/new_expenses_screen.dart';
 import 'financial_report/monthly_screen.dart';
 import 'loading_screen.dart';
+import 'account/account_name_screen.dart';
+import 'account/account_birthdate_screen.dart';
+import 'account/account_screen.dart';
 
 void main() {
   runApp(BudgetTracker());
@@ -35,8 +41,13 @@ class BudgetTracker extends StatelessWidget {
         '/history': (context) => HistoryScreen(),
         '/settings': (context) => SettingsScreen(),
         '/add_transaction': (context) => NewIncomeScreen(),
-        '/add_transaction ': (context) => NewExpenseScreen(),
+        '/add_expense': (context) => NewExpenseScreen(),
         '/financial_report': (context) => MonthlyReport(),
+        '/account_name': (context) => AccountNameScreen(),
+        '/account_birthdate': (context) => AccountBirthdateScreen(),
+        '/account': (context) => AccountScreen(),
+        '/account_email': (context) => AccountEmailScreen(),
+        '/account_mobileno': (context) => AccountMobileNoScreen(),
       },
     );
   }

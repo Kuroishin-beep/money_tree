@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:money_tree/account/account_birthdate_screen.dart';
+import 'package:money_tree/account/account_email_screen.dart';
+import 'package:money_tree/account/account_mobileno_screen.dart';
+import 'package:money_tree/account/account_name_screen.dart';
 import 'package:money_tree/dashboard/dashboard_screen.dart';
 import 'package:money_tree/history/history_screen.dart';
-import 'package:money_tree/budget/budget_screen.dart';
 import 'package:money_tree/settings/settings.dart';
 import 'package:money_tree/add_transaction/new_income_screen.dart';
+import '../financial_report/monthly_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   @override
@@ -67,7 +71,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ],
               ),
             ),
-            SectionTitle(title: 'ACCOUNT DETAILS'), // Ensure the SectionTitle widget is defined
+            SectionTitle(title: 'ACCOUNT DETAILS'),
             AccountDetail(icon: Icons.person, title: 'Name'),
             AccountDetail(icon: Icons.calendar_today, title: 'Birthdate'),
             AccountDetail(icon: Icons.email, title: 'Email'),
@@ -75,13 +79,12 @@ class _AccountScreenState extends State<AccountScreen> {
           ],
         ),
       ),
-      // Navigation Bar
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NewIncomeScreen()));
+            context,
+            MaterialPageRoute(builder: (context) => NewIncomeScreen()),
+          );
         },
         child: Icon(
           Icons.add,
@@ -92,39 +95,44 @@ class _AccountScreenState extends State<AccountScreen> {
         shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 15.0,
-        color: Color(0xff231F20),
-        elevation: 0,
-        child: SizedBox(
-          height: 70,
+      bottomNavigationBar: SizedBox(
+        height: 70,
+        child: BottomAppBar(
+          color: Color(0xff231F20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
+                icon: Icon(Icons.home_filled, color: Color(0xffFE5D26), size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Dashboard()),
+                  );
                 },
               ),
               IconButton(
                 icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => BudgetScreen())); // Updated to BudgetScreen
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => MonthlyReport()),
+                  );
                 },
               ),
               SizedBox(width: 80), // Spacer for FAB
               IconButton(
                 icon: Icon(Icons.history, color: Colors.white, size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => HistoryScreen()),
+                  );
                 },
               ),
               IconButton(
                 icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => SettingsScreen()),
+                  );
                 },
               ),
             ],
@@ -143,7 +151,10 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02, horizontal: MediaQuery.of(context).size.width * 0.04),
+      padding: EdgeInsets.symmetric(
+        vertical: MediaQuery.of(context).size.height * 0.02,
+        horizontal: MediaQuery.of(context).size.width * 0.04,
+      ),
       child: Row(
         children: [
           Text(
@@ -164,7 +175,7 @@ class AccountDetail extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const AccountDetail({Key? key, required this.icon, required this.title}) : super(key: key);
+  const AccountDetail({super.key, required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -173,8 +184,31 @@ class AccountDetail extends StatelessWidget {
       title: Text(title),
       trailing: Icon(Icons.arrow_forward_ios),
       onTap: () {
-        // Handle navigation or action, for example:
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => EditDetailScreen(title: title)));
+        if (title == 'Name') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AccountNameScreen()),
+          );
+        }
+        // You can add more if conditions for other titles if needed
+        if (title == 'Birthdate') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AccountBirthdateScreen()),
+          );
+        }
+        if (title == 'Email') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AccountEmailScreen()),
+          );
+        }
+        if (title == 'Mobile No.') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AccountMobileNoScreen()),
+          );
+        }
       },
     );
   }

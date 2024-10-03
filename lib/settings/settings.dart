@@ -3,7 +3,7 @@ import 'package:money_tree/dashboard/dashboard_screen.dart';
 import 'package:money_tree/history/history_screen.dart';
 import 'package:money_tree/budget/budget_screen.dart';
 import 'package:money_tree/add_transaction/new_income_screen.dart';
-import 'package:money_tree/account/account.dart';
+import 'package:money_tree/account/account_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override

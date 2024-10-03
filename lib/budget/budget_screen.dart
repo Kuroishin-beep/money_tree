@@ -192,13 +192,13 @@ class _BudgetScreenState extends State<BudgetScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            // "Budget" section
+
             const Text(
               "Budget",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            // Budget spent/total display
+
             Text(
               "\$${spentAmount.toStringAsFixed(2)} of \$${totalBudget.toStringAsFixed(2)}",
               style: TextStyle(fontSize: 16),
@@ -206,7 +206,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
             const SizedBox(height: 8),
             // Progress bar
             LinearProgressIndicator(
-              value: progress.clamp(0.0, 1.0), // Ensure value is between 0 and 1
+              value: progress.clamp(0.0, 1.0), // value is between 0 and 1
               backgroundColor: Colors.grey[300],
               color: Colors.teal,
             ),
@@ -341,7 +341,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
   // Show dialog to add a new category
   void _showAddCategoryDialog(bool isExpense) {
     // Implement add category functionality here
-    // You can use TextFields to get input from the user
+
   }
 
   // Show dialog to edit a category

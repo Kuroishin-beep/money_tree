@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/account/account_birthdate_screen.dart';
-import 'package:money_tree/account/account_email_screen.dart';
-import 'package:money_tree/account/account_mobileno_screen.dart';
-import 'login/login_screen.dart';
-import 'dashboard/dashboard_screen.dart';
-import 'get_started_screen.dart';
-import 'signup/signup_screen.dart';
-import 'budget/budget_screen.dart';
-import 'history/history_screen.dart';
-import 'settings/settings_screen.dart';
-import 'add_transaction/new_income_screen.dart';
-import 'add_transaction/new_expenses_screen.dart';
-import 'financial_report/monthly_screen.dart';
-import 'loading_screen.dart';
-import 'account/account_name_screen.dart';
-import 'account/account_birthdate_screen.dart';
-import 'account/account_screen.dart';
+import 'package:money_tree/views/account_details/account_birthdate_screen.dart';
+import 'package:money_tree/views/account_details/account_email_screen.dart';
+import 'package:money_tree/views/account_details/account_mobileno_screen.dart';
+import 'views/start_screens/login_screen.dart';
+import 'views/dashboard/dashboard_screen.dart';
+import 'views/start_screens/get_started_screen.dart';
+import 'views/start_screens/signup_screen.dart';
+import 'views/budget/budget_screen.dart';
+import 'views/transaction_history/history_screen.dart';
+import 'views/settings/settings_screen.dart';
+import 'views/add_transaction/add_income_screen.dart';
+import 'views/add_transaction/add_expenses_screen.dart';
+import 'views/financial_report/monthlyFR_screen.dart';
+import 'views/start_screens/loading_screen.dart';
+import 'views/account_details/account_name_screen.dart';
+import 'views/account_details/account_birthdate_screen.dart';
+import 'views/account_details/account_screen.dart';
 
 void main() {
   runApp(BudgetTracker());

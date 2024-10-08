@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tree/firebase_options.dart';
 import 'package:money_tree/views/account_details/account_birthdate_screen.dart';
 import 'package:money_tree/views/account_details/account_email_screen.dart';
 import 'package:money_tree/views/account_details/account_mobileno_screen.dart';
@@ -14,10 +16,11 @@ import 'views/add_transaction/add_expenses_screen.dart';
 import 'views/financial_report/monthlyFR_screen.dart';
 import 'views/start_screens/loading_screen.dart';
 import 'views/account_details/account_name_screen.dart';
-import 'views/account_details/account_birthdate_screen.dart';
 import 'views/account_details/account_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(BudgetTracker());
 }
 

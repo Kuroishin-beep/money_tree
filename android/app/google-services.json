@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019509459827",
+    "project_id": "moneytree-49dc0",
+    "storage_bucket": "moneytree-49dc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019509459827:android:3eeda9d85d293c2c29d306",
+        "android_client_info": {
+          "package_name": "com.example.money_tree"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBts2Zx87T_m--nU_c1CJk_yFqn070S4O0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -65,124 +65,133 @@ class HistoryDataListState extends State<HistoryScreen> {
           )
       ),
 
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.center,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xffFFF8ED),
-              Color(0xffABC5EA),
-            ],
+      body: Stack(
+        children: [
+          // Gradient Background
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.center,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xffFFF8ED),
+                  Color(0xffABC5EA),
+                ],
+              ),
+            ),
           ),
-        ),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
 
-            // Search Bar
-            _searchBar(),
+          // Main Body
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
 
-            SizedBox(height: sw * 0.05),
+                  // Search Bar
+                  _searchBar(),
 
-            // Expenses section
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(
-                    color: Color(0xff093F40),
-                    thickness: 1.3,
-                    endIndent: 20.0,
+                  SizedBox(height: sw * 0.05),
+
+                  // Expenses section
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xff093F40),
+                          thickness: 1.3,
+                          endIndent: 20.0,
+                        ),
+                      ),
+                      Text(
+                        'EXPENSES',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: fs * 0.04,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xff093F40),
+                          thickness: 1.3,
+                          indent: 20.0,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  'EXPENSES',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: fs * 0.04,
-                    fontWeight: FontWeight.w700,
+                  SizedBox(height: sw * 0.025),
+                  Column(
+                    children: trackerData
+                        .where((track) => track.type == 'expenses') // Filter for income only
+                        .map((track) {
+                      return TransactionList(track: track);
+                    }).toList(),
                   ),
-                ),
-                Expanded(
-                  child: Divider(
-                    color: Color(0xff093F40),
-                    thickness: 1.3,
-                    indent: 20.0,
+                  TextButton(
+                    onPressed: () {
+                      // setState(() {
+                      //   expenseList.addAll([
+                      //     Expense(icon: Icons.fastfood, item: 'Dinner', date: 'September 6, 2024', category: 'FOOD', amount: '\$100'),
+                      //     Expense(icon: Icons.coffee, item: 'Coffee', date: 'September 7, 2024', category: 'FOOD', amount: '\$10'),
+                      //   ]);
+                      // });
+                    },
+                    child: Text('See all'),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: sw * 0.025),
-            Column(
-              children: trackerData
-                  .where((track) => track.type == 'expenses') // Filter for income only
-                  .map((track) {
-                return TransactionList(track: track);
-              }).toList(),
-            ),
-            TextButton(
-              onPressed: () {
-                // setState(() {
-                //   expenseList.addAll([
-                //     Expense(icon: Icons.fastfood, item: 'Dinner', date: 'September 6, 2024', category: 'FOOD', amount: '\$100'),
-                //     Expense(icon: Icons.coffee, item: 'Coffee', date: 'September 7, 2024', category: 'FOOD', amount: '\$10'),
-                //   ]);
-                // });
-              },
-              child: Text('See all'),
-            ),
 
-            SizedBox(height: sw * 0.05),
+                  SizedBox(height: sw * 0.05),
 
-            // Income section
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(
-                    color: Color(0xff093F40),
-                    thickness: 1.3,
-                    endIndent: 20.0,
+                  // Income section
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xff093F40),
+                          thickness: 1.3,
+                          endIndent: 20.0,
+                        ),
+                      ),
+                      Text(
+                        'INCOME',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: fs * 0.04,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Color(0xff093F40),
+                          thickness: 1.3,
+                          indent: 20.0,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  'INCOME',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: fs * 0.04,
-                    fontWeight: FontWeight.w700,
+                  SizedBox(height: sw * 0.025),
+                  Column(
+                    children: trackerData
+                        .where((track) => track.type == 'income') // Filter for income only
+                        .map((track) {
+                      return TransactionList(track: track);
+                    }).toList(),
                   ),
-                ),
-                Expanded(
-                  child: Divider(
-                    color: Color(0xff093F40),
-                    thickness: 1.3,
-                    indent: 20.0,
+                  TextButton(
+                    onPressed: () {
+                      // setState(() {
+                      //   incomeList.addAll([
+                      //     Income(icon: Icons.attach_money, name: 'Freelance', date: 'September 7, 2024', category: 'CARD', amount: '\$100'),
+                      //   ]);
+                      // });
+                    },
+                    child: Text('See all'),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            SizedBox(height: sw * 0.025),
-            Column(
-              children: trackerData
-                  .where((track) => track.type == 'income') // Filter for income only
-                  .map((track) {
-                return TransactionList(track: track);
-              }).toList(),
-            ),
-            TextButton(
-              onPressed: () {
-                // setState(() {
-                //   incomeList.addAll([
-                //     Income(icon: Icons.attach_money, name: 'Freelance', date: 'September 7, 2024', category: 'CARD', amount: '\$100'),
-                //   ]);
-                // });
-              },
-              child: Text('See all'),
-            ),
-
-
-          ],
-        ),
+          )
+        ],
       ),
 
       // Navigation bar

@@ -46,174 +46,183 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
           )
       ),
 
-      body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.center,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xffFFF8ED),
-                Color(0xffABC5EA),
-              ],
+      body: Stack(
+        children: [
+          // Gradient Background
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.center,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xffFFF8ED),
+                  Color(0xffABC5EA),
+                ],
+              ),
             ),
           ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: sw * 0.03, horizontal: sw * 0.05),
-            child: Column(
-              children: [
-                Column(
-                  children: [
 
-                    // Text for EXPENSES
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: Color(0xff093F40),
-                            thickness: 1.3,
-                            indent: 60.0,
-                            endIndent: 10.0,
-                          ),
-                        ),
-                        Text(
-                          'EXPENSES',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: fs * 0.04,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: Color(0xff093F40),
-                            thickness: 1.3,
-                            indent: 10.0,
-                            endIndent: 60.0,
-                          ),
-                        ),
-                      ],
-                    ),
+          // Main Body
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: sw * 0.03, horizontal: sw * 0.05),
+              child: Column(
+                children: [
+                  Column(
+                    children: [
 
-                    // Amount Textfield
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: sw * 0.1),
-                          child: Container(
-                              width: sw * 0.17,
-                              height: sw * 0.08,
-                              decoration: BoxDecoration(
-                                  color: Color(0xffFFF8ED),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        blurRadius: 5,
-                                        spreadRadius: 2,
-                                        offset: Offset(0, 4)
-                                    )
-                                  ]
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Php',
-                                  style: TextStyle(
-                                      color: Color(0xff639DF0),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: fs * 0.04
-                                  ),
+                      // Text for EXPENSES
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Color(0xff093F40),
+                              thickness: 1.3,
+                              indent: 60.0,
+                              endIndent: 10.0,
+                            ),
+                          ),
+                          Text(
+                            'EXPENSES',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: fs * 0.04,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Color(0xff093F40),
+                              thickness: 1.3,
+                              indent: 10.0,
+                              endIndent: 60.0,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Amount Textfield
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: sw * 0.1),
+                            child: Container(
+                                width: sw * 0.17,
+                                height: sw * 0.08,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffFFF8ED),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          blurRadius: 5,
+                                          spreadRadius: 2,
+                                          offset: Offset(0, 4)
+                                      )
+                                    ]
                                 ),
-                              )
+                                child: Center(
+                                  child: Text(
+                                    'Php',
+                                    style: TextStyle(
+                                        color: Color(0xff639DF0),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: fs * 0.04
+                                    ),
+                                  ),
+                                )
+                            ),
                           ),
-                        ),
-                        SizedBox(width: sw * 0.05),
-                        Expanded(
-                          child: _editAmount(sw, fs),
-                        ),
-                      ],
-                    ),
+                          SizedBox(width: sw * 0.05),
+                          Expanded(
+                            child: _editAmount(sw, fs),
+                          ),
+                        ],
+                      ),
 
-                    // Item Textfield
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: sw * 0.1),
-                          child: _iconField(sw, fs, Icons.question_mark),
-                        ),
-                        SizedBox(width: sw * 0.06),
-                        _editItem(sw, fs)
-                      ],
-                    ),
+                      // Item Textfield
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: sw * 0.1),
+                            child: _iconField(sw, fs, Icons.question_mark),
+                          ),
+                          SizedBox(width: sw * 0.06),
+                          _editItem(sw, fs)
+                        ],
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      SizedBox(height: sw * 0.05),
 
-                    // Date Textfield
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: sw * 0.1),
-                          child: _iconField(sw, fs, Icons.calendar_today_rounded),
-                        ),
-                        SizedBox(width: sw * 0.06),
-                        _editDate(sw, fs)
-                      ],
-                    ),
+                      // Date Textfield
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: sw * 0.1),
+                            child: _iconField(sw, fs, Icons.calendar_today_rounded),
+                          ),
+                          SizedBox(width: sw * 0.06),
+                          _editDate(sw, fs)
+                        ],
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      SizedBox(height: sw * 0.05),
 
-                    // From which account
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
-                    ),
+                      // From which account
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                      ),
 
-                    // Account Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _fromCashButton(sw, fs),
-                        _fromCardButton(sw, fs),
-                        _fromGCashButton(sw, fs)
-                      ],
-                    ),
+                      // Account Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _fromCashButton(sw, fs),
+                          _fromCardButton(sw, fs),
+                          _fromGCashButton(sw, fs)
+                        ],
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      SizedBox(height: sw * 0.05),
 
-                    // From which category
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
-                    ),
+                      // From which category
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                      ),
 
-                    // Category Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _schoolCatButton(sw, fs),
-                        _carCatButton(sw, fs),
-                        _healthCatButton(sw, fs),
-                      ],
-                    ),
-                    SizedBox(height: sw * 0.05),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _groceryCatButton(sw, fs),
-                        _addCatButton(sw, fs)
-                      ],
-                    ),
+                      // Category Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _schoolCatButton(sw, fs),
+                          _carCatButton(sw, fs),
+                          _healthCatButton(sw, fs),
+                        ],
+                      ),
+                      SizedBox(height: sw * 0.05),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _groceryCatButton(sw, fs),
+                          _addCatButton(sw, fs)
+                        ],
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      SizedBox(height: sw * 0.05),
 
-                    // Confirm Button
-                    _confirmButton(sw, fs)
+                      // Confirm Button
+                      _confirmButton(sw, fs)
 
 
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                  ),
+                ],
+              ),
+            )
           )
+        ],
       ),
 
       // Navigation bar

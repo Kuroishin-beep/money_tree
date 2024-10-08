@@ -43,27 +43,6 @@ class GetStarted extends StatelessWidget {
 
               SizedBox(height: 30),
 
-              Text(
-                'Start Managing Your Personal Finances',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fs * 0.047,
-                    fontFamily: 'Inter Regular',
-                    fontWeight: FontWeight.w300
-                ),
-              ),
-              Text(
-                'And Set Personal Goals',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fs * 0.047,
-                    fontFamily: 'Inter Regular',
-                    fontWeight: FontWeight.w300
-                ),
-              ),
-
-              SizedBox(height: 30),
-
               ElevatedButton(
                   onPressed: () {
                     Navigator.push(

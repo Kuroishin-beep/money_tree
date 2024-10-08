@@ -91,7 +91,6 @@ class _MonthlyReportState extends State<MonthlyReport> {
               padding: EdgeInsets.symmetric(horizontal: sw * 0.04, vertical: sw * 0.01),
               child: Column(
                 children: [
-                  SizedBox(height: sw * 0.2),
 
                   // CATEGORIES
                   Row(

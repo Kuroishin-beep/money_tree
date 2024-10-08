@@ -48,212 +48,219 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
           )
       ),
 
-      body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.center,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xffFFFFFF),
-                Color(0xffFFF5E4),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.center,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xffFFFFFF),
+                  Color(0xffFFF5E4),
+                ],
+              ),
             ),
           ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: sw * 0.01, horizontal: sw * 0.05),
-            child: Column(
-              children: [
-                Column(
-                  children: [
 
-                    // OPTIONS
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // First Column for "NEW INCOME"
-                        Column(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NewIncomeScreen()
-                                    )
-                                );
-                              },
-                              child: Text(
-                                "NEW INCOME",
-                                style: TextStyle(
-                                  fontSize: fs * 0.04,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black,
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: sw * 0.01, horizontal: sw * 0.05),
+              child: Column(
+                children: [
+                  Column(
+                    children: [
+
+                      // OPTIONS
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // First Column for "NEW INCOME"
+                          Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => NewIncomeScreen()
+                                      )
+                                  );
+                                },
+                                child: Text(
+                                  "NEW INCOME",
+                                  style: TextStyle(
+                                    fontSize: fs * 0.04,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              width: sw * 0.3,
-                              child: Divider(
-                                color: Color(0xFF093F40),
-                                thickness: 1.0,
+                              SizedBox(
+                                width: sw * 0.3,
+                                child: Divider(
+                                  color: Color(0xFF093F40),
+                                  thickness: 1.0,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
 
-                        // Second Column for "NEW EXPENSE"
-                        Column(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NewExpenseScreen()
-                                    )
-                                );
-                              },
-                              child: Text(
-                                "NEW EXPENSES",
-                                style: TextStyle(
+                          // Second Column for "NEW EXPENSE"
+                          Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => NewExpenseScreen()
+                                      )
+                                  );
+                                },
+                                child: Text(
+                                  "NEW EXPENSES",
+                                  style: TextStyle(
                                     fontSize: fs * 0.04,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: sw * 0.3,
-                              child: Divider(
-                                color: Color(0xFF093F40),
-                                thickness: 1.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    // Amount Textfield
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: sw * 0.1),
-                          child: Container(
-                              width: sw * 0.17,
-                              height: sw * 0.08,
-                              decoration: BoxDecoration(
-                                  color: Color(0xffFFF8ED),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        blurRadius: 5,
-                                        spreadRadius: 2,
-                                        offset: Offset(0, 4)
-                                    )
-                                  ]
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Php',
-                                  style: TextStyle(
-                                      color: Color(0xffF4A26B),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: fs * 0.04
                                   ),
                                 ),
-                              )
+                              ),
+                              SizedBox(
+                                width: sw * 0.3,
+                                child: Divider(
+                                  color: Color(0xFF093F40),
+                                  thickness: 1.5,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: sw * 0.05),
-                        Expanded(
-                          child: _editAmount(sw, fs),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
 
-                    // Item Textfield
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: sw * 0.1),
-                          child: _iconField(sw, fs, Icons.question_mark),
-                        ),
-                        SizedBox(width: sw * 0.06),
-                        _editItem(sw, fs)
-                      ],
-                    ),
+                      // Amount Textfield
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: sw * 0.1),
+                            child: Container(
+                                width: sw * 0.17,
+                                height: sw * 0.08,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffFFF8ED),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          blurRadius: 5,
+                                          spreadRadius: 2,
+                                          offset: Offset(0, 4)
+                                      )
+                                    ]
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Php',
+                                    style: TextStyle(
+                                        color: Color(0xffF4A26B),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: fs * 0.04
+                                    ),
+                                  ),
+                                )
+                            ),
+                          ),
+                          SizedBox(width: sw * 0.05),
+                          Expanded(
+                            child: _editAmount(sw, fs),
+                          ),
+                        ],
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      // Item Textfield
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: sw * 0.1),
+                            child: _iconField(sw, fs, Icons.question_mark),
+                          ),
+                          SizedBox(width: sw * 0.06),
+                          _editItem(sw, fs)
+                        ],
+                      ),
 
-                    // Date Textfield
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: sw * 0.1),
-                          child: _iconField(sw, fs, Icons.calendar_today_rounded),
-                        ),
-                        SizedBox(width: sw * 0.06),
-                        _editDate(sw, fs)
-                      ],
-                    ),
+                      SizedBox(height: sw * 0.05),
 
-                    SizedBox(height: sw * 0.05),
+                      // Date Textfield
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: sw * 0.1),
+                            child: _iconField(sw, fs, Icons.calendar_today_rounded),
+                          ),
+                          SizedBox(width: sw * 0.06),
+                          _editDate(sw, fs)
+                        ],
+                      ),
 
-                    // From which account
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
-                    ),
+                      SizedBox(height: sw * 0.05),
 
-                    // Account Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _fromCashButton(sw, fs),
-                        _fromCardButton(sw, fs),
-                        _fromGCashButton(sw, fs)
-                      ],
-                    ),
+                      // From which account
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      // Account Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _fromCashButton(sw, fs),
+                          _fromCardButton(sw, fs),
+                          _fromGCashButton(sw, fs)
+                        ],
+                      ),
 
-                    // From which category
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
-                    ),
+                      SizedBox(height: sw * 0.05),
 
-                    // Category Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _schoolCatButton(sw, fs),
-                        _carCatButton(sw, fs),
-                        _healthCatButton(sw, fs),
-                      ],
-                    ),
-                    SizedBox(height: sw * 0.05),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _groceryCatButton(sw, fs),
-                        _addCatButton(sw, fs)
-                      ],
-                    ),
+                      // From which category
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                      ),
 
-                    SizedBox(height: sw * 0.05),
+                      // Category Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _schoolCatButton(sw, fs),
+                          _carCatButton(sw, fs),
+                          _healthCatButton(sw, fs),
+                        ],
+                      ),
+                      SizedBox(height: sw * 0.05),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _groceryCatButton(sw, fs),
+                          _addCatButton(sw, fs)
+                        ],
+                      ),
 
-                    // Confirm Button
-                    _confirmButton(sw, fs)
+                      SizedBox(height: sw * 0.05),
+
+                      // Confirm Button
+                      _confirmButton(sw, fs)
 
 
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           )
+        ],
       ),
 
       // Navigation bar

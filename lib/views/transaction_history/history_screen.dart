@@ -202,7 +202,12 @@ class HistoryDataListState extends State<HistoryScreen> {
       //FAB
       bottomNavigationBar: const SizedBox(
         height: 70,
-        child: NavBottomAppBar(),
+        child: NavBottomAppBar(
+            dashboard: Colors.white,
+            fReport: Colors.white,
+            history: Color(0xffFE5D26),
+            settings: Colors.white
+        ),
       ),
     );
   }

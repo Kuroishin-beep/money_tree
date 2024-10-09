@@ -211,7 +211,12 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
       //Navigation bar
       bottomNavigationBar: const SizedBox(
         height: 70,
-        child: NavBottomAppBar(),
+        child: NavBottomAppBar(
+            dashboard: Colors.white,
+            fReport: Colors.white,
+            history: Colors.white,
+            settings: Colors.white
+        ),
       ),
     );
   }

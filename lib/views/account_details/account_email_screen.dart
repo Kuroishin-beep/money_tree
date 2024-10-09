@@ -81,7 +81,12 @@ class AccountEmailScreen extends StatelessWidget {
       //Navigation bar
       bottomNavigationBar: const SizedBox(
         height: 70,
-        child: NavBottomAppBar(),
+        child: NavBottomAppBar(
+            dashboard: Colors.white,
+            fReport: Colors.white,
+            history: Colors.white,
+            settings: Color(0xffFE5D26)
+        ),
       ),
     );
   }

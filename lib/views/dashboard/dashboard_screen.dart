@@ -285,7 +285,12 @@ class _DashboardState extends State<Dashboard> {
       //FAB
       bottomNavigationBar: const SizedBox(
         height: 70,
-        child: NavBottomAppBar(),
+        child: NavBottomAppBar(
+            dashboard: Color(0xffFE5D26),
+            fReport: Colors.white,
+            history: Colors.white,
+            settings: Colors.white
+        ),
       ),
     );
   }

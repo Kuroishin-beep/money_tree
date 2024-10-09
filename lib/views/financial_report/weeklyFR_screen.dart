@@ -246,7 +246,12 @@ class _WeeklyReportState extends State<WeeklyReport> {
       //Navigation bar
       bottomNavigationBar: const SizedBox(
         height: 70,
-        child: NavBottomAppBar(),
+        child: NavBottomAppBar(
+            dashboard: Colors.white,
+            fReport: Color(0xffFE5D26),
+            history: Colors.white,
+            settings: Colors.white
+        ),
       ),
     );
   }

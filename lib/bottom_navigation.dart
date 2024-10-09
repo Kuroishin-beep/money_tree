@@ -6,7 +6,17 @@ import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 
 class NavBottomAppBar extends StatelessWidget {
-  const NavBottomAppBar({super.key});
+  final Color dashboard;
+  final Color fReport;
+  final Color history;
+  final Color settings;
+
+  const NavBottomAppBar({
+    required this.dashboard,
+    required this.fReport,
+    required this.history,
+    required this.settings
+});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +26,14 @@ class NavBottomAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           IconButton(
-            icon: Icon(Icons.home_filled, color: Color(0xffFE5D26), size: 33),
+            icon: Icon(Icons.home_filled, color: dashboard, size: 33),
             onPressed: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Dashboard()));
             },
           ),
           IconButton(
-            icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
+            icon: Icon(Icons.bar_chart, color: fReport, size: 33),
             onPressed: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => MonthlyReport()));
@@ -31,18 +41,19 @@ class NavBottomAppBar extends StatelessWidget {
           ),
           SizedBox(width: 80), // Spacer for FAB
           IconButton(
-            icon: Icon(Icons.history, color: Colors.white, size: 33),
+            icon: Icon(Icons.history, color: history, size: 33),
             onPressed: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => HistoryScreen()));
             },
           ),
           IconButton(
-            icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
+            icon: Icon(Icons.settings_rounded, color: settings, size: 33),
             onPressed: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => SettingsScreen()));
             },
+
           ),
         ],
       ),

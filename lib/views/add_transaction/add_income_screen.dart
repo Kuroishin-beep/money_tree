@@ -5,6 +5,9 @@ import 'package:money_tree/views/transaction_history/history_screen.dart';
 import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
 import 'package:money_tree/views/settings/settings_screen.dart';
 
+import '../../bottom_navigation.dart';
+import '../../fab.dart';
+
 class NewIncomeScreen extends StatefulWidget {
   @override
   State<NewIncomeScreen> createState() => _NewIncomeScreenState();
@@ -230,72 +233,17 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
         ],
       ),
 
-      // Navigation bar
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(top: sw * 0.04), // Adjust the value as needed
-        child: SizedBox(
-          height: 70, // Set height
-          width: 70,  // Set width
-          child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NewIncomeScreen()));
-            },
-            child: Icon(
-              Icons.add,
-              size: 40, // Icon size
-              color: Color(0xffE63636),
-            ),
-            backgroundColor: Color(0xffFFF8ED),
-            shape: CircleBorder(),
-          ),
-        ),
-      ),
+      // FAB
+      floatingActionButton: FAB(sw: sw),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: SizedBox(
+      //Navigation bar
+      bottomNavigationBar: const SizedBox(
         height: 70,
-        child: BottomAppBar(
-          color: Color(0xff231F20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Dashboard()));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => MonthlyReport()));
-                },
-              ),
-              SizedBox(width: 80), // Spacer for FAB
-              IconButton(
-                icon: Icon(Icons.history, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => HistoryScreen()));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => SettingsScreen()));
-                },
-              ),
-            ],
-          ),
-        ),
+        child: NavBottomAppBar(),
       ),
     );
   }
+
 
   Widget _editAmount(double sw, double fs) {
     return TextField(

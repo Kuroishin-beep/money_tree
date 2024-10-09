@@ -9,22 +9,27 @@ import 'package:money_tree/views/transaction_history/history_screen.dart';
 import 'package:money_tree/views/income/income_screen.dart';
 import 'package:money_tree/views/expenses/expenses_screen.dart';
 import 'package:intl/intl.dart';
+import '../../bottom_navigation.dart';
+import '../../fab.dart';
 
 
 
 class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
 
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  final formatter = NumberFormat('#,###.00');
+  final NumberFormat formatter = NumberFormat('#,###.00');
 
   // List of
   List<Tracker> trackerData = [
     Tracker(name: 'Freelance', account: 'CARD', amount: 250, type: 'income'),
-    Tracker(name: 'Tire Repair', category: 'CAR', amount: 250, type: 'expenses'),
+    Tracker(
+        name: 'Tire Repair', category: 'CAR', amount: 250, type: 'expenses'),
     Tracker(name: 'Freelance', account: 'CASH', amount: 1200, type: 'income'),
     Tracker(name: 'Freelance', account: 'GCASH', amount: 10, type: 'income'),
   ];
@@ -109,7 +114,10 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    double sw = MediaQuery.of(context).size.width;
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
     double fs = sw;
 
     return Scaffold(
@@ -132,7 +140,8 @@ class _DashboardState extends State<Dashboard> {
 
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: sw * 0.08, horizontal: sw * 0.05),
+              padding: EdgeInsets.symmetric(
+                  vertical: sw * 0.08, horizontal: sw * 0.05),
               child: Column(
                 children: [
                   // Hello, User!
@@ -157,10 +166,10 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       // Account Summary (Balance, Cash, Card, Gcash)
                       _accountSummaryBox(
-                        _getBalance(),
-                        _getCash(),
-                        _getCard(),
-                        _getGCash()
+                          _getBalance(),
+                          _getCash(),
+                          _getCard(),
+                          _getGCash()
                       ),
 
                       // Profile Picture
@@ -271,74 +280,22 @@ class _DashboardState extends State<Dashboard> {
       ),
 
       // Navigation bar
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(top: sw * 0.04), // Adjust the value as needed
-        child: SizedBox(
-          height: 70, // Set height
-          width: 70,  // Set width
-          child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NewIncomeScreen()));
-            },
-            child: Icon(
-              Icons.add,
-              size: 40, // Icon size
-              color: Color(0xffE63636),
-            ),
-            backgroundColor: Color(0xffFFF8ED),
-            shape: CircleBorder(),
-          ),
-        ),
-      ),
+      floatingActionButton: FAB(sw: sw),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: SizedBox(
+      //FAB
+      bottomNavigationBar: const SizedBox(
         height: 70,
-        child: BottomAppBar(
-          color: Color(0xff231F20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home_filled, color: Color(0xffFE5D26), size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Dashboard()));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => MonthlyReport()));
-                },
-              ),
-              SizedBox(width: 80), // Spacer for FAB
-              IconButton(
-                icon: Icon(Icons.history, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => HistoryScreen()));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => SettingsScreen()));
-                },
-              ),
-            ],
-          ),
-        ),
+        child: NavBottomAppBar(),
       ),
     );
   }
 
-  Widget _accountSummaryBox(double balance, double cash, double card, double gcash) {
-    double sw = MediaQuery.of(context).size.width;
+  Widget _accountSummaryBox(double balance, double cash, double card,
+      double gcash) {
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
     double fs = sw;
 
     return Container(
@@ -370,7 +327,8 @@ class _DashboardState extends State<Dashboard> {
 
 
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: sw * 0.01, horizontal: sw * 0.02),
+                padding: EdgeInsets.symmetric(
+                    vertical: sw * 0.01, horizontal: sw * 0.02),
                 child: Column(
                   children: [
 
@@ -527,7 +485,10 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _incomeBox(double income) {
-    double sw = MediaQuery.of(context).size.width;
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
     double fs = sw;
 
     return InkWell(
@@ -557,11 +518,11 @@ class _DashboardState extends State<Dashboard> {
         height: sw * 0.45,
         decoration: BoxDecoration(
           boxShadow: _isIncomePressed
-            ? []
-            : [
-              BoxShadow(
+              ? []
+              : [
+            BoxShadow(
                 color: Color(0xffBFBFBF)
-              )
+            )
           ],
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -586,7 +547,8 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: sw * 0.05, vertical: sw * 0.06),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -662,7 +624,10 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _expensesBox(double expenses) {
-    double sw = MediaQuery.of(context).size.width;
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
     double fs = sw;
 
     return InkWell(
@@ -720,7 +685,8 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.06),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: sw * 0.05, vertical: sw * 0.06),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -796,8 +762,12 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _budgetBox() {
-    double progress = 5000 / 10000; // Ensure the progress is within a reasonable range (between 0 and 1)
-    double sw = MediaQuery.of(context).size.width;
+    double progress = 5000 /
+        10000; // Ensure the progress is within a reasonable range (between 0 and 1)
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
     double fs = sw;
 
     return InkWell(
@@ -837,11 +807,13 @@ class _DashboardState extends State<Dashboard> {
               color: Colors.black.withOpacity(0.2),
               spreadRadius: 2,
               blurRadius: 3,
-              offset: Offset(0, _isBudgetPressed ? 2 : 4), // Adjust the offset when pressed
+              offset: Offset(0,
+                  _isBudgetPressed ? 2 : 4), // Adjust the offset when pressed
             ),
           ],
         ),
-        transform: Matrix4.translationValues(0, _isBudgetPressed ? 5 : 0, 0), // Moves the box down when pressed
+        transform: Matrix4.translationValues(0, _isBudgetPressed ? 5 : 0, 0),
+        // Moves the box down when pressed
         child: Stack(
           children: [
             Align(
@@ -898,7 +870,10 @@ class _DashboardState extends State<Dashboard> {
 
 
   Widget _recentTransactionBox() {
-    double sw = MediaQuery.of(context).size.width;
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Container(
       width: double.infinity,
@@ -916,7 +891,8 @@ class _DashboardState extends State<Dashboard> {
 
 
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: sw * 0.04, horizontal: sw * 0.05),
+        padding: EdgeInsets.symmetric(
+            vertical: sw * 0.04, horizontal: sw * 0.05),
         child: Column(
           children: [
             Container(
@@ -941,6 +917,4 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
-
 }
-

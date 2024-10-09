@@ -4,6 +4,8 @@ import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 import 'package:money_tree/views/transaction_history/history_screen.dart';
 import 'package:money_tree/views/settings/settings_screen.dart';
 import 'package:pie_chart/pie_chart.dart';
+import '../../bottom_navigation.dart';
+import '../../fab.dart';
 import 'weeklyFR_screen.dart';
 import 'yearlyFR_screen.dart';
 import 'progress_bar.dart';
@@ -32,7 +34,10 @@ class _MonthlyReportState extends State<MonthlyReport> {
   @override
   Widget build(BuildContext context) {
     // Get screen dimensions
-    double sw = MediaQuery.of(context).size.width;
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
     // for font size
     double fs = sw;
 
@@ -88,7 +93,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
 
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: sw * 0.04, vertical: sw * 0.01),
+              padding: EdgeInsets.symmetric(
+                  horizontal: sw * 0.04, vertical: sw * 0.01),
               child: Column(
                 children: [
 
@@ -101,16 +107,17 @@ class _MonthlyReportState extends State<MonthlyReport> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => WeeklyReport()),
+                            MaterialPageRoute(
+                                builder: (context) => WeeklyReport()),
                           );
                         },
                         child: Text(
                           'WEEKLY',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            fontFamily: 'Inter Regular',
-                            fontSize: fs * 0.04
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                              fontFamily: 'Inter Regular',
+                              fontSize: fs * 0.04
                           ),
                         ),
                       ),
@@ -120,16 +127,17 @@ class _MonthlyReportState extends State<MonthlyReport> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => MonthlyReport()),
+                            MaterialPageRoute(
+                                builder: (context) => MonthlyReport()),
                           );
                         },
                         child: Text(
                           'MONTHLY',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w800,
-                            fontFamily: 'Inter Regular',
-                            fontSize: fs * 0.04
+                              color: Colors.black,
+                              fontWeight: FontWeight.w800,
+                              fontFamily: 'Inter Regular',
+                              fontSize: fs * 0.04
                           ),
                         ),
                       ),
@@ -139,16 +147,17 @@ class _MonthlyReportState extends State<MonthlyReport> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => YearlyReport()),
+                            MaterialPageRoute(
+                                builder: (context) => YearlyReport()),
                           );
                         },
                         child: Text(
                           'YEARLY',
                           style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            fontFamily: 'Inter Regular',
-                            fontSize: fs * 0.04
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                              fontFamily: 'Inter Regular',
+                              fontSize: fs * 0.04
                           ),
                         ),
                       ),
@@ -193,19 +202,20 @@ class _MonthlyReportState extends State<MonthlyReport> {
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Color(0xffFFF8ED),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          spreadRadius: 6,
-                          blurRadius: 10
-                        )
-                      ]
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Color(0xffFFF8ED),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              spreadRadius: 6,
+                              blurRadius: 10
+                          )
+                        ]
                     ),
 
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.07),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: sw * 0.05, vertical: sw * 0.07),
                       child: Column(
                         children: [
                           Align(
@@ -213,9 +223,9 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             child: Text(
                               'FINANCIAL ADVICE',
                               style: TextStyle(
-                                color: Color(0xff9A9BEB),
-                                fontWeight: FontWeight.w700,
-                                fontSize: fs * 0.05
+                                  color: Color(0xff9A9BEB),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: fs * 0.05
                               ),
                             ),
                           )
@@ -223,10 +233,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: sw * 0.2),
-
-
                 ],
               ),
             ),
@@ -234,70 +241,13 @@ class _MonthlyReportState extends State<MonthlyReport> {
         ],
       ),
 
-      // Navigation bar
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(top: sw * 0.04), // Adjust the value as needed
-        child: SizedBox(
-          height: 70, // Set height
-          width: 70,  // Set width
-          child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NewIncomeScreen()));
-            },
-            child: Icon(
-              Icons.add,
-              size: 40, // Icon size
-              color: Color(0xffE63636),
-            ),
-            backgroundColor: Color(0xffFFF8ED),
-            shape: CircleBorder(),
-          ),
-        ),
-      ),
+      // FAB
+      floatingActionButton: FAB(sw: sw),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: SizedBox(
+      //Navigation bar
+      bottomNavigationBar: const SizedBox(
         height: 70,
-        child: BottomAppBar(
-          color: Color(0xff231F20),
-
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Dashboard()));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.bar_chart, color: Color(0xffFE5D26), size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => MonthlyReport()));
-                },
-              ),
-              SizedBox(width: 80), // Spacer for FAB
-              IconButton(
-                icon: Icon(Icons.history, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => HistoryScreen()));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => SettingsScreen()));
-                },
-              ),
-            ],
-          ),
-        ),
+        child: NavBottomAppBar(),
       ),
     );
   }

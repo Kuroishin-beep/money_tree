@@ -5,6 +5,9 @@ import 'package:money_tree/views/budget/budget_screen.dart';
 import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 import 'package:money_tree/views/account_details/account_screen.dart';
 
+import '../../bottom_navigation.dart';
+import '../../fab.dart';
+
 class SettingsScreen extends StatefulWidget {
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -26,7 +29,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double sw = MediaQuery.of(context).size.width;
+    double sw = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     // Changed the Layout of the App bar
     return Scaffold(
@@ -76,7 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Color(0xffF4A26B),
                         fontFamily: 'Inter Regular',
                         fontWeight: FontWeight.w700,
-                      fontSize: 35
+                        fontSize: 35
                     ),
                   ),
                 ),
@@ -98,14 +104,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // changed the switch button color
                 // Notifications
                 ExpansionTile(
-                  leading: Icon(Icons.notifications, color: Colors.black, size: 25),
+                  leading: Icon(
+                      Icons.notifications, color: Colors.black, size: 25),
                   title: Text(
                     'Notifications',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   trailing: Icon(
                     isExpandedNotif
-                        ? Icons.keyboard_arrow_down_rounded // Downward arrow when expanded
+                        ? Icons
+                        .keyboard_arrow_down_rounded // Downward arrow when expanded
                         : Icons.arrow_forward_ios, // Right arrow when collapsed
                     size: 18,
                   ),
@@ -134,14 +142,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // Preferences
                 ExpansionTile(
-                  leading: Icon(Icons.room_preferences, color: Colors.black, size: 25),
+                  leading: Icon(
+                      Icons.room_preferences, color: Colors.black, size: 25),
                   title: Text(
                     'Preferences',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   trailing: Icon(
                     isExpandedPref
-                        ? Icons.keyboard_arrow_down_rounded // Downward arrow when expanded
+                        ? Icons
+                        .keyboard_arrow_down_rounded // Downward arrow when expanded
                         : Icons.arrow_forward_ios, // Right arrow when collapsed
                     size: 18,
                   ),
@@ -199,59 +209,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          navigateTo(context, NewIncomeScreen());
-        },
-        child: Icon(
-          Icons.add,
-          size: 40,
-          color: Color(0xffE63636),
-        ),
-        backgroundColor: Color(0xffFFF8ED),
-        shape: CircleBorder(),
-      ),
+      // Navigation bar
+      floatingActionButton: FAB(sw: sw),
+      // Use the FAB widget
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 15.0,
-        color: Color(0xff231F20),
-        elevation: 0,
-        child: SizedBox(
-          height: 70,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home_filled, color: Colors.white, size: 33),
-                onPressed: () {
-                  navigateTo(context, Dashboard());
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
-                onPressed: () {
-                  navigateTo(context, BudgetScreen());
-                },
-              ),
-              SizedBox(width: 80), // Spacer for FAB
-              IconButton(
-                icon: Icon(Icons.history, color: Colors.white, size: 33),
-                onPressed: () {
-                  navigateTo(context, HistoryScreen());
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.settings_rounded, color: Colors.white, size: 33),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('You are already in Settings.')),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+      //FAB
+      bottomNavigationBar: const SizedBox(
+        height: 70,
+        child: NavBottomAppBar(),
       ),
     );
   }
@@ -261,7 +226,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class CustomSectionTitle extends StatelessWidget {
   final String title;
 
-  CustomSectionTitle({required this.title});
+  const CustomSectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

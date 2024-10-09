@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_tree/models/tracker_model.dart';
+import '../../bottom_navigation.dart';
+import '../../fab.dart';
 import '../add_transaction/add_income_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../financial_report/monthlyFR_screen.dart';
@@ -37,6 +39,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double sw = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Color(0xffFBC29C),
@@ -123,9 +126,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
         ],
       ),
 
-      floatingActionButton: _buildFloatingActionButton(),
+      // Navigation bar
+      floatingActionButton: FAB(sw: sw),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomNavigationBar(context),
+      //FAB
+      bottomNavigationBar: const SizedBox(
+        height: 70,
+        child: NavBottomAppBar(),
+      ),
     );
   }
 
@@ -177,51 +185,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
     );
   }
 
-  FloatingActionButton _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => NewIncomeScreen()),
-        );
-      },
-      backgroundColor: const Color(0xffFFF8ED),
-      shape: const CircleBorder(),
-      child: const Icon(
-        Icons.add,
-        size: 40,
-        color: Color(0xffE63636),
-      ),
-    );
-  }
-
-  BottomAppBar _buildBottomNavigationBar(BuildContext context) {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      notchMargin: 15.0,
-      color: const Color(0xff231F20),
-      elevation: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          _buildBottomNavIcon(Icons.home_filled, context, Dashboard()),
-          _buildBottomNavIcon(Icons.bar_chart, context, MonthlyReport()),
-          const SizedBox(width: 80),
-          _buildBottomNavIcon(Icons.history, context, HistoryScreen()),
-          _buildBottomNavIcon(Icons.settings_rounded, context, SettingsScreen()),
-        ],
-      ),
-    );
-  }
-
-  IconButton _buildBottomNavIcon(IconData icon, BuildContext context, Widget page) {
-    return IconButton(
-      icon: Icon(icon, color: Colors.white, size: 33),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-      },
-    );
-  }
 
   // changed the color of linear progress indicator
   // Build the Budget Summary Card

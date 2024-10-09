@@ -4,11 +4,14 @@ import 'package:money_tree/views/transaction_history/history_screen.dart';
 import 'package:money_tree/views/settings/settings_screen.dart';
 import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 
+import '../../bottom_navigation.dart';
+import '../../fab.dart';
 import '../financial_report/monthlyFR_screen.dart';
 
 class AccountMobileNoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double sw = MediaQuery.of(context).size.width;
     return Scaffold(
       // Changed the app bar
       appBar: AppBar(
@@ -61,72 +64,13 @@ class AccountMobileNoScreen extends StatelessWidget {
           ),
         ],
       ),
-      // Floating Action Button (FAB) to navigate to NewIncomeScreen
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewIncomeScreen()),
-          );
-        },
-        child: Icon(
-          Icons.add,
-          size: 40,
-          color: Color(0xffE63636),
-        ),
-        backgroundColor: Color(0xffFFF8ED),
-        shape: CircleBorder(),
-      ),
+      // FAB
+      floatingActionButton: FAB(sw: sw),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: SizedBox(
+      //Navigation bar
+      bottomNavigationBar: const SizedBox(
         height: 70,
-        child: BottomAppBar(
-          color: Color(0xff231F20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                    Icons.home_filled, color: Color(0xffFE5D26), size: 33),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Dashboard()),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.bar_chart, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MonthlyReport()),
-                  );
-                },
-              ),
-              SizedBox(width: 80), // Spacer for FAB
-              IconButton(
-                icon: Icon(Icons.history, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HistoryScreen()),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                    Icons.settings_rounded, color: Colors.white, size: 33),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+        child: NavBottomAppBar(),
       ),
     );
   }

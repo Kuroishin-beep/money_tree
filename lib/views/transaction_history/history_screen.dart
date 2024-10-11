@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/views/edit_transaction/edit_expenses_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
-import 'package:money_tree/views/add_transaction/add_income_screen.dart';
-import 'package:money_tree/views/edit_transaction/edit_income_screen.dart';
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
 import '../constants/build_transaction_list.dart';
@@ -13,6 +8,8 @@ import '../../models/tracker_model.dart';
 
 
 class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key});
+
   @override
   HistoryDataListState createState() => HistoryDataListState();
 }
@@ -35,11 +32,11 @@ class HistoryDataListState extends State<HistoryScreen> {
     double fs = sw;
 
     return Scaffold(
-      backgroundColor: Color(0xffABC5EA),
+      backgroundColor: const Color(0xffABC5EA),
 
       appBar: AppBar(
-          backgroundColor: Color(0xffFFF8ED),
-          title: Text(
+          backgroundColor: const Color(0xffFFF8ED),
+          title: const Text(
             'HISTORY',
             style: TextStyle(
                 color: Color(0XFF639DF0),
@@ -57,11 +54,11 @@ class HistoryDataListState extends State<HistoryScreen> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
+            icon: const Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
           )
@@ -71,7 +68,7 @@ class HistoryDataListState extends State<HistoryScreen> {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
@@ -98,7 +95,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                   // Expenses section
                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Color(0xff093F40),
                           thickness: 1.3,
@@ -113,7 +110,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Color(0xff093F40),
                           thickness: 1.3,
@@ -139,7 +136,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                       //   ]);
                       // });
                     },
-                    child: Text('See all'),
+                    child: const Text('See all'),
                   ),
 
                   SizedBox(height: sw * 0.05),
@@ -147,7 +144,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                   // Income section
                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Color(0xff093F40),
                           thickness: 1.3,
@@ -162,7 +159,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Color(0xff093F40),
                           thickness: 1.3,
@@ -187,7 +184,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                       //   ]);
                       // });
                     },
-                    child: Text('See all'),
+                    child: const Text('See all'),
                   ),
                 ],
               ),
@@ -222,31 +219,31 @@ class HistoryDataListState extends State<HistoryScreen> {
             color: Colors.grey.withOpacity(0.5), // Shadow color
             spreadRadius: 2, // Spread radius
             blurRadius: 5, // Blur radius
-            offset: Offset(0, 3), // Shadow position
+            offset: const Offset(0, 3), // Shadow position
           ),
         ],
       ),
       child: TextField(
         decoration: InputDecoration(
-          fillColor: Color(0xffFFF8ED),
+          fillColor: const Color(0xffFFF8ED),
           filled: true,
           hintText: 'Date, Category, Price',
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
               color: Color(0xff545454),
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w300
           ),
-          suffixIcon: Icon(
+          suffixIcon: const Icon(
             Icons.search,
             color: Color(0xff545454),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: Colors.transparent, width: 1.5),
+            borderSide: const BorderSide(color: Colors.transparent, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: Colors.transparent, width: 1.5),
+            borderSide: const BorderSide(color: Colors.transparent, width: 1.5),
           ),
         ),
       ),

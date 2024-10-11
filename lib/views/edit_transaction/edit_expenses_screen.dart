@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/views/add_transaction/add_income_screen.dart';
-import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
-import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
 
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
 
 
 class EditExpensesScreen extends StatefulWidget {
+  const EditExpensesScreen({super.key});
+
   @override
   State<EditExpensesScreen> createState() => _EditExpensesScreenState();
 }
@@ -23,8 +20,8 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Color(0xffFFF8ED),
-          title: Text(
+          backgroundColor: const Color(0xffFFF8ED),
+          title: const Text(
             'EDIT TRANSACTION',
             style: TextStyle(
                 color: Color(0XFF639DF0),
@@ -42,7 +39,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
+            icon: const Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -53,7 +50,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
@@ -77,7 +74,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                       // Text for EXPENSES
                       Row(
                         children: [
-                          Expanded(
+                          const Expanded(
                             child: Divider(
                               color: Color(0xff093F40),
                               thickness: 1.3,
@@ -93,7 +90,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          Expanded(
+                          const Expanded(
                             child: Divider(
                               color: Color(0xff093F40),
                               thickness: 1.3,
@@ -113,14 +110,14 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                                 width: sw * 0.17,
                                 height: sw * 0.08,
                                 decoration: BoxDecoration(
-                                    color: Color(0xffFFF8ED),
+                                    color: const Color(0xffFFF8ED),
                                     borderRadius: BorderRadius.circular(20.0),
                                     boxShadow: [
                                       BoxShadow(
                                           color: Colors.grey.withOpacity(0.5),
                                           blurRadius: 5,
                                           spreadRadius: 2,
-                                          offset: Offset(0, 4)
+                                          offset: const Offset(0, 4)
                                       )
                                     ]
                                 ),
@@ -128,7 +125,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                                   child: Text(
                                     'Php',
                                     style: TextStyle(
-                                        color: Color(0xff639DF0),
+                                        color: const Color(0xff639DF0),
                                         fontWeight: FontWeight.w700,
                                         fontSize: fs * 0.04
                                     ),
@@ -172,7 +169,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                       SizedBox(height: sw * 0.05),
 
                       // From which account
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                       ),
@@ -190,7 +187,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                       SizedBox(height: sw * 0.05),
 
                       // From which category
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                       ),
@@ -254,7 +251,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
           fontFamily: 'Inter Regular',
           letterSpacing: 2.0
       ),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         filled: false,
 
         enabledBorder: OutlineInputBorder(
@@ -268,7 +265,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
   }
 
   Widget _editItem(double sw, double fs) {
-    return Container(
+    return SizedBox(
       width: sw * 0.5,
       child: TextField(
         style: TextStyle(
@@ -294,7 +291,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
   }
 
   Widget _editDate(double sw, double fs) {
-    return Container(
+    return SizedBox(
       width: sw * 0.5,
       child: TextField(
         style: TextStyle(
@@ -323,7 +320,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return Container(
       width: sw * 0.12,
       height: sw * 0.12,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Color(0xff8586CB)
       ),
@@ -334,7 +331,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
             child: Container(
               width: sw * 0.095,
               height: sw * 0.095,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color(0xff9A9BEB),
                   boxShadow: [
@@ -361,7 +358,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -378,7 +375,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -395,7 +392,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -412,7 +409,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xff8586CB)
         ),
@@ -423,7 +420,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xff9A9BEB),
                     boxShadow: [
@@ -436,7 +433,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.backpack, size: 70.0),
+                  icon: const Icon(Icons.backpack, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -450,7 +447,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xff8586CB)
         ),
@@ -461,7 +458,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xff9A9BEB),
                     boxShadow: [
@@ -474,7 +471,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.directions_car_sharp, size: 70.0),
+                  icon: const Icon(Icons.directions_car_sharp, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -488,7 +485,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xff8586CB)
         ),
@@ -499,7 +496,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xff9A9BEB),
                     boxShadow: [
@@ -512,7 +509,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.local_hospital, size: 70.0),
+                  icon: const Icon(Icons.local_hospital, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -526,7 +523,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xff8586CB)
         ),
@@ -537,7 +534,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xff9A9BEB),
                     boxShadow: [
@@ -550,7 +547,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.shopping_bag_outlined, size: 70.0),
+                  icon: const Icon(Icons.shopping_bag_outlined, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -564,7 +561,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xff8586CB)
         ),
@@ -575,7 +572,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xff9A9BEB),
                     boxShadow: [
@@ -588,7 +585,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.add, size: 70.0),
+                  icon: const Icon(Icons.add, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -602,7 +599,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),

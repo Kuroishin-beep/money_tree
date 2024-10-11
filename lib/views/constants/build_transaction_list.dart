@@ -7,7 +7,7 @@ import '../edit_transaction/edit_income_screen.dart';
 class TransactionList extends StatelessWidget {
   final Tracker track;  // List of tracker items
 
-  TransactionList({super.key, required this.track});
+  const TransactionList({super.key, required this.track});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,12 @@ class TransactionList extends StatelessWidget {
         if (track.type == 'expenses') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EditExpensesScreen()), // Navigate to EditExpensesScreen
+            MaterialPageRoute(builder: (context) => const EditExpensesScreen()), // Navigate to EditExpensesScreen
           );
         } else {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EditIncomeScreen()), // Navigate to EditIncomeScreen
+            MaterialPageRoute(builder: (context) => const EditIncomeScreen()), // Navigate to EditIncomeScreen
           );
         }
       },
@@ -39,7 +39,7 @@ class TransactionList extends StatelessWidget {
             width: sw * 0.09,
             height: sw * 0.09,
             decoration: BoxDecoration(
-              color: (track.type == 'expenses' ? Color(0xffD7A685) : Color(0xff95BF8A)),
+              color: (track.type == 'expenses' ? const Color(0xffD7A685) : const Color(0xff95BF8A)),
               shape: BoxShape.circle,
             ),
             child: Stack(
@@ -53,7 +53,7 @@ class TransactionList extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: (track.type == 'expenses' ? Color(0xffFBC29C) : Color(0xffAEDFA2)),
+                          color: (track.type == 'expenses' ? const Color(0xffFBC29C) : const Color(0xffAEDFA2)),
                           blurRadius: 1,
                           spreadRadius: 3.5,
                         ),

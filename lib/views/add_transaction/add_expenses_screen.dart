@@ -9,6 +9,8 @@ import '../../bottom_navigation.dart';
 import '../../fab.dart';
 
 class NewExpenseScreen extends StatefulWidget {
+  const NewExpenseScreen({super.key});
+
   @override
   State<NewExpenseScreen> createState() => _NewExpenseScreenState();
 }
@@ -23,7 +25,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text(
+          title: const Text(
             'ADD TRANSACTION',
             style: TextStyle(
                 color: Color(0XFFF4A26B),
@@ -41,11 +43,11 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0XFFF4A26B)),
+            icon: const Icon(Icons.arrow_back, color: Color(0XFFF4A26B)),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
           )
@@ -54,7 +56,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
@@ -86,7 +88,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => NewIncomeScreen()
+                                          builder: (context) => const NewIncomeScreen()
                                       )
                                   );
                                 },
@@ -101,7 +103,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                               ),
                               SizedBox(
                                 width: sw * 0.3,
-                                child: Divider(
+                                child: const Divider(
                                   color: Color(0xFF093F40),
                                   thickness: 1.0,
                                 ),
@@ -117,7 +119,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => NewExpenseScreen()
+                                          builder: (context) => const NewExpenseScreen()
                                       )
                                   );
                                 },
@@ -132,7 +134,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                               ),
                               SizedBox(
                                 width: sw * 0.3,
-                                child: Divider(
+                                child: const Divider(
                                   color: Color(0xFF093F40),
                                   thickness: 1.5,
                                 ),
@@ -151,14 +153,14 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                                 width: sw * 0.17,
                                 height: sw * 0.08,
                                 decoration: BoxDecoration(
-                                    color: Color(0xffFFF8ED),
+                                    color: const Color(0xffFFF8ED),
                                     borderRadius: BorderRadius.circular(20.0),
                                     boxShadow: [
                                       BoxShadow(
                                           color: Colors.grey.withOpacity(0.5),
                                           blurRadius: 5,
                                           spreadRadius: 2,
-                                          offset: Offset(0, 4)
+                                          offset: const Offset(0, 4)
                                       )
                                     ]
                                 ),
@@ -166,7 +168,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                                   child: Text(
                                     'Php',
                                     style: TextStyle(
-                                        color: Color(0xffF4A26B),
+                                        color: const Color(0xffF4A26B),
                                         fontWeight: FontWeight.w700,
                                         fontSize: fs * 0.04
                                     ),
@@ -210,7 +212,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                       SizedBox(height: sw * 0.05),
 
                       // From which account
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                       ),
@@ -228,7 +230,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                       SizedBox(height: sw * 0.05),
 
                       // From which category
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
                         child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                       ),
@@ -292,7 +294,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
           fontFamily: 'Inter Regular',
           letterSpacing: 2.0
       ),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         filled: false,
 
         enabledBorder: OutlineInputBorder(
@@ -306,7 +308,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
   }
 
   Widget _editItem(double sw, double fs) {
-    return Container(
+    return SizedBox(
       width: sw * 0.5,
       child: TextField(
         style: TextStyle(
@@ -332,7 +334,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
   }
 
   Widget _editDate(double sw, double fs) {
-    return Container(
+    return SizedBox(
       width: sw * 0.5,
       child: TextField(
         style: TextStyle(
@@ -361,7 +363,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Container(
       width: sw * 0.12,
       height: sw * 0.12,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Color(0xffCE895A)
       ),
@@ -372,7 +374,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
             child: Container(
               width: sw * 0.095,
               height: sw * 0.095,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color(0xffF4A26B),
                   boxShadow: [
@@ -399,7 +401,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -416,7 +418,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -433,7 +435,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -450,7 +452,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xffCE895A)
         ),
@@ -461,7 +463,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xffF4A26B),
                     boxShadow: [
@@ -474,7 +476,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.backpack, size: 70.0),
+                  icon: const Icon(Icons.backpack, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -488,7 +490,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xffCE895A)
         ),
@@ -499,7 +501,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xffF4A26B),
                     boxShadow: [
@@ -512,7 +514,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.directions_car_sharp, size: 70.0),
+                  icon: const Icon(Icons.directions_car_sharp, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -526,7 +528,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xffCE895A)
         ),
@@ -537,7 +539,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xffF4A26B),
                     boxShadow: [
@@ -550,7 +552,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.local_hospital, size: 70.0),
+                  icon: const Icon(Icons.local_hospital, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -564,7 +566,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xffCE895A)
         ),
@@ -575,7 +577,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xffF4A26B),
                     boxShadow: [
@@ -588,7 +590,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.shopping_bag_outlined, size: 70.0),
+                  icon: const Icon(Icons.shopping_bag_outlined, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -602,7 +604,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return Container(
         width: sw * 0.25,
         height: sw * 0.25,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xffCE895A)
         ),
@@ -613,7 +615,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
               child: Container(
                 width: sw * 0.22,
                 height: sw * 0.22,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xffF4A26B),
                     boxShadow: [
@@ -626,7 +628,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.add, size: 70.0),
+                  icon: const Icon(Icons.add, size: 70.0),
                   color: Colors.white,
                 ),
               ),
@@ -640,7 +642,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),

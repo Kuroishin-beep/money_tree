@@ -9,7 +9,7 @@ class LoadingScreen extends StatelessWidget {
     double fs = sw;
 
     return Scaffold(
-      backgroundColor: Color(0xff013D5A),
+      backgroundColor: const Color(0xff013D5A),
       body: Padding(
         padding: EdgeInsets.only(top: sw * 0.85),
         child: Column(
@@ -81,12 +81,12 @@ class LoadingScreen extends StatelessWidget {
             SizedBox(height: sw * 0.05),
 
 
-            Container(
+            SizedBox(
               width: 200,
               child: LinearProgressIndicator(
                 minHeight: 5,
                 backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
             ),
           ],

@@ -9,6 +9,8 @@ import '../../bottom_navigation.dart';
 import '../../fab.dart';
 
 class NewIncomeScreen extends StatefulWidget {
+  const NewIncomeScreen({super.key});
+
   @override
   State<NewIncomeScreen> createState() => _NewIncomeScreenState();
 }
@@ -23,7 +25,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text(
+          title: const Text(
             'ADD TRANSACTION',
             style: TextStyle(
                 color: Color(0XFFF4A26B),
@@ -41,11 +43,11 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0XFFF4A26B)),
+            icon: const Icon(Icons.arrow_back, color: Color(0XFFF4A26B)),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
           )
@@ -53,7 +55,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
@@ -93,7 +95,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                                 ),
                                 SizedBox(
                                   width: sw * 0.3,
-                                  child: Divider(
+                                  child: const Divider(
                                     color: Color(0xFF093F40),
                                     thickness: 1.5,
                                   ),
@@ -109,7 +111,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => NewExpenseScreen()
+                                            builder: (context) => const NewExpenseScreen()
                                         )
                                     );
                                   },
@@ -125,7 +127,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                                 ),
                                 SizedBox(
                                   width: sw * 0.3,
-                                  child: Divider(
+                                  child: const Divider(
                                     color: Color(0xFF093F40),
                                     thickness: 1.0,
                                   ),
@@ -144,14 +146,14 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                                   width: sw * 0.17,
                                   height: sw * 0.08,
                                   decoration: BoxDecoration(
-                                      color: Color(0xffFFF8ED),
+                                      color: const Color(0xffFFF8ED),
                                       borderRadius: BorderRadius.circular(20.0),
                                       boxShadow: [
                                         BoxShadow(
                                             color: Colors.grey.withOpacity(0.5),
                                             blurRadius: 5,
                                             spreadRadius: 2,
-                                            offset: Offset(0, 4)
+                                            offset: const Offset(0, 4)
                                         )
                                       ]
                                   ),
@@ -159,7 +161,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                                     child: Text(
                                       'Php',
                                       style: TextStyle(
-                                          color: Color(0xffF4A26B),
+                                          color: const Color(0xffF4A26B),
                                           fontWeight: FontWeight.w700,
                                           fontSize: fs * 0.04
                                       ),
@@ -203,7 +205,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                         SizedBox(height: sw * 0.05),
 
                         // From which account
-                        Align(
+                        const Align(
                           alignment: Alignment.centerLeft,
                           child: Text('From account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
                         ),
@@ -259,7 +261,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
           fontFamily: 'Inter Regular',
           letterSpacing: 2.0
       ),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         filled: false,
 
         enabledBorder: OutlineInputBorder(
@@ -273,7 +275,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
   }
 
   Widget _editItem(double sw, double fs) {
-    return Container(
+    return SizedBox(
       width: sw * 0.5,
       child: TextField(
         style: TextStyle(
@@ -299,7 +301,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
   }
 
   Widget _editDate(double sw, double fs) {
-    return Container(
+    return SizedBox(
       width: sw * 0.5,
       child: TextField(
         style: TextStyle(
@@ -328,7 +330,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     return Container(
       width: sw * 0.12,
       height: sw * 0.12,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Color(0xffCE895A)
       ),
@@ -339,7 +341,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
             child: Container(
               width: sw * 0.095,
               height: sw * 0.095,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color(0xffF4A26B),
                   boxShadow: [
@@ -366,7 +368,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -383,7 +385,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -400,7 +402,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -417,7 +419,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),

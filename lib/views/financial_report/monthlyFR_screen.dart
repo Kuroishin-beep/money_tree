@@ -12,6 +12,8 @@ import 'progress_bar.dart';
 
 
 class MonthlyReport extends StatefulWidget {
+  const MonthlyReport({super.key});
+
 
   @override
   State<MonthlyReport> createState() => _MonthlyReportState();
@@ -44,8 +46,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
     return Scaffold(
 
       appBar: AppBar(
-          backgroundColor: Color(0xffFFF8ED),
-          title: Text(
+          backgroundColor: const Color(0xffFFF8ED),
+          title: const Text(
             'FINANCIAL REPORT',
             style: TextStyle(
                 color: Color(0XFF639DF0),
@@ -63,11 +65,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
+            icon: const Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
           )
@@ -79,7 +81,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
           Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
@@ -108,7 +110,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => WeeklyReport()),
+                                builder: (context) => const WeeklyReport()),
                           );
                         },
                         child: Text(
@@ -128,7 +130,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MonthlyReport()),
+                                builder: (context) => const MonthlyReport()),
                           );
                         },
                         child: Text(
@@ -148,7 +150,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => YearlyReport()),
+                                builder: (context) => const YearlyReport()),
                           );
                         },
                         child: Text(
@@ -168,19 +170,19 @@ class _MonthlyReportState extends State<MonthlyReport> {
                   PieChart(
                     dataMap: expenses,
                     chartRadius: sw / 1.7,
-                    colorList: [
+                    colorList: const [
                       Color(0xffCA498C),
                       Color(0xffCF9BBD),
                       Color(0xffE6BFCE),
                       Color(0xffFDE3DF),
                     ],
-                    chartValuesOptions: ChartValuesOptions(),
+                    chartValuesOptions: const ChartValuesOptions(),
                   ),
 
                   SizedBox(height: sw * 0.05),
 
                   //INCOME & EXPENSES Bar Chart
-                  ProgressBar(progress1: 200, progress2: 270),
+                  const ProgressBar(progress1: 200, progress2: 270),
 
                   SizedBox(height: sw * 0.05),
 
@@ -188,12 +190,12 @@ class _MonthlyReportState extends State<MonthlyReport> {
                   PieChart(
                     dataMap: income,
                     chartRadius: sw / 1.7,
-                    colorList: [
+                    colorList: const [
                       Color(0xff03045E),
                       Color(0xffA0A0DE),
                       Color(0xffE9E9F6),
                     ],
-                    chartValuesOptions: ChartValuesOptions(),
+                    chartValuesOptions: const ChartValuesOptions(),
                   ),
 
                   SizedBox(height: sw * 0.05),
@@ -203,8 +205,8 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25.0),
-                        color: Color(0xffFFF8ED),
-                        boxShadow: [
+                        color: const Color(0xffFFF8ED),
+                        boxShadow: const [
                           BoxShadow(
                               color: Colors.black12,
                               spreadRadius: 6,
@@ -223,7 +225,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
                             child: Text(
                               'FINANCIAL ADVICE',
                               style: TextStyle(
-                                  color: Color(0xff9A9BEB),
+                                  color: const Color(0xff9A9BEB),
                                   fontWeight: FontWeight.w800,
                                   fontSize: fs * 0.05
                               ),

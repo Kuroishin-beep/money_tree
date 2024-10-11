@@ -21,8 +21,10 @@ import 'views/account_details/account_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(BudgetTracker());
+
+  runApp(const BudgetTracker());
 }
+
 
 class BudgetTracker extends StatelessWidget {
   const BudgetTracker({super.key});
@@ -35,22 +37,22 @@ class BudgetTracker extends StatelessWidget {
       initialRoute: 'get_started_screen.dart',
 
       routes: {
-        'get_started_screen.dart': (context) => GetStarted(),
-        '/signup': (context) => SignUp(),
+        'get_started_screen.dart': (context) => const GetStarted(),
+        '/signup': (context) => const SignUp(),
         '/login': (context) => Login(),
-        'loading_screen.dart': (context) => LoadingScreen(),
-        '/dashboard': (context) => Dashboard(),
-        '/budget': (context) => BudgetScreen(),
-        '/history': (context) => HistoryScreen(),
-        '/settings': (context) => SettingsScreen(),
-        '/add_transaction': (context) => NewIncomeScreen(),
-        '/add_expense': (context) => NewExpenseScreen(),
-        '/financial_report': (context) => MonthlyReport(),
-        '/account_name': (context) => AccountNameScreen(),
-        '/account_birthdate': (context) => AccountBirthdateScreen(),
-        '/account': (context) => AccountScreen(),
-        '/account_email': (context) => AccountEmailScreen(),
-        '/account_mobileno': (context) => AccountMobileNoScreen(),
+        'loading_screen.dart': (context) => const LoadingScreen(),
+        '/dashboard': (context) => const Dashboard(),
+        '/budget': (context) => const BudgetScreen(),
+        '/history': (context) => const HistoryScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/add_transaction': (context) => const NewIncomeScreen(),
+        '/add_expense': (context) => const NewExpenseScreen(),
+        '/financial_report': (context) => const MonthlyReport(),
+        '/account_name': (context) => const AccountNameScreen(),
+        '/account_birthdate': (context) => const AccountBirthdateScreen(),
+        '/account': (context) => const AccountScreen(),
+        '/account_email': (context) => const AccountEmailScreen(),
+        '/account_mobileno': (context) => const AccountMobileNoScreen(),
       },
     );
   }

@@ -1,11 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import 'package:money_tree/views/constants/build_transaction_list.dart';
-import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tree/views/budget/budget_screen.dart';
-import 'package:money_tree/views/add_transaction/add_income_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
 import 'package:money_tree/views/income/income_screen.dart';
 import 'package:money_tree/views/expenses/expenses_screen.dart';
 import 'package:intl/intl.dart';
@@ -17,12 +15,34 @@ import '../../fab.dart';
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
-
   @override
-  State<Dashboard> createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
+  String? _userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserName();
+  }
+
+  Future<void> _getUserName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      
+      setState(() {
+        _userName = userData['firstName']; // Assuming firstName is stored in Firestore
+      });
+    }
+  }
+
+
   final NumberFormat formatter = NumberFormat('#,###.00');
 
   // List of
@@ -126,7 +146,7 @@ class _DashboardState extends State<Dashboard> {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -148,9 +168,9 @@ class _DashboardState extends State<Dashboard> {
                   Container(
                     padding: EdgeInsets.only(top: sw * 0.05, left: sw * 0.2),
                     child: Text(
-                      'Hello, Andrei!',
+                      'Hello, ${_userName ?? 'User'}!',
                       style: TextStyle(
-                        color: Color(0xff020202),
+                        color: const Color(0xff020202),
                         fontSize: fs * 0.08,
                         fontWeight: FontWeight.w800,
                         fontFamily: 'Inter Regular',
@@ -179,12 +199,12 @@ class _DashboardState extends State<Dashboard> {
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Color(0xffABC5EA),
+                                color: const Color(0xffABC5EA),
                                 width: 4.0,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                    color: Color(0xff8296B2).withOpacity(0.3),
+                                    color: const Color(0xff8296B2).withOpacity(0.3),
                                     spreadRadius: 4,
                                     blurRadius: 5
                                 )
@@ -192,7 +212,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           child: CircleAvatar(
                             radius: sw * 0.12,
-                            backgroundImage: AssetImage('lib/images/pfp.jpg'),
+                            backgroundImage: const AssetImage('lib/images/pfp.jpg'),
                           ),
                         ),
                       )
@@ -205,7 +225,7 @@ class _DashboardState extends State<Dashboard> {
                   // Month Divider
                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Color(0xff093F40),
                           thickness: 2.0,
@@ -213,14 +233,14 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       ),
                       Text(
-                        '${_getCurrentMonth()}',
+                        _getCurrentMonth(),
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: fs * 0.04,
                             fontWeight: FontWeight.w500
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Color(0xff093F40),
                           thickness: 2.0,
@@ -233,7 +253,7 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(height: sw * 0.07),
 
                   //Income, Expenses, Budget Sections
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: Row(
                       children: [
@@ -307,7 +327,7 @@ class _DashboardState extends State<Dashboard> {
       width: double.infinity,
       height: sw * 0.35,
       decoration: BoxDecoration(
-        color: Color(0xff8296B2),
+        color: const Color(0xff8296B2),
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Stack(
@@ -318,9 +338,9 @@ class _DashboardState extends State<Dashboard> {
               width: sw * 0.87,
               height: sw * 0.32,
               decoration: BoxDecoration(
-                color: Color(0xffABC5EA),
+                color: const Color(0xffABC5EA),
                 borderRadius: BorderRadius.circular(30.0),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Color(0xffABC5EA),
                     blurRadius: 3,
@@ -346,7 +366,7 @@ class _DashboardState extends State<Dashboard> {
                           child: Text(
                             'BALANCE',
                             style: TextStyle(
-                              color: Color(0xffFFF5E4),
+                              color: const Color(0xffFFF5E4),
                               fontFamily: 'Inter Regular',
                               fontWeight: FontWeight.w800,
                               fontSize: fs * 0.05,
@@ -359,7 +379,7 @@ class _DashboardState extends State<Dashboard> {
                           child: Text(
                             '₱${formatter.format(balance)}',
                             style: TextStyle(
-                                color: Color(0xffFFF5E4),
+                                color: const Color(0xffFFF5E4),
                                 fontFamily: 'Inter Regular',
                                 fontWeight: FontWeight.w800,
                                 fontSize: fs * 0.05,
@@ -371,7 +391,7 @@ class _DashboardState extends State<Dashboard> {
                       ],
                     ),
 
-                    Divider(
+                    const Divider(
                       color: Colors.white,
                       thickness: 2,
 
@@ -384,7 +404,7 @@ class _DashboardState extends State<Dashboard> {
                             'Cash',
                             style: TextStyle(
                               fontSize: fs * 0.038,
-                              color: Color(0xffFFF5E4),
+                              color: const Color(0xffFFF5E4),
                               fontFamily: 'Inter Regular',
                               fontWeight: FontWeight.w800,
                             ),
@@ -402,7 +422,7 @@ class _DashboardState extends State<Dashboard> {
                             '₱${formatter.format(cash)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
-                                color: Color(0xffFFF5E4),
+                                color: const Color(0xffFFF5E4),
                                 fontFamily: 'Inter Regular',
                                 fontWeight: FontWeight.w800,
                                 fontStyle: FontStyle.italic
@@ -418,7 +438,7 @@ class _DashboardState extends State<Dashboard> {
                             'Card',
                             style: TextStyle(
                               fontSize: fs * 0.038,
-                              color: Color(0xffFFF5E4),
+                              color: const Color(0xffFFF5E4),
                               fontFamily: 'Inter Regular',
                               fontWeight: FontWeight.w800,
                             ),
@@ -436,7 +456,7 @@ class _DashboardState extends State<Dashboard> {
                             '₱${formatter.format(card)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
-                                color: Color(0xffFFF5E4),
+                                color: const Color(0xffFFF5E4),
                                 fontFamily: 'Inter Regular',
                                 fontWeight: FontWeight.w800,
                                 fontStyle: FontStyle.italic
@@ -452,7 +472,7 @@ class _DashboardState extends State<Dashboard> {
                             'GCash',
                             style: TextStyle(
                               fontSize: fs * 0.038,
-                              color: Color(0xffFFF5E4),
+                              color: const Color(0xffFFF5E4),
                               fontFamily: 'Inter Regular',
                               fontWeight: FontWeight.w800,
                             ),
@@ -470,7 +490,7 @@ class _DashboardState extends State<Dashboard> {
                             '₱${formatter.format(gcash)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
-                                color: Color(0xffFFF5E4),
+                                color: const Color(0xffFFF5E4),
                                 fontFamily: 'Inter Regular',
                                 fontWeight: FontWeight.w800,
                                 fontStyle: FontStyle.italic
@@ -500,7 +520,7 @@ class _DashboardState extends State<Dashboard> {
       onTap: () {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => IncomeScreen()));
+            MaterialPageRoute(builder: (context) => const IncomeScreen()));
       },
       onTapDown: (_) {
         setState(() {
@@ -518,14 +538,14 @@ class _DashboardState extends State<Dashboard> {
         });
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 150),
         width: double.infinity,
         height: sw * 0.45,
         decoration: BoxDecoration(
           boxShadow: _isIncomePressed
               ? []
               : [
-            BoxShadow(
+            const BoxShadow(
                 color: Color(0xffBFBFBF)
             )
           ],
@@ -542,7 +562,7 @@ class _DashboardState extends State<Dashboard> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30.0),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.white,
                       blurRadius: 1,
@@ -562,7 +582,7 @@ class _DashboardState extends State<Dashboard> {
                         child: Container(
                           width: sw * 0.1,
                           height: sw * 0.1,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xffA9C6A2),
                             shape: BoxShape.circle,
                           ),
@@ -573,7 +593,7 @@ class _DashboardState extends State<Dashboard> {
                                 child: Container(
                                   width: sw * 0.3,
                                   height: sw * 0.09,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Color(0xffDAFFD1),
                                     shape: BoxShape.circle,
                                     boxShadow: [
@@ -600,7 +620,7 @@ class _DashboardState extends State<Dashboard> {
                               '₱${formatter.format(income)}',
                               style: TextStyle(
                                 fontSize: fs * 0.04,
-                                color: Color(0xff080C1A),
+                                color: const Color(0xff080C1A),
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Inter Regular',
                               ),
@@ -609,7 +629,7 @@ class _DashboardState extends State<Dashboard> {
                               'Income',
                               style: TextStyle(
                                 fontSize: fs * 0.033,
-                                color: Color(0xff65AD53),
+                                color: const Color(0xff65AD53),
                                 fontWeight: FontWeight.w400,
                                 fontFamily: 'Inter Regular',
                               ),
@@ -638,7 +658,7 @@ class _DashboardState extends State<Dashboard> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ExpensesScreen()));
+            context, MaterialPageRoute(builder: (context) => const ExpensesScreen()));
       },
       onTapDown: (_) {
         setState(() {
@@ -656,14 +676,14 @@ class _DashboardState extends State<Dashboard> {
         });
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 100),
         width: double.infinity,
         height: sw * 0.45,
         decoration: BoxDecoration(
           boxShadow: _isExpensesPressed
               ? []
               : [
-            BoxShadow(
+            const BoxShadow(
                 color: Color(0xffBFBFBF)
             )
           ],
@@ -680,7 +700,7 @@ class _DashboardState extends State<Dashboard> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30.0),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.white,
                       blurRadius: 1,
@@ -700,7 +720,7 @@ class _DashboardState extends State<Dashboard> {
                         child: Container(
                           width: sw * 0.1,
                           height: sw * 0.1,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xffC7997B),
                             shape: BoxShape.circle,
                           ),
@@ -711,7 +731,7 @@ class _DashboardState extends State<Dashboard> {
                                 child: Container(
                                   width: sw * 0.3,
                                   height: sw * 0.09,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Color(0xffFBC29C),
                                     shape: BoxShape.circle,
                                     boxShadow: [
@@ -738,7 +758,7 @@ class _DashboardState extends State<Dashboard> {
                               '₱${formatter.format(expenses)}',
                               style: TextStyle(
                                 fontSize: fs * 0.04,
-                                color: Color(0xff080C1A),
+                                color: const Color(0xff080C1A),
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Inter Regular',
                               ),
@@ -747,7 +767,7 @@ class _DashboardState extends State<Dashboard> {
                               'Expenses',
                               style: TextStyle(
                                 fontSize: fs * 0.033,
-                                color: Color(0xffC68051),
+                                color: const Color(0xffC68051),
                                 fontWeight: FontWeight.w400,
                                 fontFamily: 'Inter Regular',
                               ),
@@ -779,7 +799,7 @@ class _DashboardState extends State<Dashboard> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => BudgetScreen()),
+          MaterialPageRoute(builder: (context) => const BudgetScreen()),
         );
       },
       onTapDown: (_) {
@@ -798,10 +818,10 @@ class _DashboardState extends State<Dashboard> {
         });
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 100),
         height: 2 * (sw * 0.45) + 10,
         decoration: BoxDecoration(
-          color: Color(0xffBFBFBF),
+          color: const Color(0xffBFBFBF),
           borderRadius: BorderRadius.circular(25.0),
           border: Border.all(
             color: Colors.white,
@@ -829,7 +849,7 @@ class _DashboardState extends State<Dashboard> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20.0),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.white,
                       spreadRadius: 2,
@@ -848,8 +868,8 @@ class _DashboardState extends State<Dashboard> {
                         quarterTurns: 3,
                         child: LinearProgressIndicator(
                           value: progress.clamp(0.0, 1.0),
-                          backgroundColor: Color(0xffFFCDAC),
-                          color: Color(0xffFE5D26),
+                          backgroundColor: const Color(0xffFFCDAC),
+                          color: const Color(0xffFE5D26),
                         ),
                       ),
                     ),
@@ -859,7 +879,7 @@ class _DashboardState extends State<Dashboard> {
                       style: TextStyle(
                         fontFamily: 'Inter Regular',
                         fontSize: fs * 0.04,
-                        color: Color(0xffF4A26B),
+                        color: const Color(0xffF4A26B),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -883,7 +903,7 @@ class _DashboardState extends State<Dashboard> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Color(0xffABC5EA),
+        color: const Color(0xffABC5EA),
         borderRadius: BorderRadius.circular(25.0),
         boxShadow: [
           BoxShadow(
@@ -905,7 +925,7 @@ class _DashboardState extends State<Dashboard> {
               child: Text(
                 'RECENT TRANSACTION',
                 style: TextStyle(
-                  color: Color(0xff202828),
+                  color: const Color(0xff202828),
                   fontSize: sw * 0.055,
                   fontFamily: 'Inter Regular',
                   fontWeight: FontWeight.w800,

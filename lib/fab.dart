@@ -19,17 +19,17 @@ class FAB extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NewIncomeScreen(),
+                builder: (context) => const NewIncomeScreen(),
               ),
             );
           },
-          child: Icon(
+          backgroundColor: const Color(0xffFFF8ED),
+          shape: const CircleBorder(),
+          child: const Icon(
             Icons.add,
             size: 40, // Icon size
             color: Color(0xffE63636),
           ),
-          backgroundColor: Color(0xffFFF8ED),
-          shape: CircleBorder(),
         ),
       ),
     );

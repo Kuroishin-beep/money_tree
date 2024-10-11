@@ -48,7 +48,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
             style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'Inter Regular',
-                fontWeight: FontWeight.w700
+                fontWeight: FontWeight.w800
             ),
           ),
           centerTitle: true,

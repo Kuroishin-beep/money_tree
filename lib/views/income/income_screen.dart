@@ -45,7 +45,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Inter Regular',
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
           ),
         ),
         centerTitle: true,

@@ -44,7 +44,7 @@ class HistoryDataListState extends State<HistoryScreen> {
             style: TextStyle(
                 color: Color(0XFF639DF0),
                 fontFamily: 'Inter Regular',
-                fontWeight: FontWeight.w700
+                fontWeight: FontWeight.w800
             ),
           ),
           centerTitle: true,

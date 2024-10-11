@@ -908,7 +908,7 @@ class _DashboardState extends State<Dashboard> {
                   color: Color(0xff202828),
                   fontSize: sw * 0.055,
                   fontFamily: 'Inter Regular',
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),

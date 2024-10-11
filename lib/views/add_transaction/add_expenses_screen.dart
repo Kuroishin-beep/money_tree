@@ -28,7 +28,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
             style: TextStyle(
                 color: Color(0XFFF4A26B),
                 fontFamily: 'Inter Regular',
-                fontWeight: FontWeight.w700
+                fontWeight: FontWeight.w800
             ),
           ),
           centerTitle: true,

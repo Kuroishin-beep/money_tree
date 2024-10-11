@@ -50,7 +50,7 @@ class _YearlyReportState extends State<YearlyReport> {
             style: TextStyle(
                 color: Color(0XFF639DF0),
                 fontFamily: 'Inter Regular',
-                fontWeight: FontWeight.w700
+                fontWeight: FontWeight.w800
             ),
           ),
           centerTitle: true,
@@ -220,7 +220,7 @@ class _YearlyReportState extends State<YearlyReport> {
                               'FINANCIAL ADVICE',
                               style: TextStyle(
                                   color: Color(0xff9A9BEB),
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w800,
                                   fontSize: fs * 0.05
                               ),
                             ),

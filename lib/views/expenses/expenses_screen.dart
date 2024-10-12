@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
 import '../dashboard/dashboard_screen.dart';
-import '../financial_report/monthlyFR_screen.dart';
-import '../add_transaction/add_income_screen.dart';
-import '../settings/settings_screen.dart';
-import '../transaction_history/history_screen.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import '../constants/build_transaction_list.dart';
 import 'package:intl/intl.dart';
@@ -39,8 +35,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Color(0xffFBC29C),
-          title: Text(
+          backgroundColor: const Color(0xffFBC29C),
+          title: const Text(
             'EXPENSES',
             style: TextStyle(
                 color: Colors.white,
@@ -58,11 +54,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
           )
@@ -72,7 +68,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -94,7 +90,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     // Month Divider
                     Row(
                       children: [
-                        Expanded(
+                        const Expanded(
                           child: Divider(
                             color: Color(0xff093F40),
                             thickness: 2.0,
@@ -109,7 +105,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                               fontWeight: FontWeight.w500
                           ),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Divider(
                             color: Color(0xff093F40),
                             thickness: 2.0,

@@ -1,16 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:flutter/material.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 import 'package:money_tree/views/start_screens/loading_screen.dart';
 import 'package:money_tree/views/start_screens/signup_screen.dart';
 
-
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
   bool isLoading = false;
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +22,7 @@ class _LoginState extends State<Login> {
     double fs = sw;
 
     return Scaffold(
-      backgroundColor: Color(0xff2882A5),
+      backgroundColor: const Color(0xff2882A5),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: sw * 0.05),
@@ -30,7 +34,7 @@ class _LoginState extends State<Login> {
               Text(
                 'Log into your',
                 style: TextStyle(
-                  color: Color(0xfffff5e4),
+                  color: const Color(0xfffff5e4),
                   fontSize: fs * 0.08,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
@@ -39,17 +43,16 @@ class _LoginState extends State<Login> {
               Text(
                 'account',
                 style: TextStyle(
-                  color: Color(0xfffff5e4),
+                  color: const Color(0xfffff5e4),
                   fontSize: fs * 0.08,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
                 ),
               ),
-
               SizedBox(height: sw * 0.07),
 
               // Email Section
-              Text(
+              const Text(
                 'Email',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
@@ -58,12 +61,12 @@ class _LoginState extends State<Login> {
                 ),
               ),
               SizedBox(height: sw * 0.02),
-              _emailTextField(),        // Email text field
+              _emailTextField(), // Email text field
 
               SizedBox(height: sw * 0.07),
 
               // Password Section
-              Text(
+              const Text(
                 'Password',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
@@ -79,7 +82,7 @@ class _LoginState extends State<Login> {
               // Login Button
               Container(
                 child: isLoading
-                    ? LoadingScreen()
+                    ? const LoadingScreen()
                     : _loginButton(),
               ),
 
@@ -93,7 +96,7 @@ class _LoginState extends State<Login> {
               SizedBox(height: sw * 0.08),
 
               // Divider for other Login Options
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: Divider(
@@ -143,19 +146,19 @@ class _LoginState extends State<Login> {
     return TextField(
       onChanged: (value) {
         setState(() {
-          Placeholder();
+          email = value; // Store email
         });
       },
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
       ),
       keyboardType: TextInputType.emailAddress,
@@ -166,19 +169,19 @@ class _LoginState extends State<Login> {
     return TextField(
       onChanged: (value) {
         setState(() {
-          Placeholder();
+          password = value; // Store password
         });
       },
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
       ),
       keyboardType: TextInputType.visiblePassword,
@@ -186,57 +189,100 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _loginButton() {
-    return ElevatedButton(
-      onPressed: () async {
-        setState(() {
-          isLoading = true;
-        });
+Widget _loginButton() {
+  return ElevatedButton(
+    onPressed: () async {
+      setState(() {
+        isLoading = true;
+      });
 
-        // Navigate to the LoadingScreen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoadingScreen()),
+      try {
+        // Authenticate using Firebase
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
         );
 
-        await Future.delayed(Duration(seconds: 2));
-
-        // Navigate to the Dashboard
+        // Navigate to the Dashboard after successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Dashboard()),
+          MaterialPageRoute(builder: (context) => const Dashboard()),
         );
+      } on FirebaseAuthException catch (e) {
+        // Handle login errors with user-friendly messages
+        String errorMessage;
 
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found with this email. Please check the email and try again.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Incorrect password. Please try again.';
+            break;
+          case 'invalid-email':
+            errorMessage = 'The email address is not valid. Please enter a valid email.';
+            break;
+          case 'user-disabled':
+            errorMessage = 'This user account has been disabled. Please contact support.';
+            break;
+          case 'too-many-requests':
+            errorMessage = 'Too many login attempts. Please try again later.';
+            break;
+          default:
+            errorMessage = 'An error occurred. Please try again.';
+        }
+
+        // Show an error dialog with a user-friendly message
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Login Error'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } finally {
         setState(() {
           isLoading = false;
         });
-      },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Color(0xfffff5e4)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        )),
-        minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
+      }
+    },
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
+      shape: WidgetStateProperty.all(RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      )),
+      minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
+    ),
+    child: const Text(
+      'Log In',
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 20.0,
+        fontWeight: FontWeight.w900,
       ),
-      child: Text(
-        'Log In',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 20.0,
-          fontWeight: FontWeight.w900,
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _forgotPassButton() {
     return TextButton(
       onPressed: () {
         setState(() {
-          Placeholder();
+          const Placeholder();
         });
       },
-      child: Text(
+      child: const Text(
         "Forgot your password?",
         style: TextStyle(
           color: Colors.white,
@@ -244,9 +290,9 @@ class _LoginState extends State<Login> {
           fontSize: 20.0,
           fontWeight: FontWeight.w300,
           decoration: TextDecoration.underline,
-          decorationColor: Colors.white
+          decorationColor: Colors.white,
         ),
-      )
+      ),
     );
   }
 
@@ -254,17 +300,17 @@ class _LoginState extends State<Login> {
     return ElevatedButton(
       onPressed: () {
         setState(() {
-          Placeholder();
+          const Placeholder();
         });
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Color(0xfffff5e4)),
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
-      child: Text(
+      child: const Text(
         'Google',
         style: TextStyle(
           color: Colors.black,
@@ -279,17 +325,17 @@ class _LoginState extends State<Login> {
     return ElevatedButton(
       onPressed: () {
         setState(() {
-          Placeholder();
+          const Placeholder();
         });
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Color(0xfffff5e4)),
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
-      child: Text(
+      child: const Text(
         'Facebook',
         style: TextStyle(
           color: Colors.black,
@@ -302,27 +348,21 @@ class _LoginState extends State<Login> {
 
   Widget _signupButton() {
     return TextButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignUp()),
-          );
-          setState(() {
-            Placeholder();
-          });
-
-        },
-        child: Text(
-          "Need an account? Sign up",
-          style: TextStyle(
-              color: Colors.white,
-              fontFamily: "Inter Regular",
-              fontSize: 20.0,
-              fontWeight: FontWeight.w300,
-              decoration: TextDecoration.underline,
-              decorationColor: Colors.white
-          ),
-        )
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignUp()),
+        );
+      },
+      child: const Text(
+        "Create an account",
+        style: TextStyle(
+          color: Color(0xfffff5e4),
+          fontFamily: "Inter Regular",
+          fontSize: 20.0,
+          fontWeight: FontWeight.w300,
+        ),
+      ),
     );
   }
 }

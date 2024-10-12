@@ -4,7 +4,7 @@ class ProgressBar extends StatelessWidget {
   final double progress1;
   final double progress2;
 
-  ProgressBar({
+  const ProgressBar({super.key, 
     required this.progress1,
     required this.progress2,
 
@@ -23,7 +23,7 @@ class ProgressBar extends StatelessWidget {
             width: sw * 0.8,
             height: sw * 0.09,
             decoration: BoxDecoration(
-              color: Color(0xffE6BFCE),
+              color: const Color(0xffE6BFCE),
               borderRadius: BorderRadius.circular(20.0),
             ),
             child: Align(
@@ -32,13 +32,13 @@ class ProgressBar extends StatelessWidget {
                   width: progress1,
                   height: sw * 0.8,
                   decoration: BoxDecoration(
-                      color: Color(0xffCA498C),
+                      color: const Color(0xffCA498C),
                       borderRadius: BorderRadius.circular(20.0)),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.02),
                     child: Text(
                       'EXPENSES ${progress1-170} %',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700
                       ),
@@ -54,7 +54,7 @@ class ProgressBar extends StatelessWidget {
           width: sw * 0.8,
           height: sw * 0.09,
           decoration: BoxDecoration(
-            color: Color(0xffC8C9E9),
+            color: const Color(0xffC8C9E9),
             borderRadius: BorderRadius.circular(20.0),
           ),
           child:Align(
@@ -63,13 +63,13 @@ class ProgressBar extends StatelessWidget {
                 width: progress2,
                 height: sw * 0.8,
                 decoration: BoxDecoration(
-                    color: Color(0xff03045E),
+                    color: const Color(0xff03045E),
                     borderRadius: BorderRadius.circular(20.0)),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: sw * 0.05, vertical: sw * 0.02),
                   child: Text(
                     'INCOME ${progress2-200} %',
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700
                     ),

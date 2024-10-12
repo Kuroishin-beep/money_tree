@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
-import '../add_transaction/add_income_screen.dart';
 import '../dashboard/dashboard_screen.dart';
-import '../financial_report/monthlyFR_screen.dart';
-import '../transaction_history/history_screen.dart';
-import '../settings/settings_screen.dart';
 import 'package:intl/intl.dart';
 
 class BudgetScreen extends StatefulWidget {
@@ -42,8 +38,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
     double sw = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Color(0xffFBC29C),
-          title: Text(
+          backgroundColor: const Color(0xffFBC29C),
+          title: const Text(
             'BUDGET',
             style: TextStyle(
                 color: Colors.white,
@@ -61,11 +57,11 @@ class _BudgetScreenState extends State<BudgetScreen> {
             SizedBox(width: 16),
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
           )
@@ -75,7 +71,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -96,17 +92,17 @@ class _BudgetScreenState extends State<BudgetScreen> {
                   // Month Divider
                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Divider(thickness: 1.5, color: Colors.black54),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
                           _getCurrentMonth().toUpperCase(),
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Divider(thickness: 1.5, color: Colors.black54),
                       ),
                     ],
@@ -177,10 +173,10 @@ class _BudgetScreenState extends State<BudgetScreen> {
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          Positioned(
+          const Positioned(
             top: 10,
             right: 10,
-            child: const CircleAvatar(
+            child: CircleAvatar(
               radius: 20,
               backgroundImage: AssetImage("lib/images/pfp.jpg"),
             ),
@@ -219,14 +215,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
             Text(
               "\$${spentAmount.toStringAsFixed(2)} of \$${totalBudget.toStringAsFixed(2)}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 8),
             // Progress bar
             LinearProgressIndicator(
               value: progress.clamp(0.0, 1.0), // value is between 0 and 1
-              backgroundColor: Color(0xffFFCDAC),
-              color: Color(0xffFE5D26),
+              backgroundColor: const Color(0xffFFCDAC),
+              color: const Color(0xffFE5D26),
             ),
           ],
         ),
@@ -254,8 +250,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
             Text("\$${totalSavings.toStringAsFixed(2)}"),
             LinearProgressIndicator(
               value: progress.clamp(0.0, 1.0), // Ensure value is between 0 and 1
-              backgroundColor: Color(0xffFFCDAC),
-              color: Color(0xffFE5D26),
+              backgroundColor: const Color(0xffFFCDAC),
+              color: const Color(0xffFE5D26),
             ),
           ],
         ),
@@ -270,7 +266,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       children: [
         Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
-        ...categories.map((category) => _buildCategoryCard(category)).toList(),
+        ...categories.map((category) => _buildCategoryCard(category)),
         TextButton(
           onPressed: () {
             // Implement add category functionality
@@ -307,7 +303,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                   Container(
                     width: sw * 0.1,
                     height: sw * 0.1,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Color(0xffA78062),
                     ),
@@ -318,7 +314,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                           child: Container(
                             width: sw * 0.08,
                             height: sw * 0.08,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(

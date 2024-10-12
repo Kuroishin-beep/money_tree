@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
-import 'package:money_tree/views/add_transaction/add_income_screen.dart';
-
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
-import '../financial_report/monthlyFR_screen.dart';
 
 class AccountMobileNoScreen extends StatelessWidget {
+  const AccountMobileNoScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
     return Scaffold(
       // Changed the app bar
       appBar: AppBar(
-          backgroundColor: Color(0xffFFF5E4),
+          backgroundColor: const Color(0xffFFF5E4),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0xffF4A26B)),
+            icon: const Icon(Icons.arrow_back, color: Color(0xffF4A26B)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -30,7 +26,7 @@ class AccountMobileNoScreen extends StatelessWidget {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -48,7 +44,7 @@ class AccountMobileNoScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Mobile No.',
                   style: TextStyle(
                       color: Color(0xffF4A26B),
@@ -57,7 +53,7 @@ class AccountMobileNoScreen extends StatelessWidget {
                       fontSize: 35
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 buildTextField('Mobile No', '-', true),
               ],
             ),
@@ -94,16 +90,16 @@ Widget buildTextField(String label, String value, bool required) {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black.withOpacity(0.4)),
             ),
             if (required)
-              Text(
+              const Text(
                 ' *',
                 style: TextStyle(color: Colors.red),
               ),
           ],
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         TextFormField(
           initialValue: value,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: UnderlineInputBorder(),
           ),
         ),

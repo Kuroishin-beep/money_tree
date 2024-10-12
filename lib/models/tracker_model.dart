@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class Tracker {
   final String name;        // for income (e.g., Company Name, Freelance Work) | for expenses (e.g., Tire Repair)

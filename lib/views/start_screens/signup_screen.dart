@@ -1,20 +1,38 @@
-import 'package:money_tree/views/start_screens/login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:money_tree/views/start_screens/ProfileSetupScreen.dart';
 import 'package:flutter/material.dart';
 
-
 class SignUp extends StatefulWidget {
+  const SignUp({super.key});
+
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
     double fs = sw;
 
     return Scaffold(
-      backgroundColor: Color(0xff2882A5),
+      backgroundColor: const Color(0xff2882A5),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: sw * 0.05),
@@ -26,7 +44,7 @@ class _SignUpState extends State<SignUp> {
               Text(
                 'Sign up to track',
                 style: TextStyle(
-                  color: Color(0xfffff5e4),
+                  color: const Color(0xfffff5e4),
                   fontSize: fs * 0.08,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
@@ -35,7 +53,7 @@ class _SignUpState extends State<SignUp> {
               Text(
                 'your budget',
                 style: TextStyle(
-                  color: Color(0xfffff5e4),
+                  color: const Color(0xfffff5e4),
                   fontSize: fs * 0.08,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
@@ -45,7 +63,7 @@ class _SignUpState extends State<SignUp> {
               SizedBox(height: sw * 0.07),
 
               // Email Section
-              Text(
+              const Text(
                 'Email',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
@@ -54,12 +72,12 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               SizedBox(height: sw * 0.02),
-              _emailTextField(),        // Email text field
+              _emailTextField(), // Email text field
 
               SizedBox(height: sw * 0.07),
 
               // Create Password Section
-              Text(
+              const Text(
                 'Create Password',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
@@ -73,7 +91,7 @@ class _SignUpState extends State<SignUp> {
               SizedBox(height: sw * 0.07),
 
               // Confirm Password Section
-              Text(
+              const Text(
                 'Confirm Password',
                 style: TextStyle(
                   color: Color(0xfffff5e4),
@@ -92,7 +110,7 @@ class _SignUpState extends State<SignUp> {
               SizedBox(height: sw * 0.08),
 
               // Divider for other Login Options
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: Divider(
@@ -135,21 +153,17 @@ class _SignUpState extends State<SignUp> {
 
   Widget _emailTextField() {
     return TextField(
-      onChanged: (value) {
-        setState(() {
-          Placeholder();
-        });
-      },
-      style: TextStyle(color: Colors.white),
+      controller: _emailController,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
       ),
       keyboardType: TextInputType.emailAddress,
@@ -158,21 +172,17 @@ class _SignUpState extends State<SignUp> {
 
   Widget _createPassTextField() {
     return TextField(
-      onChanged: (value) {
-        setState(() {
-          Placeholder();
-        });
-      },
-      style: TextStyle(color: Colors.white),
+      controller: _passwordController,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
       ),
       keyboardType: TextInputType.visiblePassword,
@@ -182,21 +192,17 @@ class _SignUpState extends State<SignUp> {
 
   Widget _confirmPassTextField() {
     return TextField(
-      onChanged: (value) {
-        setState(() {
-          Placeholder();
-        });
-      },
-      style: TextStyle(color: Colors.white),
+      controller: _confirmPasswordController,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: Colors.white, width: 1.5),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
       ),
       keyboardType: TextInputType.visiblePassword,
@@ -206,23 +212,49 @@ class _SignUpState extends State<SignUp> {
 
   Widget _signupButton() {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
+      onPressed: () async {
+        String email = _emailController.text.trim();
+        String password = _passwordController.text.trim();
+        String confirmPassword = _confirmPasswordController.text.trim();
+
+        if (password != confirmPassword) {
+          // Show an error message
+          _showErrorDialog("Passwords do not match");
+          return;
+        }
+
+        try {
+          // Create user with email and password
+          UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+            email: email,
+            password: password,
+          );
+
+          // Add user information to Firestore
+          await _firestore.collection('users').doc(userCredential.user?.uid).set({
+            'email': email,
+            // Add other user details as needed
+          });
+
+        // After successful sign-up
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Login()),
+          MaterialPageRoute(builder: (context) => const ProfileSetupScreen()),
         );
-        setState(() {
-          Placeholder();
-        });
+
+        } catch (e) {
+          // Handle error
+          _showErrorDialog(e.toString());
+        }
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Color(0xfffff5e4)),
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
-      child: Text(
+      child: const Text(
         'Sign Up',
         style: TextStyle(
           color: Colors.black,
@@ -233,23 +265,36 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _googleButton() {
     return ElevatedButton(
       onPressed: () {
-
-        setState(() {
-          Placeholder();
-        });
+        // Google Sign-In logic
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Color(0xfffff5e4)),
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
-      child: Text(
-        'Google',
+      child: const Text(
+        'Sign in with Google',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -262,19 +307,17 @@ class _SignUpState extends State<SignUp> {
   Widget _facebookButton() {
     return ElevatedButton(
       onPressed: () {
-        setState(() {
-          Placeholder();
-        });
+        // Facebook Sign-In logic
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Color(0xfffff5e4)),
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
         shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
-      child: Text(
-        'Facebook',
+      child: const Text(
+        'Sign in with Facebook',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -283,5 +326,4 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
-
 }

@@ -1,24 +1,43 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tree/views/account_details/account_birthdate_screen.dart';
 import 'package:money_tree/views/account_details/account_email_screen.dart';
 import 'package:money_tree/views/account_details/account_mobileno_screen.dart';
 import 'package:money_tree/views/account_details/account_name_screen.dart';
-import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
-import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
-import '../financial_report/monthlyFR_screen.dart';
 
 class AccountScreen extends StatefulWidget {
+  const AccountScreen({super.key});
+
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
 
 class _AccountScreenState extends State<AccountScreen> {
   final double _avatarRadiusFactor = 0.15;
+  String? _userName = '';
 
+  @override
+    void initState() {
+    super.initState();
+    _getUserName();
+  }
+  Future<void> _getUserName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      
+      setState(() {
+        _userName = userData['firstName']; 
+      });
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery
@@ -30,10 +49,10 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       // Changed the App Bar
       appBar: AppBar(
-          backgroundColor: Color(0xffFFF5E4),
+          backgroundColor: const Color(0xffFFF5E4),
           title: Text(
-            'Hello, Andrei!',
-            style: TextStyle(
+            'Hello, ${_userName ?? 'User'}!',
+            style: const TextStyle(
                 color: Color(0xffF4A26B),
                 fontFamily: 'Inter Regular',
                 fontWeight: FontWeight.w700
@@ -41,7 +60,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0xffF4A26B)),
+            icon: const Icon(Icons.arrow_back, color: Color(0xffF4A26B)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -53,7 +72,7 @@ class _AccountScreenState extends State<AccountScreen> {
         children: [
           // Gradient Background
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -71,19 +90,19 @@ class _AccountScreenState extends State<AccountScreen> {
               children: [
                 CircleAvatar(
                   radius: screenWidth * _avatarRadiusFactor,
-                  backgroundImage: AssetImage('lib/images/pfp.jpg'),
+                  backgroundImage: const AssetImage('lib/images/pfp.jpg'),
                   onBackgroundImageError: (exception, stackTrace) {
                     // Handle error here
                   },
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-                SectionTitle(title: 'ACCOUNT DETAILS'),
-                AccountDetail(icon: Icons.person, title: 'Name'),
-                AccountDetail(icon: Icons.calendar_today, title: 'Birthdate'),
-                AccountDetail(icon: Icons.email, title: 'Email'),
-                AccountDetail(icon: Icons.phone, title: 'Mobile No.'),
+                const SectionTitle(title: 'ACCOUNT DETAILS'),
+                const AccountDetail(icon: Icons.person, title: 'Name'),
+                const AccountDetail(icon: Icons.calendar_today, title: 'Birthdate'),
+                const AccountDetail(icon: Icons.email, title: 'Email'),
+                const AccountDetail(icon: Icons.phone, title: 'Mobile No.'),
               ],
             ),
           ),
@@ -109,7 +128,7 @@ class _AccountScreenState extends State<AccountScreen> {
 class SectionTitle extends StatelessWidget {
   final String title;
 
-  const SectionTitle({Key? key, required this.title}) : super(key: key);
+  const SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +153,7 @@ class AccountDetail extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const AccountDetail({Key? key, required this.icon, required this.title}) : super(key: key);
+  const AccountDetail({super.key, required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -144,19 +163,19 @@ class AccountDetail extends StatelessWidget {
       onTap: () {
         if (title == 'Name') {
           Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AccountNameScreen()),
+            context, MaterialPageRoute(builder: (context) => const AccountNameScreen()),
           );
         } else if (title == 'Birthdate') {
           Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AccountBirthdateScreen()),
+            context, MaterialPageRoute(builder: (context) => const AccountBirthdateScreen()),
           );
         } else if (title == 'Email') {
           Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AccountEmailScreen()),
+            context, MaterialPageRoute(builder: (context) => const AccountEmailScreen()),
           );
         } else if (title == 'Mobile No.') {
           Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AccountMobileNoScreen()),
+            context, MaterialPageRoute(builder: (context) => const AccountMobileNoScreen()),
           );
         }
       },

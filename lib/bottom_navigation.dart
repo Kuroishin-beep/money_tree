@@ -11,7 +11,7 @@ class NavBottomAppBar extends StatelessWidget {
   final Color history;
   final Color settings;
 
-  const NavBottomAppBar({
+  const NavBottomAppBar({super.key, 
     required this.dashboard,
     required this.fReport,
     required this.history,
@@ -21,7 +21,7 @@ class NavBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      color: Color(0xff231F20),
+      color: const Color(0xff231F20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -29,29 +29,29 @@ class NavBottomAppBar extends StatelessWidget {
             icon: Icon(Icons.home_filled, color: dashboard, size: 33),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Dashboard()));
+                  context, MaterialPageRoute(builder: (context) => const Dashboard()));
             },
           ),
           IconButton(
             icon: Icon(Icons.bar_chart, color: fReport, size: 33),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MonthlyReport()));
+                  context, MaterialPageRoute(builder: (context) => const MonthlyReport()));
             },
           ),
-          SizedBox(width: 80), // Spacer for FAB
+          const SizedBox(width: 80), // Spacer for FAB
           IconButton(
             icon: Icon(Icons.history, color: history, size: 33),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => HistoryScreen()));
+                  context, MaterialPageRoute(builder: (context) => const HistoryScreen()));
             },
           ),
           IconButton(
             icon: Icon(Icons.settings_rounded, color: settings, size: 33),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => SettingsScreen()));
+                  context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
             },
 
           ),

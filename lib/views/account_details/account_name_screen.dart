@@ -67,6 +67,7 @@ class _AccountNameScreenState extends State<AccountNameScreen> {
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: const Color(0xffFFF5E4),
           centerTitle: true,

@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 import '../../bottom_navigation.dart';
+import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
 import '../constants/build_transaction_list.dart';
 
@@ -15,15 +18,10 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class HistoryDataListState extends State<HistoryScreen> {
-  List<Tracker> trackerData = [
-    // List of expenses
-    Tracker(name: 'Tire Repair', category: 'CAR', amount: 250, type: 'expenses'),
-    Tracker(name: 'Tuition fee', category: 'SCHOOL', amount: 250, type: 'expenses'),
+  // call firestore service
+  final FirestoreService firestoreService = FirestoreService();
 
-    // List of income
-    Tracker(name: 'Freelance', account: 'CARD', amount: 250, type: 'income'),
-    Tracker(name: 'XYZ Company', account: 'CASH', amount: 250, type: 'income'),
-  ];
+
 
 
   @override
@@ -32,7 +30,7 @@ class HistoryDataListState extends State<HistoryScreen> {
     double fs = sw;
 
     return Scaffold(
-      backgroundColor: const Color(0xffABC5EA),
+      resizeToAvoidBottomInset: false,
 
       appBar: AppBar(
           backgroundColor: const Color(0xffFFF8ED),
@@ -120,13 +118,57 @@ class HistoryDataListState extends State<HistoryScreen> {
                     ],
                   ),
                   SizedBox(height: sw * 0.025),
-                  Column(
-                    children: trackerData
-                        .where((track) => track.type == 'expenses') // Filter for income only
-                        .map((track) {
-                      return TransactionList(track: track);
-                    }).toList(),
+
+                  // List of Expenses from Firestore
+                  StreamBuilder<QuerySnapshot>(
+                    stream: firestoreService.getTracksStream(),
+                    builder: (context, snapshot) {
+                      // If encountered an error...
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      // If there are no transactions available
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(child: Text('No transactions found.'));
+                      }
+
+                      // Filter the documents to only include those with 'expenses' type
+                      final filteredDocs = snapshot.data!.docs.where((doc) {
+                        return doc['type'] == 'expenses';
+                      }).toList();
+
+                      // If no expense transactions exist
+                      if (filteredDocs.isEmpty) {
+                        return const Center(child: Text('No expense transactions found.'));
+                      }
+
+                      return Column(
+                        children: filteredDocs.map((doc) {
+                          // Convert each document to Tracker class model
+                          final track = Tracker(
+                            name: doc['name'],
+                            category: doc['category'],
+                            account: doc['account'],
+                            amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
+                            type: doc['type'],
+                            date: (doc['date'] as Timestamp).toDate(),
+                            icon: doc['icon']
+                          );
+
+                          // Format the date to display only the date portion
+                          String formattedDate = DateFormat('MMMM d, y').format(track.date!);
+
+                          return TransactionList(
+                            track: track,
+                            formattedDate: formattedDate,
+                            docID: doc.id,
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
+
                   TextButton(
                     onPressed: () {
                       // setState(() {
@@ -169,13 +211,56 @@ class HistoryDataListState extends State<HistoryScreen> {
                     ],
                   ),
                   SizedBox(height: sw * 0.025),
-                  Column(
-                    children: trackerData
-                        .where((track) => track.type == 'income') // Filter for income only
-                        .map((track) {
-                      return TransactionList(track: track);
-                    }).toList(),
+
+                  // List of Income from Firestore
+                  StreamBuilder<QuerySnapshot>(
+                    stream: firestoreService.getTracksStream(),
+                    builder: (context, snapshot) {
+                      // If encountered an error...
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      // If there are no transactions available
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(child: Text('No transactions found.'));
+                      }
+
+                      // Filter the documents to only include those with 'income' type
+                      final filteredDocs = snapshot.data!.docs.where((doc) {
+                        return doc['type'] == 'income';
+                      }).toList();
+
+                      // If no expense transactions exist
+                      if (filteredDocs.isEmpty) {
+                        return const Center(child: Text('No expense transactions found.'));
+                      }
+
+                      return Column(
+                        children: filteredDocs.map((doc) {
+                          // Convert each document to Tracker class model
+                          final track = Tracker(
+                            name: doc['name'],
+                            category: doc['category'],
+                            account: doc['account'],
+                            amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
+                            type: doc['type'],
+                            date: (doc['date'] as Timestamp).toDate(),
+                          );
+
+                          // Format the date to display only the date portion
+                          String formattedDate = DateFormat('MMMM d, y').format(track.date!);
+
+                          return TransactionList(
+                            track: track,
+                            formattedDate: formattedDate,
+                            docID: doc.id,
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
+
                   TextButton(
                     onPressed: () {
                       // setState(() {
@@ -251,37 +336,4 @@ class HistoryDataListState extends State<HistoryScreen> {
   }
 
 
-}
-
-// Define the models for Expense and Income
-class Expense {
-  final IconData icon;
-  final String item;
-  final String date;
-  final String category;
-  final String amount;
-
-  Expense({
-    required this.icon,
-    required this.item,
-    required this.date,
-    required this.category,
-    required this.amount,
-  });
-}
-
-class Income {
-  final IconData icon;
-  final String name;
-  final String date;
-  final String category;
-  final String amount;
-
-  Income({
-    required this.icon,
-    required this.name,
-    required this.date,
-    required this.category,
-    required this.amount,
-  });
 }

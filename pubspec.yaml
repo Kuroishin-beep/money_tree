@@ -44,6 +44,7 @@ dependencies:
   fluttertoast: ^8.2.8
   image_picker: ^0.8.5+3
   table_calendar: ^3.0.0 
+  flutter_iconpicker: ^4.0.1
 
 
 dev_dependencies:

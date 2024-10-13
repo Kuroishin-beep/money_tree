@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import '../../controller/tracker_controller.dart';
 import '../../models/tracker_model.dart';
 import 'package:intl/intl.dart';
 import '../edit_transaction/edit_expenses_screen.dart';
 import '../edit_transaction/edit_income_screen.dart';
 
 class TransactionList extends StatelessWidget {
-  final Tracker track;  // List of tracker items
+  final Tracker track;
+  final String formattedDate;
+  final String docID;
 
-  const TransactionList({super.key, required this.track});
+  const TransactionList({
+    super.key,
+    required this.track,
+    required this.formattedDate,
+    required this.docID,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +30,17 @@ class TransactionList extends StatelessWidget {
         if (track.type == 'expenses') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const EditExpensesScreen()), // Navigate to EditExpensesScreen
+            MaterialPageRoute(builder: (context) => EditExpensesScreen(docID: docID,)), // Navigate to EditExpensesScreen
           );
         } else {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const EditIncomeScreen()), // Navigate to EditIncomeScreen
+            MaterialPageRoute(builder: (context) => EditIncomeScreen(docID: docID,)), // Navigate to EditIncomeScreen
           );
         }
+      },
+      onLongPress: () {
+        _showDeleteConfirmationDialog(context, docID);
       },
       child: Card(
         elevation: 10,
@@ -61,7 +72,10 @@ class TransactionList extends StatelessWidget {
                     ),
                     child: Icon(
                       (track.type == 'expenses'
-                          ? Tracker.categoryIcons[track.category] ?? Icons.error
+                          ? IconData(
+                              track.icon!, // Make sure iconCode is of type Icon
+                              fontFamily: 'MaterialIcons'
+                            )
                           : Tracker.accountIcons[track.account]
                       ),
                       size: 25,
@@ -76,7 +90,7 @@ class TransactionList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                DateFormat.yMMMMd().format(track.date),
+                '${formattedDate}',
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: fs * 0.035
@@ -91,17 +105,45 @@ class TransactionList extends StatelessWidget {
               ),
             ],
           ),
-          subtitle: Text(track.type == 'expenses' ? track.category : track.account),
+          subtitle: Text(track.type == 'expenses' ? track.category.toUpperCase() : track.account),
           trailing: Text(
             '₱ ${formatter.format(track.amount)}',
             style: TextStyle(
-                fontSize: fs * 0.05,
+                fontSize: fs * 0.04,
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold
             ),
           ),
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String docID) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Transaction'),
+          content: Text('Are you sure you want to delete this transaction?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Call the delete method here
+                FirestoreService().deleteTrack(docID);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

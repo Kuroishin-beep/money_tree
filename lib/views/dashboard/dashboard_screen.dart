@@ -8,9 +8,8 @@ import 'package:money_tree/views/income/income_screen.dart';
 import 'package:money_tree/views/expenses/expenses_screen.dart';
 import 'package:intl/intl.dart';
 import '../../bottom_navigation.dart';
+import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
-
-
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -20,6 +19,9 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  // call firestore service
+  final FirestoreService firestoreService = FirestoreService();
+
   String? _userName = '';
 
   @override
@@ -28,6 +30,7 @@ class _DashboardState extends State<Dashboard> {
     _getUserName();
   }
 
+  // Get user name
   Future<void> _getUserName() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -42,88 +45,87 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  // Number format
+  final NumberFormat formatter = NumberFormat('#,###.##');
 
-  final NumberFormat formatter = NumberFormat('#,###.00');
+  // variables for income & expenses
+  double _totalIncome = 0;
+  double _totalExpenses = 0;
 
-  // List of
-  List<Tracker> trackerData = [
-    Tracker(name: 'Freelance', account: 'CARD', amount: 250, type: 'income'),
-    Tracker(
-        name: 'Tire Repair', category: 'CAR', amount: 250, type: 'expenses'),
-    Tracker(name: 'Freelance', account: 'CASH', amount: 1200, type: 'income'),
-    Tracker(name: 'Freelance', account: 'GCASH', amount: 10, type: 'income'),
-  ];
+  // variables for CASH, CARD, GCASH
+  double _totalCash = 0;
+  double _totalCard = 0;
+  double _totalGCash = 0;
 
-  // FOR ACCOUNT SUMMARY BOX
+  // calculate totals
+  // TODO: Fix the total Cash, Card, and Gcash
+  void _calculateTotals(List<QueryDocumentSnapshot> docs) {
+
+    double totalCashExpenses = 0;
+    double totalCardExpenses = 0;
+    double totalGCashExpenses = 0;
+
+    for (var doc in docs) {
+      final track = Tracker(
+        name: doc['name'],
+        category: doc['category'],
+        account: doc['account'],
+        amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
+        type: doc['type'],
+        date: (doc['date'] as Timestamp).toDate(),
+      );
+
+      // Update total income and expenses
+      if (track.type == 'income') {
+        _totalIncome += track.amount;
+      } else if (track.type == 'expenses') {
+        _totalExpenses += track.amount;
+      }
+
+      // Update totals based on account type
+      if (track.account == 'CASH') {
+        _totalCash += track.amount; // For income or expenses
+      } else if (track.account == 'CARD') {
+        _totalCard += track.amount; // For income or expenses
+      } else if (track.account == 'GCASH') {
+        _totalGCash += track.amount; // For income or expenses
+      }
+
+      // Accumulate expenses based on account type
+      if (track.type == 'expenses') {
+        if (track.account == 'CASH') {
+          totalCashExpenses += track.amount;
+        } else if (track.account == 'CARD') {
+          totalCardExpenses += track.amount;
+        } else if (track.account == 'GCASH') {
+          totalGCashExpenses += track.amount;
+        }
+      }
+
+      // Perform the subtraction after all expenses have been totaled
+      _totalCash = _totalCash - totalCashExpenses;
+      _totalCard = _totalCard - totalCardExpenses;
+      _totalGCash = _totalGCash - totalGCashExpenses;
+    }
+
+    // Debugging output
+    print('Total Cash after expenses: $_totalCash');
+    print('Total Card after expenses: $_totalCard');
+    print('Total GCash after expenses: $_totalGCash');
+
+  }
+
+
+  // GET: Balance
   double _getBalance() {
     double balance = 0;
-
-    for (var tracker in trackerData) {
-      if (tracker.type == 'income') {
-        balance += tracker.amount;
-      }
-    }
+     balance = _totalIncome - _totalExpenses;
     return balance;
-  }
-
-  double _getCash() {
-    double cash = 0;
-
-    for (var tracker in trackerData) {
-      if (tracker.type == 'income' && tracker.account == 'CASH') {
-        cash += tracker.amount;
-      }
-    }
-    return cash;
-  }
-
-  double _getCard() {
-    double card = 0;
-
-    for (var tracker in trackerData) {
-      if (tracker.type == 'income' && tracker.account == 'CARD') {
-        card += tracker.amount;
-      }
-    }
-    return card;
-  }
-
-  double _getGCash() {
-    double gcash = 0;
-
-    for (var tracker in trackerData) {
-      if (tracker.type == 'income' && tracker.account == 'GCASH') {
-        gcash += tracker.amount;
-      }
-    }
-    return gcash;
   }
 
   // Get current month as a string
   String _getCurrentMonth() {
     return DateFormat('MMMM').format(DateTime.now());
-  }
-
-  double _getTotalIncome() {
-    double income = 0;
-
-    for (var tracker in trackerData) {
-      if (tracker.type == 'income') {
-        income += tracker.amount;
-      }
-    }
-    return income;
-  }
-
-  double _getTotalExpenses() {
-    double expenses = 0;
-
-    for (var tracker in trackerData) {
-      if (tracker.type == 'expenses') {
-        expenses += tracker.amount;
-      }
-    }
-    return expenses;
   }
 
   // for button animation
@@ -141,7 +143,7 @@ class _DashboardState extends State<Dashboard> {
     double fs = sw;
 
     return Scaffold(
-
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Gradient Background
@@ -185,12 +187,7 @@ class _DashboardState extends State<Dashboard> {
                     clipBehavior: Clip.none,
                     children: [
                       // Account Summary (Balance, Cash, Card, Gcash)
-                      _accountSummaryBox(
-                          _getBalance(),
-                          _getCash(),
-                          _getCard(),
-                          _getGCash()
-                      ),
+                      _accountSummaryBox(),
 
                       // Profile Picture
                       Positioned(
@@ -265,12 +262,12 @@ class _DashboardState extends State<Dashboard> {
                               children: [
 
                                 // Income Section
-                                _incomeBox(_getTotalIncome()),
+                                _incomeBox(_totalIncome),
 
                                 SizedBox(height: sw * 0.03),
 
                                 // Expenses Section
-                                _expensesBox(_getTotalExpenses())
+                                _expensesBox(_totalExpenses)
                               ],
                             )
                         ),
@@ -315,8 +312,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget _accountSummaryBox(double balance, double cash, double card,
-      double gcash) {
+  Widget _accountSummaryBox() {
     double sw = MediaQuery
         .of(context)
         .size
@@ -377,7 +373,7 @@ class _DashboardState extends State<Dashboard> {
                         Container(
                           alignment: Alignment.topRight,
                           child: Text(
-                            '₱${formatter.format(balance)}',
+                            '₱${formatter.format(_getBalance())}',
                             style: TextStyle(
                                 color: const Color(0xffFFF5E4),
                                 fontFamily: 'Inter Regular',
@@ -419,7 +415,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
 
                           Text(
-                            '₱${formatter.format(cash)}',
+                            '₱${formatter.format(_totalCash)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
                                 color: const Color(0xffFFF5E4),
@@ -453,7 +449,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
 
                           Text(
-                            '₱${formatter.format(card)}',
+                            '₱${formatter.format(_totalCard)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
                                 color: const Color(0xffFFF5E4),
@@ -487,7 +483,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
 
                           Text(
-                            '₱${formatter.format(gcash)}',
+                            '₱${formatter.format(_totalGCash)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
                                 color: const Color(0xffFFF5E4),
@@ -755,7 +751,7 @@ class _DashboardState extends State<Dashboard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '₱${formatter.format(expenses)}',
+                              '₱${formatter.format(expenses ?? 0)}',
                               style: TextStyle(
                                 fontSize: fs * 0.04,
                                 color: const Color(0xff080C1A),
@@ -932,11 +928,45 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
-            Column(
-              children: trackerData.map((track) {
-                return TransactionList(track: track);
-              }).toList(),
-            ),
+
+            // Create the List Using Column
+            StreamBuilder<QuerySnapshot>(
+              stream: firestoreService.getTracksStream(),
+              builder: (context, snapshot) {
+                // Check for errors and empty data
+                if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) return Center(child: Text('No transactions found.'));
+
+                // Calculate income and expenses here
+                _calculateTotals(snapshot.data!.docs);
+
+                return Column(
+                  children: snapshot.data!.docs.map((doc) {
+                    // Convert each document to Tracker class model
+                    final track = Tracker(
+                      name: doc['name'],
+                      category: doc['category'],
+                      account: doc['account'],
+                      amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
+                      type: doc['type'],
+                      date: (doc['date'] as Timestamp).toDate(),
+                      icon: doc['icon'], // Retrieve icon using getIconFromString
+                    );
+
+                    // Format the date
+                    String formattedDate = DateFormat('MMMM d, y').format(track.date!);
+
+                    return TransactionList(
+                      track: track,
+                      formattedDate: formattedDate,
+                      docID: doc.id,
+                    );
+                  }).toList(),
+                );
+              },
+            )
+
+
           ],
         ),
       ),

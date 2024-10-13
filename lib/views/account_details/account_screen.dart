@@ -47,6 +47,8 @@ class _AccountScreenState extends State<AccountScreen> {
     double sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+
       // Changed the App Bar
       appBar: AppBar(
           backgroundColor: const Color(0xffFFF5E4),

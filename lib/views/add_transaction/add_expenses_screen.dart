@@ -1,12 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/Models/configuration.dart';
+import 'package:money_tree/controller/tracker_controller.dart';
+import 'package:money_tree/models/tracker_model.dart';
 import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
-import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
-
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 class NewExpenseScreen extends StatefulWidget {
   const NewExpenseScreen({super.key});
@@ -16,6 +17,65 @@ class NewExpenseScreen extends StatefulWidget {
 }
 
 class _NewExpenseScreenState extends State<NewExpenseScreen> {
+  // call firestore service
+  final FirestoreService firestoreService = FirestoreService();
+
+  // Variable to hold the selected account
+  String selectedAccount = '';
+
+  // for Icon picker
+  Icon? _icon;
+  IconData? _selectedIconData;
+  String _selectedCategory = '';
+  int code = 0;
+  // String? fontFamily;
+
+  // Icon picker function
+  _pickIcon() async {
+    IconPickerIcon? icon = await showIconPicker(
+      context,
+      configuration: SinglePickerConfiguration(
+        iconPackModes: [IconPack.material],
+      ),
+    );
+
+    if (icon != null) {
+      setState(() {
+        _selectedIconData = icon.data;
+        _icon = Icon(
+          icon.data,
+          size: 30,
+          color: const Color(0xffF4A26B),
+        );
+
+        code = _selectedIconData!.codePoint;
+        // fontFamily = _selectedIconData!.fontFamily;
+      });
+    }
+  }
+
+  // text field controllers
+  TextEditingController _amountController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _categoryController = TextEditingController();
+
+  // Select date function
+  Future<void> _selectDate() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100)
+    );
+
+    if(_picked != null) {
+      setState(() {
+        _dateController.text = _picked.toString().split(" ")[0];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -23,6 +83,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
 
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: Colors.white,
           title: const Text(
@@ -55,6 +116,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
 
       body: Stack(
         children: [
+          // Gradient Background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -76,7 +138,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                   Column(
                     children: [
 
-                      // OPTIONS
+                      // OPTIONS: New Income or New Expenses
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -178,36 +240,18 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                           ),
                           SizedBox(width: sw * 0.05),
                           Expanded(
-                            child: _editAmount(sw, fs),
+                            child: _addAmount(sw, fs),
                           ),
                         ],
                       ),
 
                       // Item Textfield
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: sw * 0.1),
-                            child: _iconField(sw, fs, Icons.question_mark),
-                          ),
-                          SizedBox(width: sw * 0.06),
-                          _editItem(sw, fs)
-                        ],
-                      ),
+                      _addItem(sw, fs),
 
-                      SizedBox(height: sw * 0.05),
+                      SizedBox(height: sw * 0.01),
 
                       // Date Textfield
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: sw * 0.1),
-                            child: _iconField(sw, fs, Icons.calendar_today_rounded),
-                          ),
-                          SizedBox(width: sw * 0.06),
-                          _editDate(sw, fs)
-                        ],
-                      ),
+                      _addDate(sw, fs),
 
                       SizedBox(height: sw * 0.05),
 
@@ -227,7 +271,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                         ],
                       ),
 
-                      SizedBox(height: sw * 0.05),
+                      SizedBox(height: sw * 0.1),
 
                       // From which category
                       const Align(
@@ -236,27 +280,17 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                       ),
 
                       // Category Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _schoolCatButton(sw, fs),
-                          _carCatButton(sw, fs),
-                          _healthCatButton(sw, fs),
-                        ],
-                      ),
-                      SizedBox(height: sw * 0.05),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _groceryCatButton(sw, fs),
-                          _addCatButton(sw, fs)
-                        ],
-                      ),
+                      _addCategory(sw, fs),
 
                       SizedBox(height: sw * 0.05),
 
                       // Confirm Button
-                      _confirmButton(sw, fs)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _confirmButton(sw, fs)
+                        ],
+                      )
 
 
                     ],
@@ -285,18 +319,18 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
   }
 
 
-  Widget _editAmount(double sw, double fs) {
+  Widget _addAmount(double sw, double fs) {
     return TextField(
+      controller: _amountController,
       style: TextStyle(
           color: Colors.black,
-          fontSize: fs * 0.12,
+          fontSize: fs * 0.08,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter Regular',
           letterSpacing: 2.0
       ),
       decoration: const InputDecoration(
         filled: false,
-
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide.none
         ),
@@ -307,15 +341,26 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     );
   }
 
-  Widget _editItem(double sw, double fs) {
+  Widget _addItem(double sw, double fs) {
     return SizedBox(
-      width: sw * 0.5,
+      width: sw * 0.6,
       child: TextField(
+        controller: _nameController,
         style: TextStyle(
             fontSize: fs * 0.05,
             fontWeight: FontWeight.w700
         ),
         decoration: InputDecoration(
+          labelText: 'Item Name',
+          labelStyle: TextStyle(
+              fontSize: fs * 0.05,
+              color: Colors.grey
+          ),
+          prefixIcon: Icon(
+            Icons.edit_note,
+            size: 35,
+            color: Color(0xffF4A26B),
+          ),
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.4),
@@ -333,15 +378,31 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     );
   }
 
-  Widget _editDate(double sw, double fs) {
+  Widget _addDate(double sw, double fs) {
     return SizedBox(
-      width: sw * 0.5,
+      width: sw * 0.6,
       child: TextField(
+        onTap: () {
+          _selectDate();
+        },
+        controller: _dateController,
+        readOnly: true,
         style: TextStyle(
             fontSize: fs * 0.05,
             fontWeight: FontWeight.w700
         ),
         decoration: InputDecoration(
+          labelText: 'Date',
+          labelStyle: TextStyle(
+            fontSize: fs * 0.05,
+            color: Colors.grey
+          ),
+          prefixIcon: Icon(
+            Icons.calendar_today_rounded,
+            size: 30,
+            color: Color(0xffF4A26B),
+          ),
+          suffixIcon: Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xffF4A26B)),
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.4),
@@ -359,49 +420,71 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     );
   }
 
-  Widget _iconField(double sw, double fs, IconData icon) {
-    return Container(
-      width: sw * 0.12,
-      height: sw * 0.12,
-      decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xffCE895A)
-      ),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: sw * 0.095,
-              height: sw * 0.095,
-              decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xffF4A26B),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 4
-                    )
-                  ]
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 30.0,
-              ),
+  Widget _addCategory(double sw, double fs) {
+    return SizedBox(
+      width: sw * 0.7,
+      child: TextField(
+        controller: _categoryController,
+        style: TextStyle(
+            fontSize: fs * 0.05,
+            fontWeight: FontWeight.w700
+        ),
+        decoration: InputDecoration(
+          labelText: 'Category',
+          labelStyle: TextStyle(
+              fontSize: fs * 0.05,
+              color: Colors.grey
+          ),
+
+          // for picking icons
+          prefixIcon: IconButton(
+            onPressed: () async {
+              _selectedCategory = _categoryController.text;
+
+              if (_selectedCategory.isNotEmpty) {
+                _pickIcon();
+              } else {
+                // Show a message if the category field is empty
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter a category')),
+                );
+              }
+            },
+            icon: _icon != null
+                ? _icon!
+                : Icon(
+              Icons.add_circle_outlined,
+              size: 30,
+              color: Color(0xffF4A26B),
             ),
-          )
-        ],
+          ),
+
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.grey.withOpacity(0.4),
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.grey.withOpacity(0.4),
+              width: 2.0,
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _fromCashButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedAccount = 'CASH';
+        });
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: selectedAccount == 'CASH' ? Color(0xffF4A26B) : const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -416,9 +499,13 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
 
   Widget _fromCardButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedAccount = 'CARD';
+        });
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: selectedAccount == 'CARD' ? Color(0xffF4A26B) : const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -433,9 +520,13 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
 
   Widget _fromGCashButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedAccount = 'GCASH';
+        });
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: selectedAccount == 'GCASH' ? Color(0xffF4A26B) : const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -448,199 +539,33 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
     );
   }
 
-  Widget _schoolCatButton(double sw, double fs) {
-    return Container(
-        width: sw * 0.25,
-        height: sw * 0.25,
-        decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xffCE895A)
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: sw * 0.22,
-                height: sw * 0.22,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xffF4A26B),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 5,
-                      )
-                    ]
-                ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.backpack, size: 70.0),
-                  color: Colors.white,
-                ),
-              ),
-            )
-          ],
-        )
-    );
-  }
-
-  Widget _carCatButton(double sw, double fs) {
-    return Container(
-        width: sw * 0.25,
-        height: sw * 0.25,
-        decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xffCE895A)
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: sw * 0.22,
-                height: sw * 0.22,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xffF4A26B),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 5,
-                      )
-                    ]
-                ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.directions_car_sharp, size: 70.0),
-                  color: Colors.white,
-                ),
-              ),
-            )
-          ],
-        )
-    );
-  }
-
-  Widget _healthCatButton(double sw, double fs) {
-    return Container(
-        width: sw * 0.25,
-        height: sw * 0.25,
-        decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xffCE895A)
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: sw * 0.22,
-                height: sw * 0.22,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xffF4A26B),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 5,
-                      )
-                    ]
-                ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.local_hospital, size: 70.0),
-                  color: Colors.white,
-                ),
-              ),
-            )
-          ],
-        )
-    );
-  }
-
-  Widget _groceryCatButton(double sw, double fs) {
-    return Container(
-        width: sw * 0.25,
-        height: sw * 0.25,
-        decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xffCE895A)
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: sw * 0.22,
-                height: sw * 0.22,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xffF4A26B),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 5,
-                      )
-                    ]
-                ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.shopping_bag_outlined, size: 70.0),
-                  color: Colors.white,
-                ),
-              ),
-            )
-          ],
-        )
-    );
-  }
-
-  Widget _addCatButton(double sw, double fs) {
-    return Container(
-        width: sw * 0.25,
-        height: sw * 0.25,
-        decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xffCE895A)
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: sw * 0.22,
-                height: sw * 0.22,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xffF4A26B),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 5,
-                      )
-                    ]
-                ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.add, size: 70.0),
-                  color: Colors.white,
-                ),
-              ),
-            )
-          ],
-        )
-    );
-  }
-
   Widget _confirmButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () async {
+        DateTime selectedDate = DateTime.parse(_dateController.text);
+
+
+        Tracker newTrack = Tracker(
+          name: _nameController.text,
+          category: _selectedCategory,
+          account: selectedAccount,
+          amount: double.parse(_amountController.text),
+          type: 'expenses',
+          date: selectedDate,
+          icon: code,
+        );
+
+
+        await firestoreService.addTrack(newTrack);
+
+        _amountController.clear();
+        _nameController.clear();
+        _categoryController.clear();
+        _dateController.clear();
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Dashboard()));
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
@@ -650,7 +575,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
       ),
       child: Text(
         'CONFIRM',
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: sw * 0.05),
+        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87, fontSize: sw * 0.05),
       ),
     );
   }

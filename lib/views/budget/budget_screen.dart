@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:flutter/cupertino.dart'; // For Cupertino icon pack
+
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -13,6 +17,25 @@ class BudgetScreen extends StatefulWidget {
 }
 
 class _BudgetScreenState extends State<BudgetScreen> {
+
+  Icon? _icon;
+
+  // Icon picker method
+  _pickIcon() async {
+    IconPickerIcon? icon = await showIconPicker(
+      context,
+      configuration: SinglePickerConfiguration(
+        iconPackModes: [IconPack.cupertino],  // Specify the icon pack you want
+      ),
+    );
+
+    if (icon != null) {
+      _icon = Icon(icon.data);
+      setState(() {});
+    }
+  }
+
+
   List<Map<String, dynamic>> expenseCategories = [
     {"title": "SCHOOL", "amount": 100, "budget": 500},
     {"title": "CAR", "amount": 467, "budget": 500},
@@ -268,10 +291,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         const SizedBox(height: 8),
         ...categories.map((category) => _buildCategoryCard(category)),
         TextButton(
-          onPressed: () {
-            // Implement add category functionality
-            _showAddCategoryDialog(isExpense);
-          },
+          onPressed: () => _showAddCategoryDialog(isExpense),
           child: const Text("Add Card", style: TextStyle(color: Color(0xffFE5D26), fontSize: 16)),
         ),
       ],
@@ -300,41 +320,27 @@ class _BudgetScreenState extends State<BudgetScreen> {
             children: [
               Row(
                 children: [
+                  // Circle with icon
                   Container(
                     width: sw * 0.1,
                     height: sw * 0.1,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xffA78062),
+                      color: Color(0xffA78062),  // Circle color
                     ),
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            width: sw * 0.08,
-                            height: sw * 0.08,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color(0xffC29472),
-                                  blurRadius: 1,
-                                  spreadRadius: 2
-                                )
-                              ]
-                            ),
-                            child: Icon(
-                              Tracker.categoryIcons[category["title"]],
-                              size: 30,
-                              color: Colors.white,     // Icon color (optional)
-                            ),
-                          )
-                        )
-                      ],
-                    )
+                    child: Center(
+                      // Use the saved IconData to display the icon
+                      child: category.containsKey("icon")
+                          ? Icon(
+                        category["icon"],  // Access the saved IconData
+                        size: 30,
+                        color: Colors.white,  // Icon color
+                      )
+                          : const SizedBox(),  // Placeholder if no icon is selected
+                    ),
                   ),
                   const SizedBox(width: 8),
+                  // Title of the category
                   Text(
                     category["title"],
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -347,7 +353,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
-                      // Implement edit functionality (navigate to edit screen)
                       _showEditCategoryDialog(category);
                     },
                   ),
@@ -394,17 +399,155 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
   // Show dialog to add a new category
   void _showAddCategoryDialog(bool isExpense) {
-    // Implement add category functionality here
+    TextEditingController titleController = TextEditingController();
+    TextEditingController amountController = TextEditingController();
+    TextEditingController budgetController = TextEditingController();
+    _icon = null;  // Reset the icon for each new category
 
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isExpense ? "Add Expense" : "Add Income"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: "Title"),
+              ),
+              TextField(
+                controller: amountController,
+                decoration: const InputDecoration(labelText: "Amount"),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: budgetController,
+                decoration: const InputDecoration(labelText: "Budget"),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 10),
+              // Icon Picker Button
+              TextButton.icon(
+                icon: const Icon(Icons.add_circle_outline),
+                label: const Text("Pick Icon"),
+                onPressed: () {
+                  _pickIcon();  // Use the provided _pickIcon method
+                },
+              ),
+              // Display selected icon
+              _icon != null ? _icon! : const SizedBox(),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Add"),
+              onPressed: () {
+                setState(() {
+                  Map<String, dynamic> newCategory = {
+                    "title": titleController.text,
+                    "amount": double.parse(amountController.text),
+                    "budget": double.parse(budgetController.text),
+                    "icon": _icon?.icon,  // Save the selected icon
+                  };
+                  if (isExpense) {
+                    expenseCategories.add(newCategory);
+                  } else {
+                    incomeCategories.add(newCategory);
+                  }
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Show dialog to edit a category
   void _showEditCategoryDialog(Map<String, dynamic> category) {
-    // Implement edit functionality here
+    TextEditingController amountController = TextEditingController(text: category["amount"].toString());
+    TextEditingController budgetController = TextEditingController(text: category["budget"].toString());
+    _icon = category.containsKey('icon') ? Icon(category["icon"]) : null;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("EDIT ${category["title"]}",
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xffFBC29C),
+              fontFamily: 'Inter Regular',
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: amountController,
+                decoration: const InputDecoration(labelText: "Amount"),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: budgetController,
+                decoration: const InputDecoration(labelText: "Budget"),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 10),
+              // Icon Picker Button
+              TextButton.icon(
+                icon: const Icon(Icons.add_circle_outline),
+                label: const Text("Pick Icon"),
+                onPressed: () {
+                  _pickIcon();  // Use the provided _pickIcon method
+                },
+              ),
+              // Display selected icon
+              _icon != null ? _icon! : const SizedBox(),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Save"),
+              onPressed: () {
+                setState(() {
+                  category["amount"] = double.parse(amountController.text);
+                  category["budget"] = double.parse(budgetController.text);
+                  if (_icon != null) {
+                    category["icon"] = _icon?.icon;  // Save updated icon
+                  }
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
+
+
+
 
   // Get current month as a string
   String _getCurrentMonth() {
     return DateFormat('MMMM').format(DateTime.now());
   }
 }
+
+

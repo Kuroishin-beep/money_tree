@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:money_tree/views/add_transaction/add_expenses_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
-import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
-
 import '../../bottom_navigation.dart';
+import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
+import '../../models/tracker_model.dart';
 
 class NewIncomeScreen extends StatefulWidget {
   const NewIncomeScreen({super.key});
@@ -16,6 +14,36 @@ class NewIncomeScreen extends StatefulWidget {
 }
 
 class _NewIncomeScreenState extends State<NewIncomeScreen> {
+  // call firestore service
+  final FirestoreService firestoreService = FirestoreService();
+
+  // Variable to hold the selected account & default category
+  String selectedAccount = '';
+
+
+  // text field controllers
+  TextEditingController _amountController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _dateController = TextEditingController();
+
+
+  // Select date function
+  Future<void> _selectDate() async {
+    DateTime? _picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100)
+    );
+
+    if(_picked != null) {
+      setState(() {
+        _dateController.text = _picked.toString().split(" ")[0];
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -23,6 +51,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
 
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: Colors.white,
           title: const Text(
@@ -54,6 +83,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
       ),
       body: Stack(
         children: [
+          // Gradient Background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -75,7 +105,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                     Column(
                       children: [
 
-                        // OPTIONS
+                        // OPTIONS: New Income or New Expenses
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -171,36 +201,18 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
                             ),
                             SizedBox(width: sw * 0.05),
                             Expanded(
-                              child: _editAmount(sw, fs),
+                              child: _addAmount(sw, fs),
                             ),
                           ],
                         ),
 
                         // Item Textfield
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: sw * 0.1),
-                              child: _iconField(sw, fs, Icons.question_mark),
-                            ),
-                            SizedBox(width: sw * 0.06),
-                            _editItem(sw, fs)
-                          ],
-                        ),
+                        _addItem(sw, fs),
 
-                        SizedBox(height: sw * 0.05),
+                        SizedBox(height: sw * 0.01),
 
                         // Date Textfield
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: sw * 0.1),
-                              child: _iconField(sw, fs, Icons.calendar_today_rounded),
-                            ),
-                            SizedBox(width: sw * 0.06),
-                            _editDate(sw, fs)
-                          ],
-                        ),
+                        _addDate(sw, fs),
 
                         SizedBox(height: sw * 0.05),
 
@@ -251,19 +263,18 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     );
   }
 
-
-  Widget _editAmount(double sw, double fs) {
+  Widget _addAmount(double sw, double fs) {
     return TextField(
+      controller: _amountController,
       style: TextStyle(
           color: Colors.black,
-          fontSize: fs * 0.12,
+          fontSize: fs * 0.08,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter Regular',
           letterSpacing: 2.0
       ),
       decoration: const InputDecoration(
         filled: false,
-
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide.none
         ),
@@ -274,15 +285,26 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     );
   }
 
-  Widget _editItem(double sw, double fs) {
+  Widget _addItem(double sw, double fs) {
     return SizedBox(
-      width: sw * 0.5,
+      width: sw * 0.6,
       child: TextField(
+        controller: _nameController,
         style: TextStyle(
             fontSize: fs * 0.05,
             fontWeight: FontWeight.w700
         ),
         decoration: InputDecoration(
+          labelText: 'Item Name',
+          labelStyle: TextStyle(
+              fontSize: fs * 0.05,
+              color: Colors.grey
+          ),
+          prefixIcon: Icon(
+            Icons.edit_note,
+            size: 35,
+            color: Color(0xffF4A26B),
+          ),
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.4),
@@ -300,15 +322,31 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
     );
   }
 
-  Widget _editDate(double sw, double fs) {
+  Widget _addDate(double sw, double fs) {
     return SizedBox(
-      width: sw * 0.5,
+      width: sw * 0.6,
       child: TextField(
+        onTap: () {
+          _selectDate();
+        },
+        controller: _dateController,
+        readOnly: true,
         style: TextStyle(
             fontSize: fs * 0.05,
             fontWeight: FontWeight.w700
         ),
         decoration: InputDecoration(
+          labelText: 'Date',
+          labelStyle: TextStyle(
+              fontSize: fs * 0.05,
+              color: Colors.grey
+          ),
+          prefixIcon: Icon(
+            Icons.calendar_today_rounded,
+            size: 30,
+            color: Color(0xffF4A26B),
+          ),
+          suffixIcon: Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xffF4A26B)),
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.4),
@@ -322,53 +360,19 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _iconField(double sw, double fs, IconData icon) {
-    return Container(
-      width: sw * 0.12,
-      height: sw * 0.12,
-      decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xffCE895A)
-      ),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: sw * 0.095,
-              height: sw * 0.095,
-              decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xffF4A26B),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Color(0xffF4A26B),
-                        blurRadius: 2,
-                        spreadRadius: 4
-                    )
-                  ]
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 30.0,
-              ),
-            ),
-          )
-        ],
       ),
     );
   }
 
   Widget _fromCashButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedAccount = 'CASH';
+        });
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: selectedAccount == 'CASH' ? Color(0xffF4A26B) : const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -383,9 +387,13 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
 
   Widget _fromCardButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedAccount = 'CARD';
+        });
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: selectedAccount == 'CARD' ? Color(0xffF4A26B) : const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -400,9 +408,13 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
 
   Widget _fromGCashButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedAccount = 'GCASH';
+        });
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: selectedAccount == 'GCASH' ? Color(0xffF4A26B) : const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -417,7 +429,29 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
 
   Widget _confirmButton(double sw, double fs) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () async {
+        DateTime selectedDate = DateTime.parse(_dateController.text);
+
+        Tracker newTrack = Tracker(
+            name: _nameController.text,
+            category: 'NULL',
+            account: selectedAccount,
+            amount: double.parse(_amountController.text),
+            type: 'income',
+            date: selectedDate,
+            icon: 0
+        );
+
+        await firestoreService.addTrack(newTrack);
+
+        _amountController.clear();
+        _nameController.clear();
+        _dateController.clear();
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Dashboard()));
+
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFFAF3E0),
         shape: RoundedRectangleBorder(
@@ -427,7 +461,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
       ),
       child: Text(
         'CONFIRM',
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: sw * 0.05),
+        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87, fontSize: sw * 0.05),
       ),
     );
   }

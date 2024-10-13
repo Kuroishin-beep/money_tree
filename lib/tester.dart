@@ -8,6 +8,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,6 +19,8 @@ class MyApp extends StatelessWidget {
 }
 
 class IconCodePointScreen extends StatefulWidget {
+  const IconCodePointScreen({super.key});
+
   @override
   _IconCodePointScreenState createState() => _IconCodePointScreenState();
 }
@@ -79,7 +83,7 @@ class _IconCodePointScreenState extends State<IconCodePointScreen> {
           ),
           SizedBox(height: 20), // Add some space between button and text
           Text(
-            'Code Point: ${codePoint}', // Display codePoint in hexadecimal
+            'Code Point: $codePoint', // Display codePoint in hexadecimal
             style: TextStyle(fontSize: 24), // Text style
           ),
           SizedBox(height: 20), // Add space between code point and icon

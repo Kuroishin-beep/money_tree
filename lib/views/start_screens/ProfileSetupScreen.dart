@@ -47,27 +47,53 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   }
 
   void _submit() async {
-    final user = _auth.currentUser;
+  final user = _auth.currentUser;
 
-    if (user != null) {
-      String firstName = _firstNameController.text.trim();
-      String lastName = _lastNameController.text.trim();
-      String email = user.email ?? '';
-      String birthday = _selectedBirthday != null ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!) : '';
+  if (user != null) {
+    String firstName = _firstNameController.text.trim();
+    String lastName = _lastNameController.text.trim();
+    String email = user.email ?? '';
+    String birthday = _selectedBirthday != null 
+      ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!) 
+      : '';
 
-      await _firestore.collection('users').doc(user.uid).update({
-        'firstName': firstName,
-        'lastName': lastName,
-        'birthday': birthday,
-        'profileImage': _profileImage != null ? await _uploadImage() : null,
-      });
+    // Reference to the user's document
+    DocumentReference userDocRef = _firestore.collection('users').doc(user.uid);
+
+    try {
+      // Check if the document exists
+      DocumentSnapshot docSnapshot = await userDocRef.get();
+
+      if (docSnapshot.exists) {
+        // If the document exists, update it
+        await userDocRef.update({
+          'firstName': firstName,
+          'lastName': lastName,
+          'birthday': birthday,
+          'profileImage': _profileImage != null ? await _uploadImage() : null,
+        });
+      } else {
+        // If the document does not exist, create it
+        await userDocRef.set({
+          'firstName': firstName,
+          'lastName': lastName,
+          'birthday': birthday,
+          'profileImage': _profileImage != null ? await _uploadImage() : null,
+          'email': email, // Include email or any other fields you need
+        });
+      }
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()), // Replace with your Dashboard widget
       );
+    } catch (e) {
+      print("Error updating user document: $e");
+      // Handle any errors here (e.g., show a snackbar or dialog)
     }
   }
+}
+
 
   Future<String?> _uploadImage() async {
     // Implement image upload to Firebase Storage and return the URL

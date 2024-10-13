@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 import 'package:money_tree/views/start_screens/loading_screen.dart';
 import 'package:money_tree/views/start_screens/signup_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,10 +12,29 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
+Future<UserCredential> signInWithGoogle() async {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+  if (googleUser == null) {
+    throw Exception('Google sign-in was aborted.');
+  }
+
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  final OAuthCredential credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
+
 class _LoginState extends State<Login> {
   bool isLoading = false;
   String email = '';
   String password = '';
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +44,10 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: const Color(0xff2882A5),
       body: SingleChildScrollView(
-        child: Padding(
+        child: Container(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
+          ),
           padding: EdgeInsets.symmetric(horizontal: sw * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +84,7 @@ class _LoginState extends State<Login> {
                 ),
               ),
               SizedBox(height: sw * 0.02),
-              _emailTextField(), // Email text field
+              _emailTextField(),
 
               SizedBox(height: sw * 0.07),
 
@@ -146,7 +169,7 @@ class _LoginState extends State<Login> {
     return TextField(
       onChanged: (value) {
         setState(() {
-          email = value; // Store email
+          email = value;
         });
       },
       style: const TextStyle(color: Colors.white),
@@ -169,7 +192,7 @@ class _LoginState extends State<Login> {
     return TextField(
       onChanged: (value) {
         setState(() {
-          password = value; // Store password
+          password = value;
         });
       },
       style: const TextStyle(color: Colors.white),
@@ -189,91 +212,86 @@ class _LoginState extends State<Login> {
     );
   }
 
-Widget _loginButton() {
-  return ElevatedButton(
-    onPressed: () async {
-      setState(() {
-        isLoading = true;
-      });
-
-      try {
-        // Authenticate using Firebase
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-
-        // Navigate to the Dashboard after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
-        );
-      } on FirebaseAuthException catch (e) {
-        // Handle login errors with user-friendly messages
-        String errorMessage;
-
-        switch (e.code) {
-          case 'user-not-found':
-            errorMessage = 'No user found with this email. Please check the email and try again.';
-            break;
-          case 'wrong-password':
-            errorMessage = 'Incorrect password. Please try again.';
-            break;
-          case 'invalid-email':
-            errorMessage = 'The email address is not valid. Please enter a valid email.';
-            break;
-          case 'user-disabled':
-            errorMessage = 'This user account has been disabled. Please contact support.';
-            break;
-          case 'too-many-requests':
-            errorMessage = 'Too many login attempts. Please try again later.';
-            break;
-          default:
-            errorMessage = 'An error occurred. Please try again.';
-        }
-
-        // Show an error dialog with a user-friendly message
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Login Error'),
-              content: Text(errorMessage),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } finally {
+  Widget _loginButton() {
+    return ElevatedButton(
+      onPressed: () async {
         setState(() {
-          isLoading = false;
+          isLoading = true;
         });
-      }
-    },
-    style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
-      shape: WidgetStateProperty.all(RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      )),
-      minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
-    ),
-    child: const Text(
-      'Log In',
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 20.0,
-        fontWeight: FontWeight.w900,
-      ),
-    ),
-  );
-}
 
+        try {
+          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: email,
+            password: password,
+          );
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } on FirebaseAuthException catch (e) {
+          String errorMessage;
+
+          switch (e.code) {
+            case 'user-not-found':
+              errorMessage = 'No user found with this email. Please check the email and try again.';
+              break;
+            case 'wrong-password':
+              errorMessage = 'Incorrect password. Please try again.';
+              break;
+            case 'invalid-email':
+              errorMessage = 'The email address is not valid. Please enter a valid email.';
+              break;
+            case 'user-disabled':
+              errorMessage = 'This user account has been disabled. Please contact support.';
+              break;
+            case 'too-many-requests':
+              errorMessage = 'Too many login attempts. Please try again later.';
+              break;
+            default:
+              errorMessage = 'An error occurred. Please try again.';
+          }
+
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Login Error'),
+                content: Text(errorMessage),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } finally {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xfffff5e4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        minimumSize: const Size(double.infinity, 70),
+      ),
+      child: const Text(
+        'Log In',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 20.0,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
 
   Widget _forgotPassButton() {
     return TextButton(
@@ -298,20 +316,29 @@ Widget _loginButton() {
 
   Widget _googleButton() {
     return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          const Placeholder();
-        });
+      onPressed: () async {
+        try {
+          // Sign out the currently signed-in user if any
+          await _googleSignIn.signOut();
+          await signInWithGoogle();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } catch (e) {
+          // Handle errors if necessary
+          print(e);
+        }
       },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xfffff5e4),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-        )),
-        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
+        ),
+        minimumSize: const Size(double.infinity, 70),
       ),
       child: const Text(
-        'Google',
+        'Log In with Google',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -324,19 +351,17 @@ Widget _loginButton() {
   Widget _facebookButton() {
     return ElevatedButton(
       onPressed: () {
-        setState(() {
-          const Placeholder();
-        });
+        // Handle Facebook sign-in here
       },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xfffff5e4),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-        )),
-        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
+        ),
+        minimumSize: const Size(double.infinity, 70),
       ),
       child: const Text(
-        'Facebook',
+        'Log In with Facebook',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -355,12 +380,11 @@ Widget _loginButton() {
         );
       },
       child: const Text(
-        "Create an account",
+        "Don't have an account? Sign up",
         style: TextStyle(
-          color: Color(0xfffff5e4),
-          fontFamily: "Inter Regular",
-          fontSize: 20.0,
-          fontWeight: FontWeight.w300,
+          color: Colors.white,
+          fontSize: 18.0,
+          fontWeight: FontWeight.w100,
         ),
       ),
     );

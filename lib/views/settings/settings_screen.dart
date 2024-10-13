@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authenticatio
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
 import 'package:money_tree/views/start_screens/login_screen.dart';
+
 // CustomSectionTitle widget
 class CustomSectionTitle extends StatelessWidget {
   final String title;
@@ -77,16 +78,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Logout function
   Future<void> _logout(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Login()), // Redirect to login screen after logout
+    // Confirm logout
+    bool confirmLogout = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout Confirmation'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled
+              },
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+            ),
+          ],
+        );
+      },
+    ) ?? false; // Default to false if dialog is dismissed
+
+    if (confirmLogout) {
+      // Show loading indicator
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Center(child: CircularProgressIndicator());
+        },
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout failed. Please try again.')),
-      );
+
+      try {
+        await FirebaseAuth.instance.signOut();
+        Navigator.of(context).pop(); // Close the loading indicator
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Login()), // Redirect to login screen after logout
+        );
+      } catch (e) {
+        Navigator.of(context).pop(); // Close the loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Logout failed. Please try again.')),
+        );
+      }
     }
   }
 

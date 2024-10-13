@@ -39,7 +39,7 @@ class BudgetTracker extends StatelessWidget {
       routes: {
         'get_started_screen.dart': (context) => const GetStarted(),
         '/signup': (context) => const SignUp(),
-        '/login': (context) => Login(),
+        '/login': (context) => const Login(),
         'loading_screen.dart': (context) => const LoadingScreen(),
         '/dashboard': (context) => const Dashboard(),
         '/budget': (context) => const BudgetScreen(),

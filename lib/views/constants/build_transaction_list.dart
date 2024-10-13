@@ -90,7 +90,7 @@ class TransactionList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${formattedDate}',
+                formattedDate,
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: fs * 0.035

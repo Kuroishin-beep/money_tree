@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'package:money_tree/views/transaction_history/history_screen.dart';
-import 'package:money_tree/views/settings/settings_screen.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../../bottom_navigation.dart';
 import '../../fab.dart';

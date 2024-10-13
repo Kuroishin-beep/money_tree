@@ -42,4 +42,14 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+
+        <!-- Permissions for Facebook Login -->
+    <provider
+        android:name="com.facebook.FacebookContentProvider"
+        android:authorities="com.facebook.app.FacebookContentProvider1:1019509459827:android:3eeda9d85d293c2c29d306"
+        android:exported="true"/>
+    
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
+
 </manifest>

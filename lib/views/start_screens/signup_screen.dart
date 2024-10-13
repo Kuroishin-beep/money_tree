@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign-In
 import 'package:money_tree/views/start_screens/ProfileSetupScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -10,6 +12,21 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
+Future<void> loginWithFacebook() async {
+  try {
+    final LoginResult result = await FacebookAuth.instance.login();
+    
+    if (result.status == LoginStatus.success) {
+      // User is logged in
+      final AccessToken? accessToken = result.accessToken;
+      print('Logged in! ${accessToken?.token}');
+    } else {
+      print('Login failed: ${result.status}, ${result.message}');
+    }
+  } catch (e) {
+    print('Error during Facebook login: $e');
+  }
+}
 class _SignUpState extends State<SignUp> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -17,6 +34,7 @@ class _SignUpState extends State<SignUp> {
   
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(); // Initialize Google Sign-In
 
   @override
   void dispose() {
@@ -236,11 +254,11 @@ class _SignUpState extends State<SignUp> {
             // Add other user details as needed
           });
 
-        // After successful sign-up
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileSetupScreen()),
-        );
+          // After successful sign-up
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileSetupScreen()),
+          );
 
         } catch (e) {
           // Handle error
@@ -248,11 +266,11 @@ class _SignUpState extends State<SignUp> {
         }
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+        backgroundColor: MaterialStateProperty.all(const Color(0xfffff5e4)),
+        shape: MaterialStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
+        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 70)),
       ),
       child: const Text(
         'Sign Up',
@@ -283,18 +301,54 @@ class _SignUpState extends State<SignUp> {
 
   Widget _googleButton() {
     return ElevatedButton(
-      onPressed: () {
-        // Google Sign-In logic
+      onPressed: () async {
+        try {
+          // Sign out the currently signed-in user if any
+          await _googleSignIn.signOut();
+
+          // Sign in with Google
+          final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+          if (googleUser != null) {
+            final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+            final credential = GoogleAuthProvider.credential(
+              accessToken: googleAuth.accessToken,
+              idToken: googleAuth.idToken,
+            );
+
+            // Sign in to Firebase
+            UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+            // Check if the user is new or existing
+            if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+              // Add user information to Firestore
+              await _firestore.collection('users').doc(userCredential.user?.uid).set({
+                'email': googleUser.email,
+                // Add other user details as needed
+              });
+            }
+
+            // After successful sign-in
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileSetupScreen()),
+            );
+          }
+        } catch (e) {
+          // Handle error
+          _showErrorDialog(e.toString());
+        }
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(
+        backgroundColor: MaterialStateProperty.all(const Color(0xfffff5e4)),
+        shape: MaterialStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
+        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 70)),
       ),
       child: const Text(
-        'Sign in with Google',
+        'Sign Up with Google',
         style: TextStyle(
           color: Colors.black,
           fontSize: 20.0,
@@ -304,26 +358,62 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _facebookButton() {
-    return ElevatedButton(
-      onPressed: () {
-        // Facebook Sign-In logic
-      },
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
-        shape: WidgetStateProperty.all(RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        )),
-        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
+ Widget _facebookButton() {
+  return ElevatedButton(
+    onPressed: () async {
+      try {
+        // Start the Facebook login process
+        final LoginResult result = await FacebookAuth.instance.login();
+
+        if (result.status == LoginStatus.success) {
+          // Create a credential from the access token
+          final AccessToken accessToken = result.accessToken!;
+
+          // Create a new credential for Firebase
+          final credential = FacebookAuthProvider.credential(accessToken.token);
+
+          // Sign in to Firebase
+          UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+          // Check if the user is new or existing
+          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+            // Add user information to Firestore
+            await _firestore.collection('users').doc(userCredential.user?.uid).set({
+              'email': userCredential.user?.email,
+              // Add other user details as needed
+            });
+          }
+
+          // After successful sign-in
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileSetupScreen()),
+          );
+        } else {
+          // Handle error
+          _showErrorDialog(result.message ?? 'Facebook login failed');
+        }
+      } catch (e) {
+        // Handle error
+        _showErrorDialog(e.toString());
+      }
+    },
+    style: ButtonStyle(
+      backgroundColor: MaterialStateProperty.all(const Color(0xfffff5e4)),
+      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      )),
+      minimumSize: MaterialStateProperty.all(const Size(double.infinity, 70)),
+    ),
+    child: const Text(
+      'Sign Up with Facebook',
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 20.0,
+        fontWeight: FontWeight.w900,
       ),
-      child: const Text(
-        'Sign in with Facebook',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 20.0,
-          fontWeight: FontWeight.w900,
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
+
 }

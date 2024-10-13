@@ -9,6 +9,8 @@ class AccountMobileNoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+
       // Changed the app bar
       appBar: AppBar(
           backgroundColor: const Color(0xffFFF5E4),

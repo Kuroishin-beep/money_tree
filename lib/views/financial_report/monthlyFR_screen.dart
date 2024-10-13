@@ -44,7 +44,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
     double fs = sw;
 
     return Scaffold(
-
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: const Color(0xffFFF8ED),
           title: const Text(

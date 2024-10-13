@@ -42,9 +42,7 @@ class _YearlyReportState extends State<YearlyReport> {
     double fs = sw;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: const Color(0xffFFF8ED),
           title: const Text(
@@ -98,7 +96,6 @@ class _YearlyReportState extends State<YearlyReport> {
               padding: EdgeInsets.symmetric(horizontal: sw * 0.04, vertical: sw * 0.01),
               child: Column(
                 children: [
-                  SizedBox(height: sw * 0.2),
 
                   // CATEGORIES
                   Row(

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../bottom_navigation.dart';
+import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:money_tree/models/tracker_model.dart';
@@ -15,6 +17,9 @@ class ExpensesScreen extends StatefulWidget {
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
+  // call firestore service
+  final FirestoreService firestoreService = FirestoreService();
+
   String month = 'September';
 
   List<Tracker> trackerData = [
@@ -34,6 +39,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     double fs = sw;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: const Color(0xffFBC29C),
           title: const Text(
@@ -117,14 +123,55 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
                     SizedBox(height: sw * 0.04),
 
-                    // List of income
-                    Column(
-                      children: trackerData.map((track) {
-                        return TransactionList(track: track);
-                      }).toList(),
-                    ),
+                    // List of Expenses from Firestore
+                    StreamBuilder<QuerySnapshot>(
+                      stream: firestoreService.getTracksStream(),
+                      builder: (context, snapshot) {
+                        // If encountered an error...
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        }
 
+                        // If there are no transactions available
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('No transactions found.'));
+                        }
 
+                        // Filter the documents to only include those with 'expenses' type
+                        final filteredDocs = snapshot.data!.docs.where((doc) {
+                          return doc['type'] == 'expenses';
+                        }).toList();
+
+                        // If no expense transactions exist
+                        if (filteredDocs.isEmpty) {
+                          return const Center(child: Text('No transactions found.'));
+                        }
+
+                        return Column(
+                          children: filteredDocs.map((doc) {
+                            // Convert each document to Tracker class model
+                            final track = Tracker(
+                              name: doc['name'],
+                              category: doc['category'],
+                              account: doc['account'],
+                              amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
+                              type: doc['type'],
+                              date: (doc['date'] as Timestamp).toDate(),
+                              icon: doc['icon'],
+                            );
+
+                            // Format the date to display only the date portion
+                            String formattedDate = DateFormat('MMMM d, y').format(track.date!);
+
+                            return TransactionList(
+                              track: track,
+                              formattedDate: formattedDate,
+                              docID: doc.id,
+                            );
+                          }).toList(),
+                        );
+                      },
+                    )
                   ],
                 ),
               )

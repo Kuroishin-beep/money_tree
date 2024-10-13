@@ -380,6 +380,7 @@ class _SignUpState extends State<SignUp> {
             // Add user information to Firestore
             await _firestore.collection('users').doc(userCredential.user?.uid).set({
               'email': userCredential.user?.email,
+              'name': userCredential.user?.displayName,
               // Add other user details as needed
             });
           }
@@ -415,5 +416,6 @@ class _SignUpState extends State<SignUp> {
     ),
   );
 }
+
 
 }

@@ -16,3 +16,4 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+implementation 'com.facebook.android:facebook-android-sdk:[8,9)'

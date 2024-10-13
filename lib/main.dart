@@ -18,6 +18,7 @@ import 'views/start_screens/loading_screen.dart';
 import 'views/account_details/account_name_screen.dart';
 import 'views/account_details/account_screen.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

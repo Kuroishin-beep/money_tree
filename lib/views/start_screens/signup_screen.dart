@@ -266,11 +266,11 @@ class _SignUpState extends State<SignUp> {
         }
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(const Color(0xfffff5e4)),
-        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
       child: const Text(
         'Sign Up',
@@ -341,11 +341,11 @@ class _SignUpState extends State<SignUp> {
         }
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(const Color(0xfffff5e4)),
-        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+        backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
+        shape: WidgetStateProperty.all(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         )),
-        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 70)),
+        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
       ),
       child: const Text(
         'Sign Up with Google',
@@ -400,11 +400,11 @@ class _SignUpState extends State<SignUp> {
       }
     },
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(const Color(0xfffff5e4)),
-      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+      backgroundColor: WidgetStateProperty.all(const Color(0xfffff5e4)),
+      shape: WidgetStateProperty.all(RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       )),
-      minimumSize: MaterialStateProperty.all(const Size(double.infinity, 70)),
+      minimumSize: WidgetStateProperty.all(const Size(double.infinity, 70)),
     ),
     child: const Text(
       'Sign Up with Facebook',

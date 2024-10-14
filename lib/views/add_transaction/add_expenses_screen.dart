@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:money_tree/controller/tracker_controller.dart';

@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
-import 'package:flutter_iconpicker/Models/icon_picker_icon.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 import '../../bottom_navigation.dart';

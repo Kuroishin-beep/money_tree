@@ -21,27 +21,40 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
+  
 
   String? _userName = '';
+  String? _profileImage; // Variable to store profile image URL
 
   @override
   void initState() {
     super.initState();
-    _getUserName();
+    _getUserNameAndProfileImage();
+    
   }
 
-  // Get user name
-  Future<void> _getUserName() async {
+    // Get user name and profile image
+  Future<void> _getUserNameAndProfileImage() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      DocumentSnapshot userData = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      
-      setState(() {
-        _userName = userData['firstName']; // Assuming firstName is stored in Firestore
-      });
+      // Check if the user is authenticated with Google
+      if (user.photoURL != null) {
+        setState(() {
+          _profileImage = user.photoURL; // Use the Google profile image
+          _userName = user.displayName ?? 'User'; // Use display name if available
+        });
+      } else {
+        // If not using Google account, retrieve from Firestore
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          _profileImage = userData['profileImage']; // Get profile image URL from Firestore
+          _userName = userData['firstName']; // Assuming firstName is stored in Firestore
+        });
+      }
     }
   }
 
@@ -209,7 +222,9 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           child: CircleAvatar(
                             radius: sw * 0.12,
-                            backgroundImage: const AssetImage('lib/images/pfp.jpg'),
+                            backgroundImage: _profileImage != null 
+                              ? NetworkImage(_profileImage!) // Use NetworkImage for the URL from Firestore
+                              : const AssetImage('lib/images/pfp.jpg') as ImageProvider, // Fallback image
                           ),
                         ),
                       )

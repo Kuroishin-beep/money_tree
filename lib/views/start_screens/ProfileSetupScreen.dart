@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import 'ImagePickerService.dart'; // Import the ImagePickerService
-
+import 'ImagePickerService.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -47,57 +47,73 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   }
 
   void _submit() async {
-  final user = _auth.currentUser;
+    final user = _auth.currentUser;
 
-  if (user != null) {
-    String firstName = _firstNameController.text.trim();
-    String lastName = _lastNameController.text.trim();
-    String email = user.email ?? '';
-    String birthday = _selectedBirthday != null 
-      ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!) 
-      : '';
+    if (user != null) {
+      String firstName = _firstNameController.text.trim();
+      String lastName = _lastNameController.text.trim();
+      String email = user.email ?? '';
+      String birthday = _selectedBirthday != null
+          ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!)
+          : '';
 
-    // Reference to the user's document
-    DocumentReference userDocRef = _firestore.collection('users').doc(user.uid);
+      DocumentReference userDocRef = _firestore.collection('users').doc(user.uid);
 
-    try {
-      // Check if the document exists
-      DocumentSnapshot docSnapshot = await userDocRef.get();
+      try {
+        String? imageUrl;
+        if (_profileImage != null) {
+          imageUrl = await _uploadImage(); // Upload and get URL
+        }
 
-      if (docSnapshot.exists) {
-        // If the document exists, update it
-        await userDocRef.update({
-          'firstName': firstName,
-          'lastName': lastName,
-          'birthday': birthday,
-          'profileImage': _profileImage != null ? await _uploadImage() : null,
-        });
-      } else {
-        // If the document does not exist, create it
-        await userDocRef.set({
-          'firstName': firstName,
-          'lastName': lastName,
-          'birthday': birthday,
-          'profileImage': _profileImage != null ? await _uploadImage() : null,
-          'email': email, // Include email or any other fields you need
-        });
+        DocumentSnapshot docSnapshot = await userDocRef.get();
+
+        if (docSnapshot.exists) {
+          await userDocRef.update({
+            'firstName': firstName,
+            'lastName': lastName,
+            'birthday': birthday,
+            'profileImage': imageUrl,
+          });
+        } else {
+          await userDocRef.set({
+            'firstName': firstName,
+            'lastName': lastName,
+            'birthday': birthday,
+            'profileImage': imageUrl,
+            'email': email,
+          });
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
+      } catch (e) {
+        print("Error updating user document: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to update profile: $e")),
+        );
       }
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Dashboard()), // Replace with your Dashboard widget
-      );
-    } catch (e) {
-      print("Error updating user document: $e");
-      // Handle any errors here (e.g., show a snackbar or dialog)
     }
   }
-}
-
 
   Future<String?> _uploadImage() async {
-    // Implement image upload to Firebase Storage and return the URL
-    return 'url_to_uploaded_image';
+    if (_profileImage == null) return null;
+
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      String filePath = 'profile_images/${_auth.currentUser!.uid}.png';
+
+      TaskSnapshot snapshot = await storage.ref(filePath).putFile(_profileImage!);
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Image upload failed: $e")),
+      );
+      return null;
+    }
   }
 
   @override
@@ -121,39 +137,34 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: sw * 0.05),
-
-            // Profile Picture
             Center(
               child: GestureDetector(
-                onTap: _showImageSourceSelection, // Use the new method
+                onTap: _showImageSourceSelection,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                  child: _profileImage == null ? const Icon(Icons.add_a_photo, size: 40) : null,
+                  backgroundImage:
+                      _profileImage != null ? FileImage(_profileImage!) : null,
+                  child: _profileImage == null
+                      ? const Icon(Icons.add_a_photo, size: 40)
+                      : null,
                 ),
               ),
             ),
             SizedBox(height: sw * 0.05),
-
-            // First Name
             const Text('First Name', style: TextStyle(fontSize: 18)),
             TextField(controller: _firstNameController),
-
             SizedBox(height: sw * 0.02),
-
-            // Last Name
             const Text('Last Name', style: TextStyle(fontSize: 18)),
             TextField(controller: _lastNameController),
-
             SizedBox(height: sw * 0.02),
-
-            // Birthday
             const Text('Birthday', style: TextStyle(fontSize: 18)),
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    _selectedBirthday != null ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!) : 'Select your birthday',
+                    _selectedBirthday != null
+                        ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!)
+                        : 'Select your birthday',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -163,23 +174,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 ),
               ],
             ),
-
             SizedBox(height: sw * 0.05),
-
-            // Confirm Email
             const Text('Confirm Email', style: TextStyle(fontSize: 18)),
             Text(
               _auth.currentUser?.email ?? '',
               style: const TextStyle(fontSize: 16),
             ),
-
             SizedBox(height: sw * 0.05),
-
-            // Submit Button
             ElevatedButton(
               onPressed: _submit,
               style: ButtonStyle(
-                minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+                minimumSize:
+                    MaterialStateProperty.all(const Size(double.infinity, 50)),
               ),
               child: const Text('Proceed to Dashboard'),
             ),
@@ -189,6 +195,3 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     );
   }
 }
-
-
-

@@ -1,4 +1,4 @@
-implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
+
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration

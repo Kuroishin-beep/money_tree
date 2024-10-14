@@ -293,26 +293,98 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _forgotPassButton() {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          const Placeholder();
-        });
-      },
-      child: const Text(
-        "Forgot your password?",
-        style: TextStyle(
-          color: Colors.white,
-          fontFamily: "Inter Regular",
-          fontSize: 20.0,
-          fontWeight: FontWeight.w300,
-          decoration: TextDecoration.underline,
-          decorationColor: Colors.white,
-        ),
+ Widget _forgotPassButton() {
+  return TextButton(
+    onPressed: () async {
+      if (email.isEmpty) {
+        // Show error if the email field is empty
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Please enter your email address.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        try {
+          // Send password reset email using Firebase Auth
+          await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+          // Show success message
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Password Reset'),
+                content: Text(
+                    'A password reset link has been sent to $email. Please check your inbox.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } on FirebaseAuthException catch (e) {
+          String errorMessage;
+          switch (e.code) {
+            case 'invalid-email':
+              errorMessage = 'The email address is not valid.';
+              break;
+            case 'user-not-found':
+              errorMessage = 'No user found with this email.';
+              break;
+            default:
+              errorMessage = 'An error occurred. Please try again.';
+          }
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: Text(errorMessage),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    },
+    child: const Text(
+      "Forgot your password?",
+      style: TextStyle(
+        color: Colors.white,
+        fontFamily: "Inter Regular",
+        fontSize: 20.0,
+        fontWeight: FontWeight.w300,
+        decoration: TextDecoration.underline,
+        decorationColor: Colors.white,
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   Widget _googleButton() {
     return ElevatedButton(

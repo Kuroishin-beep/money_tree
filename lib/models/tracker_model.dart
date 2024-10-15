@@ -8,16 +8,22 @@ class Tracker {
   final String type;        // identify if expenses or income
   final DateTime? date;
   final int? icon;
+  final double budget_amount;
+  final double savings_amount;
+  final double total_budgetamount;
 
 
   Tracker({
-    required this.name,
+    this.name = '',
     this.category = '',
     this.account = '',
-    required this.amount,
-    required this.type,
+    this.amount = 0,
+    this.type ='',
     this.date,
     this.icon,
+    this.budget_amount = 0,
+    this.savings_amount = 0,
+    this.total_budgetamount = 0,
   });
 
 

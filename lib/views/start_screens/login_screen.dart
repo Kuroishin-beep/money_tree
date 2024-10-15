@@ -104,9 +104,9 @@ class _LoginState extends State<Login> {
 
               // Login Button
               Container(
-                child: isLoading
-                    ? const LoadingScreen()
-                    : _loginButton(),
+                child: _loginButton()
+                    // ? const LoadingScreen()
+                    // : _loginButton(),
               ),
 
               SizedBox(height: sw * 0.05),

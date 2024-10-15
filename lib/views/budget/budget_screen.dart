@@ -1,39 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:money_tree/models/tracker_model.dart';
+import 'package:money_tree/views/constants/build_budgetsavings.dart';
 import '../../bottom_navigation.dart';
+import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 // For Cupertino icon pack
 
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
 
+
   @override
   State<BudgetScreen> createState() => _BudgetScreenState();
 }
 
 class _BudgetScreenState extends State<BudgetScreen> {
+  final FirestoreService firestoreService = FirestoreService();
 
-  Icon? _icon;
+  final String docID = '';
 
-  // Icon picker method
-  _pickIcon() async {
-    IconPickerIcon? icon = await showIconPicker(
-      context,
-      configuration: SinglePickerConfiguration(
-        iconPackModes: [IconPack.cupertino],  // Specify the icon pack you want
-      ),
-    );
-
-    if (icon != null) {
-      _icon = Icon(icon.data);
-      setState(() {});
-    }
-  }
 
 
   List<Map<String, dynamic>> expenseCategories = [
@@ -50,8 +41,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
     {"title": "GROCERIES", "amount": 637, "budget": 1500},
   ];
 
+  TextEditingController amountController = TextEditingController();
+  TextEditingController budgetController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  int _icon =  0 ;
+
+
   // Instance of the model to use for icons
-  final Tracker track = Tracker(name: '', amount: 0, type: 'income');
+  final Tracker track = Tracker(name: '', budget_amount: 0, type: 'income', savings_amount: 0, amount: 0 );
 
   double totalSavings = 4500; // Example total savings amount
   double totalBudget = 5000; // Example total budget for expenses
@@ -60,6 +57,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: const Color(0xffFBC29C),
           title: const Text(
@@ -133,16 +131,73 @@ class _BudgetScreenState extends State<BudgetScreen> {
                   const SizedBox(height: 3),
                   _buildBudgetSummaryCard(),
                   const SizedBox(height: 3),
-                  _buildBudgetCategoryList("EXPENSES", expenseCategories, true),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: firestoreService.getTracksStream(),
+                    builder: (context, snapshot) {
+                      // If encountered an error...
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      // If there are no transactions available
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(child: Text('No transactions found.'));
+                      }
+
+                      // Filter the documents to only include those with 'income' type
+                      // final filteredDocs = snapshot.data!.docs.where((doc) {
+                      //   return doc['category'] != 'NULL';
+                      // }).toList();
+                      //
+                      // // If no income transactions exist
+                      // if (filteredDocs.isEmpty) {
+                      //   return const Center(child: Text('No transactions found.'));
+                      // }
+
+                      return Column(
+                        children: snapshot.data!.docs.map((doc) {
+                          // Convert each document to Tracker class model
+                          final track = Tracker(
+                            category: doc['category'],
+                            budget_amount: doc['budget_amount'],
+                            total_budgetamount: doc['total_budgetamount'],
+                            icon: doc['icon'],
+                          );
+
+
+                          return BuildBudgetlist(
+                            budget: track,
+                            docID: doc.id,
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                        onPressed:()  {
+                          _showAddCategoryDialog();
+                        },
+                        child: Text('Add')),
+                  ),
+                  //_buildBudgetCategoryList("EXPENSES", expenseCategories, true),
                   const SizedBox(height: 64),
                   _buildSavingsSummaryCard(),
                   const SizedBox(height: 3),
-                  _buildBudgetCategoryList("INCOME", incomeCategories, false),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                        onPressed:() {
+                          _showAddCategoryDialog();
+                        },
+                        child: Text('Add')),
+                  ),
+                  //_buildBudgetCategoryList("INCOME", incomeCategories, false),
                 ],
               ),
             ),
-          ),
-        ],
+          ),],
       ),
 
       // Navigation bar
@@ -161,59 +216,13 @@ class _BudgetScreenState extends State<BudgetScreen> {
     );
   }
 
-  // TODO: turn this widget into another dart file to be called by other screens
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(70),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: MediaQuery.of(context).size.width / 2,
-              height: 50,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFBC29C),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Center(
-                child: Text(
-                  "BUDGET",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFFFFF),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 10,
-            left: 10,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Color(0xffE63636)),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          const Positioned(
-            top: 10,
-            right: 10,
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage("lib/images/pfp.jpg"),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
 
   // changed the color of linear progress indicator
   // Build the Budget Summary Card
   Widget _buildBudgetSummaryCard() {
-    double spentAmount = expenseCategories.fold(0, (sum, category) => sum + category["amount"]);
+    double spentAmount = expenseCategories
+        .where((category) => category['category'] != 'NULL')
+        .fold(0, (sum, category) => sum + category["amount"]);
     double progress = spentAmount / totalBudget;
 
     return Card(
@@ -282,133 +291,159 @@ class _BudgetScreenState extends State<BudgetScreen> {
     );
   }
 
-  // Build the Budget Category List
-  Widget _buildBudgetCategoryList(String title, List<Map<String, dynamic>> categories, bool isExpense) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  // // Build the Budget Category List
+  // Widget _buildBudgetCategoryList(String title, List<Map<String, dynamic>> categories, bool isExpense) {
+  //   List<Map<String, dynamic>> filteredCategories = categories
+  //       .where((category) => category['category'] != 'NULL')
+  //       .toList();
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+  //       const SizedBox(height: 8),
+  //       ...categories.map((category) => _buildCategoryCard(category)),
+  //       TextButton(
+  //         onPressed: () => _showAddCategoryDialog(isExpense),
+  //         child: const Text("Add Card", style: TextStyle(color: Color(0xffFE5D26), fontSize: 16)),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+
+
+
+
+
+
+// Function to build month divider
+  Widget _buildMonthDivider() {
+    return Row(
       children: [
-        Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        ...categories.map((category) => _buildCategoryCard(category)),
-        TextButton(
-          onPressed: () => _showAddCategoryDialog(isExpense),
-          child: const Text("Add Card", style: TextStyle(color: Color(0xffFE5D26), fontSize: 16)),
+        const Expanded(
+          child: Divider(thickness: 1.5, color: Colors.black54),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            _getCurrentMonth().toUpperCase(),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+          ),
+        ),
+        const Expanded(
+          child: Divider(thickness: 1.5, color: Colors.black54),
         ),
       ],
     );
   }
 
-  // added a circle background container
-  // Build each category card
-  Widget _buildCategoryCard(Map<String, dynamic> category) {
-    double sw = MediaQuery.of(context).size.width;
 
-    return GestureDetector(
-      onLongPress: () {
-        _showDeleteConfirmationDialog(category);
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 3,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  // Circle with icon
-                  Container(
-                    width: sw * 0.1,
-                    height: sw * 0.1,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xffA78062),  // Circle color
-                    ),
-                    child: Center(
-                      // Use the saved IconData to display the icon
-                      child: category.containsKey("icon")
-                          ? Icon(
-                        category["icon"],  // Access the saved IconData
-                        size: 30,
-                        color: Colors.white,  // Icon color
-                      )
-                          : const SizedBox(),  // Placeholder if no icon is selected
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Title of the category
-                  Text(
-                    category["title"],
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text("\$${category["amount"]}", style: const TextStyle(fontSize: 16)),
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      _showEditCategoryDialog(category);
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+  // Get current month as a string
+  String _getCurrentMonth() {
+    return DateFormat('MMMM').format(DateTime.now());
+  }
+
+  Icon? selected_icon;
+  IconData? selectedIconData;
+
+  // Icon picker method
+  _pickIcon() async {
+    IconPickerIcon? icon = await showIconPicker(
+      context,
+      configuration: SinglePickerConfiguration(
+        iconPackModes: [IconPack.material],  // Specify the icon pack you want
       ),
     );
+
+    if (icon != null) {
+      setState(() {
+        selectedIconData = icon.data;
+        selected_icon = Icon(icon.data);
+
+        _icon = selectedIconData!.codePoint;
+        // fontFamily = _selectedIconData!.fontFamily;
+      });
+    }
   }
 
-  // Show dialog to delete category
-  void _showDeleteConfirmationDialog(Map<String, dynamic> category) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Delete Category"),
-          content: Text("Are you sure you want to delete ${category["title"]}?"),
-          actions: [
-            TextButton(
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-            ),
-            TextButton(
-              child: const Text("Confirm"),
-              onPressed: () {
-                setState(() {
-                  // Remove the category from the list (Implement logic as per your needs)
-                  expenseCategories.remove(category); // Remove from expenseCategories or incomeCategories
-                  // Update your state
-                });
-                Navigator.of(context).pop(); // Dismiss the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+  // Show dialog to edit a category
+  // void _showEditCategoryDialog(BuildContext context) {
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text("EDIT TRANSACTION",
+  //           textAlign: TextAlign.center,
+  //           style: const TextStyle(
+  //             color: Color(0xffFBC29C),
+  //             fontFamily: 'Inter Regular',
+  //             fontWeight: FontWeight.w800,
+  //           ),
+  //         ),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             TextField(
+  //               controller: amountController,
+  //               decoration: const InputDecoration(labelText: "Amount"),
+  //               keyboardType: TextInputType.number,
+  //             ),
+  //             TextField(
+  //               controller: budgetController,
+  //               decoration: const InputDecoration(labelText: "Budget"),
+  //               keyboardType: TextInputType.number,
+  //             ),
+  //             const SizedBox(height: 10),
+  //             // Icon Picker Button
+  //             TextButton.icon(
+  //               icon: Icon(selectedIconData ?? Icons.add_circle_outline),
+  //               label: const Text("Pick Icon"),
+  //               onPressed: () {
+  //                 _pickIcon();  // Use the provided _pickIcon method
+  //               },
+  //             )
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: const Text("Cancel"),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text("Save"),
+  //             onPressed: () async {
+  //               Tracker newTrack = Tracker(
+  //                   category: titleController.text,
+  //                   savings_amount: double.parse(amountController.text),
+  //                   total_budgetamount: double.parse(budgetController.text)
+  //               );
+  //
+  //               await firestoreService.updateTrack(docID, newTrack);
+  //
+  //               amountController.clear();
+  //               budgetController.clear();
+  //
+  //               Navigator.pop(context);
+  //
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
   // Show dialog to add a new category
-  void _showAddCategoryDialog(bool isExpense) {
-    TextEditingController titleController = TextEditingController();
-    TextEditingController amountController = TextEditingController();
-    TextEditingController budgetController = TextEditingController();
-    _icon = null;  // Reset the icon for each new category
+  void _showAddCategoryDialog() {
+     // Reset the icon for each new category
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(isExpense ? "Add Expense" : "Add Income"),
+          title: Text("Add Transaction"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -429,14 +464,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
               const SizedBox(height: 10),
               // Icon Picker Button
               TextButton.icon(
-                icon: const Icon(Icons.add_circle_outline),
+                icon: Icon(selectedIconData ?? Icons.add_circle_outline),
                 label: const Text("Pick Icon"),
                 onPressed: () {
                   _pickIcon();  // Use the provided _pickIcon method
                 },
-              ),
-              // Display selected icon
-              _icon != null ? _icon! : const SizedBox(),
+              )
             ],
           ),
           actions: [
@@ -448,106 +481,23 @@ class _BudgetScreenState extends State<BudgetScreen> {
             ),
             TextButton(
               child: const Text("Add"),
-              onPressed: () {
-                setState(() {
-                  Map<String, dynamic> newCategory = {
-                    "title": titleController.text,
-                    "amount": double.parse(amountController.text),
-                    "budget": double.parse(budgetController.text),
-                    "icon": _icon?.icon,  // Save the selected icon
-                  };
-                  if (isExpense) {
-                    expenseCategories.add(newCategory);
-                  } else {
-                    incomeCategories.add(newCategory);
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+                onPressed:() async {
+                  Tracker newTrack = Tracker(
+                      category: titleController.text,
+                      savings_amount: double.parse(amountController.text),
+                      total_budgetamount: double.parse(budgetController.text)
+                  );
 
-  // Show dialog to edit a category
-  void _showEditCategoryDialog(Map<String, dynamic> category) {
-    TextEditingController amountController = TextEditingController(text: category["amount"].toString());
-    TextEditingController budgetController = TextEditingController(text: category["budget"].toString());
-    _icon = category.containsKey('icon') ? Icon(category["icon"]) : null;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("EDIT ${category["title"]}",
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xffFBC29C),
-              fontFamily: 'Inter Regular',
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: amountController,
-                decoration: const InputDecoration(labelText: "Amount"),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: budgetController,
-                decoration: const InputDecoration(labelText: "Budget"),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 10),
-              // Icon Picker Button
-              TextButton.icon(
-                icon: const Icon(Icons.add_circle_outline),
-                label: const Text("Pick Icon"),
-                onPressed: () {
-                  _pickIcon();  // Use the provided _pickIcon method
+                  await firestoreService.addTrack(newTrack);
                 },
-              ),
-              // Display selected icon
-              _icon != null ? _icon! : const SizedBox(),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text("Save"),
-              onPressed: () {
-                setState(() {
-                  category["amount"] = double.parse(amountController.text);
-                  category["budget"] = double.parse(budgetController.text);
-                  if (_icon != null) {
-                    category["icon"] = _icon?.icon;  // Save updated icon
-                  }
-                });
-                Navigator.of(context).pop();
-              },
             ),
           ],
         );
       },
     );
-  }
-
-
-
-
-  // Get current month as a string
-  String _getCurrentMonth() {
-    return DateFormat('MMMM').format(DateTime.now());
   }
 }
+
+
 
 

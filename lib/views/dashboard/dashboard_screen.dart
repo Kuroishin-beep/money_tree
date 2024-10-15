@@ -33,7 +33,7 @@ class _DashboardState extends State<Dashboard> {
     
   }
 
-    // Get user name and profile image
+  // Get user name and profile image
   Future<void> _getUserNameAndProfileImage() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {

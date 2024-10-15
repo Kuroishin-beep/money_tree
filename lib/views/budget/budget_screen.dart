@@ -26,7 +26,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
   final String docID = '';
 
 
-
   List<Map<String, dynamic>> expenseCategories = [
     {"title": "SCHOOL", "amount": 100, "budget": 500},
     {"title": "CAR", "amount": 467, "budget": 500},

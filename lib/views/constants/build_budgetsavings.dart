@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:money_tree/models/tracker_model.dart';
 
 import '../../controller/tracker_controller.dart';
 import '../edit_transaction/edit_category.dart';
 
-class BuildBudgetlist extends StatefulWidget {
+class BuildBudgetlist extends StatelessWidget {
   final Tracker budget;
   final String docID;
 
@@ -15,74 +16,73 @@ class BuildBudgetlist extends StatefulWidget {
   });
 
   @override
-  _BuildBudgetlistState createState() => _BuildBudgetlistState();
-}
-
-class _BuildBudgetlistState extends State<BuildBudgetlist> {
-  bool isDeleted = false; // Track if this specific category is deleted
-
-  @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
-
+    
+    final formatter = NumberFormat('#,###.00');
 
     return GestureDetector(
       onLongPress: () {
-        _showDeleteConfirmationDialog(context, widget.budget.category);
+        _showDeleteConfirmationDialog(context, docID);
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
-        elevation: 3,
-        child: ListTile(
-          leading: Container(
-            width: sw * 0.1,
-            height: sw * 0.1,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xffA78062), // Circle color
-            ),
-            child: Center(
-              child: widget.budget.icon != null
-                  ? Icon(
-                IconData(
-                  widget.budget.icon!,
-                  fontFamily: 'MaterialIcons',
-                ),
-                color: const Color(0xffF4A26B),
-              )
-                  : const Icon(
-                Icons.category, // Fallback icon if no icon is selected
-                color: Color(0xffF4A26B),
+        elevation: 5,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            leading: Container(
+              width: sw * 0.12,
+              height: sw * 0.12,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xffA78062),
+              ),
+              child: Center(
+                child: budget.icon != null
+                    ? Icon(
+                        IconData(
+                            budget.icon!,
+                            fontFamily: 'MaterialIcons'
+                        ),
+                        color: Colors.white,
+                        size: 30,
+                      )
+                    : const Icon(
+                        Icons.category,
+                        color: Colors.white,
+                        size: 30,
+                      ),
               ),
             ),
-          ),
-          title: Text(
-            widget.budget.category,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+            title: Text(
+              budget.category,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
             ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Php ${widget.budget.total_budgetamount ?? 0} of Php ${widget.budget.budget_amount ?? 0}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+            subtitle: Text(
+              '₱ ${formatter.format(budget.budget_amount) ?? 0} of ₱ ${formatter.format(budget.total_budgetamount) ?? 0}',
+              style: const TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 16,
               ),
-              IconButton(
-                icon: const Icon(Icons.edit, color: Colors.grey),
-                onPressed: () {
-                  EditCategoryDialog(docID: widget.docID); // Call edit dialog
-                },
-              ),
-            ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.edit, color: Colors.grey, size: 28),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return EditCategoryDialog(docID: docID);
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),

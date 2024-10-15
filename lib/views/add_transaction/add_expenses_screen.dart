@@ -337,6 +337,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
             borderSide: BorderSide.none
         ),
       ),
+      keyboardType: TextInputType.number,
     );
   }
 

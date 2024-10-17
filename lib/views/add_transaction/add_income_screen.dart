@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tree/views/add_transaction/add_expenses_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
@@ -20,11 +21,16 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
   // Variable to hold the selected account & default category
   String selectedAccount = '';
 
+  // for icons
+  IconData? _selectedIconData;
+  int code = 0;
+
 
   // text field controllers
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+
 
 
   // Select date function
@@ -369,6 +375,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
       onPressed: () {
         setState(() {
           selectedAccount = 'CASH';
+          _selectedIconData = Icons.attach_money_rounded;
         });
       },
       style: ElevatedButton.styleFrom(
@@ -390,6 +397,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
       onPressed: () {
         setState(() {
           selectedAccount = 'CARD';
+          _selectedIconData = Icons.credit_card;
         });
       },
       style: ElevatedButton.styleFrom(
@@ -411,6 +419,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
       onPressed: () {
         setState(() {
           selectedAccount = 'GCASH';
+          _selectedIconData = Icons.money_rounded;
         });
       },
       style: ElevatedButton.styleFrom(
@@ -430,7 +439,22 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
   Widget _confirmButton(double sw, double fs) {
     return ElevatedButton(
       onPressed: () async {
+        if (_amountController.text.isEmpty ||
+            _nameController.text.isEmpty ||
+            _dateController.text.isEmpty ||
+            selectedAccount.isEmpty) {
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please fill all fields before proceeding.'),
+              //backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         DateTime selectedDate = DateTime.parse(_dateController.text);
+        code = _selectedIconData!.codePoint;
 
         Tracker newTrack = Tracker(
             name: _nameController.text,
@@ -439,14 +463,19 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
             amount: double.parse(_amountController.text),
             type: 'income',
             date: selectedDate,
-            icon: 0
+            icon: code
         );
 
-        await firestoreService.addTrack(newTrack);
+        await firestoreService.addIncome(newTrack);
 
         _amountController.clear();
         _nameController.clear();
         _dateController.clear();
+
+        setState(() {
+          selectedAccount = '';
+          _selectedIconData = null;
+        });
 
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const Dashboard()));

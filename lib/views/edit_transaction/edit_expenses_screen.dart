@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -60,6 +62,72 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+
+  // get current user
+  User? user = FirebaseAuth.instance.currentUser;
+
+  // for popup menu
+  List<String> predefinedValues = [];
+  String selectedValue = '';
+
+  // for fetching category
+  String? fetchCategory= '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+    fetchExistingCategories();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      // Fetch categories from the Firestore categories collection
+      QuerySnapshot categorySnapshot = await FirebaseFirestore.instance
+          .collection('categories')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      List<String> categoryTempList = [];
+
+      // Collect category names
+      for (var doc in categorySnapshot.docs) {
+        // Assuming categoriesArray is an array of strings
+        if (doc['categoriesArray'] is List) {
+          List<String> categories = List<String>.from(doc['categoriesArray']);
+          categoryTempList.addAll(categories); // Append categories to the list
+        } else {
+          print('Error: categoriesArray is not a list for document ID: ${doc.id}');
+        }
+      }
+
+      // Update state with fetched categories
+      setState(() {
+        predefinedValues = categoryTempList; // Assign the list of categories to predefinedValues
+      });
+
+      print('Fetched categories: $predefinedValues'); // Debug print to see fetched categories
+    } catch (e) {
+      print('Error fetching categories: $e');
+    }
+  }
+
+  List<String> existingCategories = [];
+
+  Future<void> fetchExistingCategories() async {
+    try {
+      QuerySnapshot categorySnapshot = await FirebaseFirestore.instance.collection('categories').get();
+      existingCategories.clear();
+
+      for (var doc in categorySnapshot.docs) {
+        // Assuming categoriesArray is an array of strings in your Firestore
+        List<String> categories = List<String>.from(doc['categoriesArray']);
+        existingCategories.addAll(categories);
+      }
+    } catch (e) {
+      print('Error fetching categories: $e');
+    }
+  }
 
 
   // Select date function
@@ -381,40 +449,50 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
       child: TextField(
         controller: _categoryController,
         style: TextStyle(
-            fontSize: fs * 0.05,
-            fontWeight: FontWeight.w700
+          fontSize: fs * 0.05,
+          fontWeight: FontWeight.w700,
         ),
         decoration: InputDecoration(
-
           labelText: 'Category',
           labelStyle: TextStyle(
-              fontSize: fs * 0.05,
-              color: Colors.grey
+            fontSize: fs * 0.05,
+            color: Colors.grey,
           ),
-
-          // for picking icons
+          suffixIcon: PopupMenuButton<String>(
+            icon: Icon(Icons.arrow_drop_down, color: Color(0xffA0A0DE)),
+            onSelected: (String value) {
+              setState(() {
+                selectedValue = value;
+                _categoryController.text = value;
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              if (predefinedValues.isEmpty) {
+                return [
+                  const PopupMenuItem<String>(
+                    enabled: false,
+                    child: Text('No Categories'),
+                  ),
+                ];
+              }
+              return predefinedValues.map((String value) {
+                return PopupMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList();
+            },
+          ),
           prefixIcon: IconButton(
             onPressed: () async {
-              _selectedCategory = _categoryController.text;
-
-              if (_selectedCategory.isNotEmpty) {
-                _pickIcon();
-              } else {
-                // Show a message if the category field is empty
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a category')),
-                );
-              }
+              _pickIcon();
             },
-            icon: _icon != null
-                ? _icon!
-                : Icon(
-              Icons.add_circle_outlined,
-              size: 30,
-              color: Color(0xff9A9BEB),
+            icon: Icon(
+              _selectedIconData ?? Icons.add_circle_outline,
+              size: 40,
+              color: const Color(0xffA0A0DE),
             ),
           ),
-
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.4),
@@ -498,12 +576,34 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
   Widget _confirmButton(double sw, double fs) {
     return ElevatedButton(
       onPressed: () async {
+        if (_amountController.text.isEmpty ||
+            _nameController.text.isEmpty ||
+            _dateController.text.isEmpty ||
+            selectedAccount.isEmpty) {
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please fill all fields before proceeding.'),
+              //backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        } else if (_selectedIconData == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please pick an icon before proceeding.'),
+              //backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         DateTime selectedDate = DateTime.parse(_dateController.text);
 
 
         Tracker newTrack = Tracker(
           name: _nameController.text,
-          category: _selectedCategory,
+          category: _categoryController.text ?? selectedValue,
           account: selectedAccount,
           amount: double.parse(_amountController.text),
           type: 'expenses',
@@ -511,7 +611,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
           icon: code,
         );
 
-        await firestoreService.updateTrack(widget.docID, newTrack);
+        await firestoreService.updateExpense(widget.docID, newTrack);
 
         _amountController.clear();
         _nameController.clear();

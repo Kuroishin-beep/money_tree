@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
+import '../account_details/account_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import '../constants/build_transaction_list.dart';
@@ -50,10 +51,19 @@ class _IncomeScreenState extends State<IncomeScreen> {
           ),
         ),
         centerTitle: true,
-        actions: const [
-          CircleAvatar(
-            backgroundImage: AssetImage('lib/images/pfp.jpg'),
-            radius: 20,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AccountScreen()),
+              );
+            },
+            child: CircleAvatar(
+              backgroundImage: AssetImage(
+                  'lib/images/pfp.jpg'),
+              radius: 20,
+            ),
           ),
           SizedBox(width: 16),
         ],
@@ -120,7 +130,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
 
                   // List of Income from Firestore
                   StreamBuilder<QuerySnapshot>(
-                    stream: firestoreService.getTracksStream(),
+                    stream: firestoreService.getIncomeStream(),
                     builder: (context, snapshot) {
                       // If encountered an error...
                       if (snapshot.hasError) {
@@ -152,6 +162,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                             amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
                             type: doc['type'],
                             date: (doc['date'] as Timestamp).toDate(),
+                            icon: doc['icon']
                           );
 
                           // Format the date to display only the date portion

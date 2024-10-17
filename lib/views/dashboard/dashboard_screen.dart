@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:money_tree/models/tracker_model.dart';
@@ -7,6 +9,7 @@ import 'package:money_tree/views/budget/budget_screen.dart';
 import 'package:money_tree/views/income/income_screen.dart';
 import 'package:money_tree/views/expenses/expenses_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
@@ -21,17 +24,136 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
-  
 
-  String? _userName = '';
-  String? _profileImage; // Variable to store profile image URL
+  // get current user
+  User? user = FirebaseAuth.instance.currentUser;
+
+  // for calculations
+  double? totalIncome = 0;
+  double? totalExpenses = 0;
+  double? balance = 0;
+  double? totalCash = 0;
+  double? totalCard = 0;
+  double? totalGCash = 0;
+  double? totalBudget = 0;
+  double? totalSavings = 0;
+  double? budgetAmount = 0;
+  double? savingsAmount = 0;
+
 
   @override
   void initState() {
     super.initState();
+    fetchData();
     _getUserNameAndProfileImage();
-    
   }
+
+  Future<void> fetchData() async {
+    try {
+      QuerySnapshot incomeSnapshot = await FirebaseFirestore.instance
+          .collection('incomes')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      QuerySnapshot expenseSnapshot = await FirebaseFirestore.instance
+          .collection('expenses')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      QuerySnapshot budgetSnapshot = await FirebaseFirestore.instance
+          .collection('budgets')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      QuerySnapshot savingsSnapshot = await FirebaseFirestore.instance
+          .collection('savings')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      double totalIncomeTemp = 0;
+      double totalExpensesTemp = 0;
+      double incomeCashTemp = 0;
+      double incomeCardTemp = 0;
+      double incomeGCashTemp = 0;
+      double expenseCashTemp = 0;
+      double expenseCardTemp = 0;
+      double expenseGCashTemp = 0;
+      double totalBudgetTemp = 0;
+      double totalSavingsTemp = 0;
+      double budgetTemp = 0;
+      double savingsTemp = 0;
+
+
+      // Calculate total income
+      if (incomeSnapshot.docs.isNotEmpty) {
+        for (var doc in incomeSnapshot.docs) {
+          totalIncomeTemp += doc['amount'];
+
+          if (doc['account'] == 'CASH') {
+            incomeCashTemp += doc['amount'];
+          } else if (doc['account'] == 'CARD') {
+            incomeCardTemp += doc['amount'];
+          } else if (doc['account'] == 'GCASH') {
+            incomeGCashTemp += doc['amount'];
+          }
+        }
+      }
+
+      // Calculate total expenses
+      if (expenseSnapshot.docs.isNotEmpty) {
+        for (var doc in expenseSnapshot.docs) {
+          totalExpensesTemp += doc['amount'];
+
+          if (doc['account'] == 'CASH') {
+            expenseCashTemp += doc['amount'];
+          } else if (doc['account'] == 'CARD') {
+            expenseCardTemp += doc['amount'];
+          } else if (doc['account'] == 'GCASH') {
+            expenseGCashTemp += doc['amount'];
+          }
+        }
+      }
+
+      // Calculate total budget
+      if (budgetSnapshot.docs.isNotEmpty) {
+        for (var doc in budgetSnapshot.docs) {
+          totalBudgetTemp += doc['totalBudgetAmount'];
+          budgetTemp += doc['budgetAmount'];
+        }
+      }
+
+      // Calculate total savings
+      if (savingsSnapshot.docs.isNotEmpty) {
+        for (var doc in savingsSnapshot.docs) {
+          totalSavingsTemp += doc['totalSavingsAmount'];
+          savingsTemp += doc['savingsAmount'];
+        }
+      }
+
+      // Update state with totals
+      setState(() {
+        totalIncome = totalIncomeTemp;
+        totalExpenses = totalExpensesTemp;
+        balance = totalIncome! - totalExpenses!;
+
+        totalCash = incomeCashTemp - expenseCashTemp;
+        totalCard = incomeCardTemp - expenseCardTemp;
+        totalGCash = incomeGCashTemp - expenseGCashTemp;
+
+        totalBudget = totalBudgetTemp;
+        totalSavings = totalSavingsTemp;
+        budgetAmount = budgetTemp;
+        savingsAmount = savingsTemp;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+
+  String? _userName = '';
+  String? _profileImage;
+
 
   // Get user name and profile image
   Future<void> _getUserNameAndProfileImage() async {
@@ -61,80 +183,6 @@ class _DashboardState extends State<Dashboard> {
   // Number format
   final NumberFormat formatter = NumberFormat('#,###.##');
 
-  // variables for income & expenses
-  double _totalIncome = 0;
-  double _totalExpenses = 0;
-
-  // variables for CASH, CARD, GCASH
-  double _totalCash = 0;
-  double _totalCard = 0;
-  double _totalGCash = 0;
-
-  // calculate totals
-  // TODO: Fix the total Cash, Card, and Gcash
-  void _calculateTotals(List<QueryDocumentSnapshot> docs) {
-
-    double totalCashExpenses = 0;
-    double totalCardExpenses = 0;
-    double totalGCashExpenses = 0;
-
-    for (var doc in docs) {
-      final track = Tracker(
-        name: doc['name'],
-        category: doc['category'],
-        account: doc['account'],
-        amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
-        type: doc['type'],
-        date: (doc['date'] as Timestamp).toDate(),
-      );
-
-      // Update total income and expenses
-      if (track.type == 'income') {
-        _totalIncome += track.amount;
-      } else if (track.type == 'expenses') {
-        _totalExpenses += track.amount;
-      }
-
-      // Update totals based on account type
-      if (track.account == 'CASH') {
-        _totalCash += track.amount; // For income or expenses
-      } else if (track.account == 'CARD') {
-        _totalCard += track.amount; // For income or expenses
-      } else if (track.account == 'GCASH') {
-        _totalGCash += track.amount; // For income or expenses
-      }
-
-      // Accumulate expenses based on account type
-      if (track.type == 'expenses') {
-        if (track.account == 'CASH') {
-          totalCashExpenses += track.amount;
-        } else if (track.account == 'CARD') {
-          totalCardExpenses += track.amount;
-        } else if (track.account == 'GCASH') {
-          totalGCashExpenses += track.amount;
-        }
-      }
-
-      // Perform the subtraction after all expenses have been totaled
-      _totalCash = _totalCash - totalCashExpenses;
-      _totalCard = _totalCard - totalCardExpenses;
-      _totalGCash = _totalGCash - totalGCashExpenses;
-    }
-
-    // Debugging output
-    print('Total Cash after expenses: $_totalCash');
-    print('Total Card after expenses: $_totalCard');
-    print('Total GCash after expenses: $_totalGCash');
-
-  }
-
-
-  // GET: Balance
-  double _getBalance() {
-    double balance = 0;
-     balance = _totalIncome - _totalExpenses;
-    return balance;
-  }
 
   // Get current month as a string
   String _getCurrentMonth() {
@@ -277,12 +325,12 @@ class _DashboardState extends State<Dashboard> {
                               children: [
 
                                 // Income Section
-                                _incomeBox(_totalIncome),
+                                _incomeBox(totalIncome!),
 
                                 SizedBox(height: sw * 0.03),
 
                                 // Expenses Section
-                                _expensesBox(_totalExpenses)
+                                _expensesBox(totalExpenses!)
                               ],
                             )
                         ),
@@ -388,7 +436,7 @@ class _DashboardState extends State<Dashboard> {
                         Container(
                           alignment: Alignment.topRight,
                           child: Text(
-                            '₱${formatter.format(_getBalance())}',
+                            '₱${formatter.format(balance!)}',
                             style: TextStyle(
                                 color: const Color(0xffFFF5E4),
                                 fontFamily: 'Inter Regular',
@@ -430,7 +478,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
 
                           Text(
-                            '₱${formatter.format(_totalCash)}',
+                            '₱${formatter.format(totalCash)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
                                 color: const Color(0xffFFF5E4),
@@ -464,7 +512,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
 
                           Text(
-                            '₱${formatter.format(_totalCard)}',
+                            '₱${formatter.format(totalCard)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
                                 color: const Color(0xffFFF5E4),
@@ -498,7 +546,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
 
                           Text(
-                            '₱${formatter.format(_totalGCash)}',
+                            '₱${formatter.format(totalGCash)}',
                             style: TextStyle(
                                 fontSize: fs * 0.038,
                                 color: const Color(0xffFFF5E4),
@@ -798,8 +846,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _budgetBox() {
-    double progress = 5000 /
-        10000; // Ensure the progress is within a reasonable range (between 0 and 1)
+    double progress = budgetAmount! / totalBudget!;
     double sw = MediaQuery
         .of(context)
         .size
@@ -944,19 +991,44 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
 
-            // Create the List Using Column
-            StreamBuilder<QuerySnapshot>(
-              stream: firestoreService.getTracksStream(),
+
+
+            StreamBuilder<List<QuerySnapshot>>(
+              stream: CombineLatestStream.list([
+                firestoreService.getExpenseStream(),
+                firestoreService.getIncomeStream(),
+              ]),
               builder: (context, snapshot) {
-                // Check for errors and empty data
-                if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) return Center(child: Text('No transactions found.'));
+                // Check for errors
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                // Check if the data is available and contains documents
+                if (!snapshot.hasData ||
+                    (snapshot.data![0].docs.isEmpty && snapshot.data![1].docs.isEmpty)) {
+                  return Center(child: Text('No transactions found.'));
+                }
+
+                // Combine documents from both streams
+                var docs = [...snapshot.data![0].docs, ...snapshot.data![1].docs];
+
+                // Sort the combined documents by date in descending order (newest first)
+                docs.sort((a, b) {
+                  final dateA = (a['date'] as Timestamp).toDate();
+                  final dateB = (b['date'] as Timestamp).toDate();
+                  return dateB.compareTo(dateA); // Sort by date descending
+                });
+
+                // Limit to the latest 5 transactions
+                var limitedDocs = docs.take(5).toList();
 
                 // Calculate income and expenses here
-                _calculateTotals(snapshot.data!.docs);
+                //_calculateTotals(limitedDocs);
 
+                // Display the sorted and limited list
                 return Column(
-                  children: snapshot.data!.docs.map((doc) {
+                  children: limitedDocs.map((doc) {
                     // Convert each document to Tracker class model
                     final track = Tracker(
                       name: doc['name'],
@@ -965,7 +1037,7 @@ class _DashboardState extends State<Dashboard> {
                       amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
                       type: doc['type'],
                       date: (doc['date'] as Timestamp).toDate(),
-                      icon: doc['icon'], // Retrieve icon using getIconFromString
+                      icon: doc['icon'], // Retrieve icon if necessary
                     );
 
                     // Format the date
@@ -979,7 +1051,9 @@ class _DashboardState extends State<Dashboard> {
                   }).toList(),
                 );
               },
-            )
+            ),
+
+
 
 
           ],

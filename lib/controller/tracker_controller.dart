@@ -6,23 +6,27 @@ class FirestoreService {
   // get current user
   User? user = FirebaseAuth.instance.currentUser;
 
-  // get collection of tracks
+  // Collections
   final CollectionReference tracks = FirebaseFirestore.instance.collection('tracks');
-  final CollectionReference income = FirebaseFirestore.instance.collection('income');
+  final CollectionReference incomes = FirebaseFirestore.instance.collection('incomes');
   final CollectionReference expenses = FirebaseFirestore.instance.collection('expenses');
+  final CollectionReference budgets = FirebaseFirestore.instance.collection('budgets');
+  final CollectionReference savings = FirebaseFirestore.instance.collection('savings');
+  final CollectionReference categories = FirebaseFirestore.instance.collection('categories');
 
-  // CREATE: add new income, expenses, budget, and savings
+
+  // CREATE: add new income, expenses, budget, savings, and calculations
   // FOR INCOME
   Future<void> addIncome(Tracker income) {
-    return income.add({
+    return incomes.add({
       'UserEmail': user!.email,
       'name': income.name,
       'category': income.category,
       'account': income.account,
       'amount': income.amount,
-      'type': income.type,         // also for budget and savings
+      'type': income.type,
       'date': income.date,
-      'icon': income.icon,
+      'icon': income.icon
     });
   }
   // FOR EXPENSE
@@ -33,78 +37,89 @@ class FirestoreService {
       'category': expense.category,
       'account': expense.account,
       'amount': expense.amount,
-      'type': expense.type,         // also for budget and savings
+      'type': expense.type,
       'date': expense.date,
       'icon': expense.icon,
     });
   }
-
-
-  Future<void> addTrack(Tracker track) {
-    return tracks.add({
+  // FOR BUDGET
+  Future<void> addBudget(Tracker budget) {
+    return budgets.add({
       'UserEmail': user!.email,
-
-      // INCOME AND EXPENSES
-      'name': track.name,
-      'category': track.category,
-      'account': track.account,
-      'amount': track.amount,
-      'type': track.type,         // also for budget and savings
-      'date': track.date,
-      'icon': track.icon,
-
-      // BUDGET AND SAVINGS
-      'budget_amount': track.budget_amount,
-      'savings_amount': track.savings_amount,
-      'total_budgetamount': track.total_budgetamount,
-      'total_savaingsamount': track.total_savingsamount,
-
-      // CALCULATIONS
-      'balance': track.balance,
-      'totalCash': track.totalCash,
-      'totalCard': track.totalCard,
-      'totalGCash': track.totalGCash
+      'category': budget.category,
+      'budgetAmount': budget.budgetAmount,
+      'totalBudgetAmount': budget.totalBudgetAmount,
+      'type': budget.type,
+      'icon': budget.icon
+    });
+  }
+  // FOR SAVINGS
+  Future<void> addSavings(Tracker save) {
+    return savings.add({
+      'UserEmail': user!.email,
+      'category': save.category,
+      'savingsAmount': save.savingsAmount,
+      'totalSavingsAmount': save.totalSavingsAmount,
+      'type': save.type,
+      'icon': save.icon
     });
   }
 
+
+  // FOR CATEGORIES: Accepting a list (array in Dart) and storing it in Firestore
+  Future<void> addCategory(List<String> categoriesList) async {
+    await FirebaseFirestore.instance.collection('categories').add({
+      'UserEmail': user!.email,
+      'categoriesArray': categoriesList,
+    });
+  }
+
+  Future<void> updateCategory(String docId, List<String> categoriesList) async {
+    await FirebaseFirestore.instance.collection('categories').doc(docId).set({
+      'categoriesArray': categoriesList,
+    });
+  }
 
 
 
 
 
   // READ: get data from database
-  Stream<QuerySnapshot> getTracksStream() {
-    final tracksStream = tracks.orderBy('date', descending: true).snapshots();
-
-    return tracksStream;
+  //FOR INCOME
+  Stream<QuerySnapshot> getIncomeStream() {
+    return incomes
+        .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+        .snapshots();
   }
-
-
-
-
-
-  // Stream<QuerySnapshot> getTracksStream() {
-  //   // Ensure user is logged in
-  //   if (user == null) {
-  //     throw Exception("User not logged in");
-  //   }
-  //
-  //   // Filter tracks by the current user's email
-  //   final tracksStream = tracks
-  //       .where('UserEmail', isEqualTo: user!.email)  // Only fetch tracks for the current user
-  //       .orderBy('date', descending: true).snapshots();
-  //
-  //   return tracksStream;
-  // }
-
-  // Stream<QuerySnapshot> getTracksStream() {
-  //   final tracksStream = FirebaseFirestore.instance.collection('tracks')
-  //       .orderBy('date', descending: true)
+  //FOR Expenses
+  Stream<QuerySnapshot> getExpenseStream() {
+    return expenses
+        .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+        .snapshots();
+  }
+  //FOR BUDGET
+  Stream<QuerySnapshot> getBudgetStream() {
+    return budgets
+        .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+        .snapshots();
+  }
+  //FOR SAVINGS
+  Stream<QuerySnapshot> getSavingsStream() {
+    return savings
+        .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+        .snapshots();
+  }
+  // //FOR CALCULATIONS
+  // Stream<QuerySnapshot> getCalculateStream() {
+  //   return calculations
+  //       .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
   //       .snapshots();
-  //
-  //   return tracksStream;
   // }
 
+
+
+
+  // FIXME: Do not delete yet
   Future<DocumentSnapshot> getExpenseById(String docID) async {
     return await FirebaseFirestore.instance.collection('your_collection_name').doc(docID).get();
   }
@@ -113,39 +128,12 @@ class FirestoreService {
 
 
 
-
-
-
-
   // UPDATE: edit income, expenses, budget, and savings
-  // Future<void> updateTrack(String docID, Tracker newTrack) {
-  //   return tracks.doc(docID).update({
-  //     // INCOME AND EXPENSES
-  //     'name': newTrack.name,
-  //     'category': newTrack.category,
-  //     'account': newTrack.account,
-  //     'amount': newTrack.amount,
-  //     'type': newTrack.type,    // also for budget and savings
-  //     'date': newTrack.date,
-  //     'icon': newTrack.icon,
-  //
-  //     // BUDGET AND SAVINGS
-  //     'budget_amount': newTrack.budget_amount,
-  //     'savings_amount': newTrack.savings_amount,
-  //     'total_budgetamount': newTrack.total_budgetamount,
-  //     'total_savaingsamount': newTrack.total_savingsamount,
-  //
-  //     // CALCULATIONS
-  //     'balance': newTrack.balance,
-  //     'totalCash': newTrack.totalCash,
-  //     'totalCard': newTrack.totalCard,
-  //     'totalGCash': newTrack.totalGCash
-  //   });
-  // }
 
-  Future<void> updateTrack(String docID, Tracker newTrack) async {
+  // FOR INCOME
+  Future<void> updateIncome(String docID, Tracker newIncome) async {
     try {
-      DocumentSnapshot existingDoc = await tracks.doc(docID).get();
+      DocumentSnapshot existingDoc = await incomes.doc(docID).get();
 
       if (!existingDoc.exists) {
         throw Exception("Document does not exist");
@@ -153,64 +141,231 @@ class FirestoreService {
 
       Map<String, dynamic> updates = {};
 
-      // Updating fields only if they have valid new value different from null or, for strings, not empty.
-      if (newTrack.name != null && newTrack.name.isNotEmpty) {
-        updates['name'] = newTrack.name;
+      if (newIncome.name != null) {
+        updates['name'] = newIncome.name;
       }
-      if (newTrack.category != null && newTrack.category.isNotEmpty) {
-        updates['category'] = newTrack.category;
+      if (newIncome.category != null) {
+        updates['category'] = newIncome.category;
       }
-      if (newTrack.account != null && newTrack.account.isNotEmpty) {
-        updates['account'] = newTrack.account;
+      if (newIncome.account != null) {
+        updates['account'] = newIncome.account;
       }
-      if (newTrack.amount != null && newTrack.amount != 0) {
-        updates['amount'] = newTrack.amount;
+      if (newIncome.amount != null && newIncome.amount != 0) {
+        updates['amount'] = newIncome.amount;
       }
-      if (newTrack.type != null && newTrack.type.isNotEmpty) {
-        updates['type'] = newTrack.type;
+      if (newIncome.type != null) {
+        updates['type'] = newIncome.type;
       }
-      if (newTrack.date != null) {
-        updates['date'] = newTrack.date;
+      if (newIncome.date != null) {
+        updates['date'] = newIncome.date;
       }
-      if (newTrack.icon != 0) {
-        updates['icon'] = newTrack.icon;
-      }
-      if (newTrack.budget_amount != null && newTrack.budget_amount != 0) {
-        updates['budget_amount'] = newTrack.budget_amount;
-      }
-      if (newTrack.savings_amount != null && newTrack.savings_amount != 0) {
-        updates['savings_amount'] = newTrack.savings_amount;
-      }
-      if (newTrack.total_budgetamount != null && newTrack.total_budgetamount != 0) {
-        updates['total_budgetamount'] = newTrack.total_budgetamount;
-      }
-      if (newTrack.total_savingsamount != null && newTrack.total_savingsamount !=0) {
-        updates['total_savaingsamount'] = newTrack.total_savingsamount;
-      }
-      if (newTrack.balance != null) {
-        updates['balance'] = newTrack.balance;
-      }
-      if (newTrack.totalCash != null) {
-        updates['totalCash'] = newTrack.totalCash;
-      }
-      if (newTrack.totalCard != null) {
-        updates['totalCard'] = newTrack.totalCard;
-      }
-      if (newTrack.totalGCash != null) {
-        updates['totalGCash'] = newTrack.totalGCash;
+      if (newIncome.icon != 0) {
+        updates['icon'] = newIncome.icon;
       }
 
-      return tracks.doc(docID).update(updates);
+      return incomes.doc(docID).update(updates);
     } catch (e) {
-      print("Error updating track: $e");
+      print("Error updating expense: $e");
     }
   }
+
+  // FOR EXPENSE
+  Future<void> updateExpense(String docID, Tracker newExpense) async {
+    try {
+      DocumentSnapshot existingDoc = await expenses.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+      if (newExpense.name != null) {
+        updates['name'] = newExpense.name;
+      }
+      if (newExpense.category != null) {
+        updates['category'] = newExpense.category;
+      }
+      if (newExpense.account != null) {
+        updates['account'] = newExpense.account;
+      }
+      if (newExpense.amount != null && newExpense.amount != 0) {
+        updates['amount'] = newExpense.amount;
+      }
+      if (newExpense.type != null) {
+        updates['type'] = newExpense.type;
+      }
+      if (newExpense.date != null) {
+        updates['date'] = newExpense.date;
+      }
+      if (newExpense.icon != 0) {
+        updates['icon'] = newExpense.icon;
+      }
+
+      return expenses.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating expense: $e");
+    }
+  }
+
+  // FOR BUDGET
+  Future<void> updateBudget(String docID, Tracker newBudget) async {
+    try {
+      DocumentSnapshot existingDoc = await budgets.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+      // if (newBudget.category != null) {
+      //   updates['category'] = newBudget.category;
+      // }
+      if (newBudget.budgetAmount != null && newBudget.budgetAmount != 0) {
+        updates['budgetAmount'] = newBudget.budgetAmount;
+      }
+      if (newBudget.totalBudgetAmount != null && newBudget.totalBudgetAmount != 0) {
+        updates['totalBudgetAmount'] = newBudget.totalBudgetAmount;
+      }
+      if (newBudget.type != null) {
+        updates['type'] = newBudget.type;
+      }
+      if (newBudget.icon != null) {
+        updates['icon'] = newBudget.icon;
+      }
+
+      return budgets.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating budget: $e");
+    }
+  }
+
+// FOR SAVINGS
+  Future<void> updateSavings(String docID, Tracker newSavings) async {
+    try {
+      DocumentSnapshot existingDoc = await savings.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+
+      if (newSavings.savingsAmount != null && newSavings.savingsAmount != 0) {
+        updates['savingsAmount'] = newSavings.savingsAmount;
+      }
+      if (newSavings.totalSavingsAmount != null && newSavings.totalSavingsAmount != 0) {
+        updates['totalSavingsAmount'] = newSavings.totalSavingsAmount;
+      }
+      if (newSavings.type != null) {
+        updates['type'] = newSavings.type;
+      }
+      if (newSavings.icon != null) {
+        updates['icon'] = newSavings.icon;
+      }
+
+      return savings.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating savings: $e");
+    }
+  }
+
+// // FOR CALCULATIONS
+//   Future<void> updateCalculation(String docID, Tracker newCalc) async {
+//     try {
+//       DocumentSnapshot existingDoc = await calculations.doc(docID).get();
+//
+//       if (!existingDoc.exists) {
+//         throw Exception("Document does not exist");
+//       }
+//
+//       Map<String, dynamic> updates = {};
+//
+//       if (newCalc.balance != null) {
+//         updates['balance'] = newCalc.balance;
+//       }
+//       if (newCalc.totalCash != null) {
+//         updates['totalCash'] = newCalc.totalCash;
+//       }
+//       if (newCalc.totalCard != null) {
+//         updates['totalCard'] = newCalc.totalCard;
+//       }
+//       if (newCalc.totalGCash != null) {
+//         updates['totalGCash'] = newCalc.totalGCash;
+//       }
+//
+//       return calculations.doc(docID).update(updates);
+//     } catch (e) {
+//       print("Error updating calculation: $e");
+//     }
+//   }
 
 
 
 
   // DELETE: delete transactions
-  Future<void> deleteTrack(String docID) {
-    return tracks.doc(docID).delete();
+  // FOR INCOME
+  Future<void> deleteIncome(String docID) async {
+    try {
+      await incomes.doc(docID).delete();
+      print("Income document with ID: $docID deleted successfully.");
+    } catch (e) {
+      print("Error deleting income document: $e");
+    }
   }
+  // FOR EXPENSE
+  Future<void> deleteExpense(String docID) async {
+    try {
+      await expenses.doc(docID).delete();
+      print("Expense document with ID: $docID deleted successfully.");
+    } catch (e) {
+      print("Error deleting expense document: $e");
+    }
+  }
+  // FOR BUDGET
+  Future<void> deleteBudget(String docID) async {
+    try {
+      await budgets.doc(docID).delete();
+      print("Budget document with ID: $docID deleted successfully.");
+    } catch (e) {
+      print("Error deleting budget document: $e");
+    }
+  }
+  //  FIXME: Cannot perform delete category yet
+  // FOR SAVINGS
+  Future<void> deleteSavings(String docID) async {
+    try {
+      await savings.doc(docID).delete();
+      print("Savings document with ID: $docID deleted successfully.");
+    } catch (e) {
+      print("Error deleting savings document: $e");
+    }
+  }
+  // FOR CATEGORIES
+  Future<void> deleteCategory(String docID) async {
+    try {
+      await categories.doc(docID).delete();
+      print("Category document with ID: $docID deleted successfully.");
+    } catch (e) {
+      print("Error deleting category document: $e");
+    }
+  }
+
+
+// // FOR CALCULATION
+  // Future<void> deleteCalculation(String docID) async {
+  //   try {
+  //     await calculations.doc(docID).delete();
+  //     print("Calculation document with ID: $docID deleted successfully.");
+  //   } catch (e) {
+  //     print("Error deleting calculation document: $e");
+  //   }
+  // }
+
+
+
+
+
 }

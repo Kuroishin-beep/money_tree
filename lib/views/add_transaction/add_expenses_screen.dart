@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:money_tree/controller/tracker_controller.dart';
@@ -16,18 +18,92 @@ class NewExpenseScreen extends StatefulWidget {
 }
 
 class _NewExpenseScreenState extends State<NewExpenseScreen> {
+
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
+
+  // text field controllers
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+
+  // get current user
+  User? user = FirebaseAuth.instance.currentUser;
+
+  // for popup menu
+  List<String> predefinedValues = [];
+  String selectedValue = '';
+
+  // for fetching category
+  String? fetchCategory= '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+    fetchExistingCategories();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      // Fetch categories from the Firestore categories collection
+      QuerySnapshot categorySnapshot = await FirebaseFirestore.instance
+          .collection('categories')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      List<String> categoryTempList = [];
+
+      // Collect category names
+      for (var doc in categorySnapshot.docs) {
+        // Assuming categoriesArray is an array of strings
+        if (doc['categoriesArray'] is List) {
+          List<String> categories = List<String>.from(doc['categoriesArray']);
+          categoryTempList.addAll(categories); // Append categories to the list
+        } else {
+          print('Error: categoriesArray is not a list for document ID: ${doc.id}');
+        }
+      }
+
+      // Update state with fetched categories
+      setState(() {
+        predefinedValues = categoryTempList; // Assign the list of categories to predefinedValues
+      });
+
+      print('Fetched categories: $predefinedValues'); // Debug print to see fetched categories
+    } catch (e) {
+      print('Error fetching categories: $e');
+    }
+  }
+
+  List<String> existingCategories = [];
+
+  Future<void> fetchExistingCategories() async {
+    try {
+      QuerySnapshot categorySnapshot = await FirebaseFirestore.instance.collection('categories').get();
+      existingCategories.clear();
+
+      for (var doc in categorySnapshot.docs) {
+        // Assuming categoriesArray is an array of strings in your Firestore
+        List<String> categories = List<String>.from(doc['categoriesArray']);
+        existingCategories.addAll(categories);
+      }
+    } catch (e) {
+      print('Error fetching categories: $e');
+    }
+  }
+
 
   // Variable to hold the selected account
   String selectedAccount = '';
 
+
   // for Icon picker
   Icon? _icon;
   IconData? _selectedIconData;
-  String _selectedCategory = '';
   int code = 0;
-  // String? fontFamily;
+
 
   // Icon picker function
   _pickIcon() async {
@@ -52,12 +128,6 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
       });
     }
   }
-
-  // text field controllers
-  final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
 
   // Select date function
   Future<void> _selectDate() async {
@@ -272,11 +342,11 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
 
                       SizedBox(height: sw * 0.1),
 
-                      // From which category
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
-                      ),
+                      // // From which category
+                      // const Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text('From category', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 17)),
+                      // ),
 
                       // Category Buttons
                       _addCategory(sw, fs),
@@ -289,7 +359,9 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
                         children: [
                           _confirmButton(sw, fs)
                         ],
-                      )
+                      ),
+
+
 
 
                     ],
@@ -426,39 +498,50 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
       child: TextField(
         controller: _categoryController,
         style: TextStyle(
-            fontSize: fs * 0.05,
-            fontWeight: FontWeight.w700
+          fontSize: fs * 0.05,
+          fontWeight: FontWeight.w700,
         ),
         decoration: InputDecoration(
           labelText: 'Category',
           labelStyle: TextStyle(
-              fontSize: fs * 0.05,
-              color: Colors.grey
+            fontSize: fs * 0.05,
+            color: Colors.grey,
           ),
-
-          // for picking icons
+          suffixIcon: PopupMenuButton<String>(
+            icon: Icon(Icons.arrow_drop_down),
+            onSelected: (String value) {
+              setState(() {
+                selectedValue = value;
+                _categoryController.text = value;
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              if (predefinedValues.isEmpty) {
+                return [
+                  const PopupMenuItem<String>(
+                    enabled: false,
+                    child: Text('No Categories'),
+                  ),
+                ];
+              }
+              return predefinedValues.map((String value) {
+                return PopupMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList();
+            },
+          ),
           prefixIcon: IconButton(
             onPressed: () async {
-              _selectedCategory = _categoryController.text;
-
-              if (_selectedCategory.isNotEmpty) {
-                _pickIcon();
-              } else {
-                // Show a message if the category field is empty
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a category')),
-                );
-              }
+              _pickIcon();
             },
-            icon: _icon != null
-                ? _icon!
-                : Icon(
-              Icons.add_circle_outlined,
-              size: 30,
-              color: Color(0xffF4A26B),
+            icon: Icon(
+              _selectedIconData ?? Icons.add_circle_outline,
+              size: 40,
+              color: const Color(0xffF4A26B),
             ),
           ),
-
           enabledBorder: UnderlineInputBorder(
             borderSide: BorderSide(
               color: Colors.grey.withOpacity(0.4),
@@ -475,6 +558,8 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
       ),
     );
   }
+
+
 
   Widget _fromCashButton(double sw, double fs) {
     return ElevatedButton(
@@ -542,12 +627,31 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
   Widget _confirmButton(double sw, double fs) {
     return ElevatedButton(
       onPressed: () async {
-        DateTime selectedDate = DateTime.parse(_dateController.text);
+        if (_amountController.text.isEmpty ||
+            _categoryController.text.isEmpty ||
+            _nameController.text.isEmpty ||
+            _dateController.text.isEmpty ||
+            selectedAccount.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please fill all fields before proceeding.'),
+            ),
+          );
+          return;
+        } else if (_selectedIconData == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please pick an icon before proceeding.'),
+            ),
+          );
+          return;
+        }
 
+        DateTime selectedDate = DateTime.parse(_dateController.text);
 
         Tracker newTrack = Tracker(
           name: _nameController.text,
-          category: _selectedCategory,
+          category: _categoryController.text ?? selectedValue,
           account: selectedAccount,
           amount: double.parse(_amountController.text),
           type: 'expenses',
@@ -555,8 +659,16 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
           icon: code,
         );
 
+        await firestoreService.addExpense(newTrack);
 
-        await firestoreService.addTrack(newTrack);
+        String category = _categoryController.text.toUpperCase(); // Use uppercase for uniformity
+
+        // Check if category already exists
+        if (!existingCategories.contains(category)) {
+          List<String> categories = [category];
+          await firestoreService.addCategory(categories);
+          existingCategories.add(category); // Add to the local list
+        }
 
         _amountController.clear();
         _nameController.clear();
@@ -567,7 +679,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
             context, MaterialPageRoute(builder: (context) => const Dashboard()));
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFAF3E0),
+        backgroundColor: const Color(0xFFFFEACA),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -575,7 +687,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
       ),
       child: Text(
         'CONFIRM',
-        style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87, fontSize: sw * 0.05),
+        style: TextStyle(fontWeight: FontWeight.w700, color: Colors.black87, fontSize: sw * 0.05),
       ),
     );
   }

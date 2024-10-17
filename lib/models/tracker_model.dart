@@ -11,10 +11,10 @@ class Tracker {
   final int? icon;                    // icon code
 
   // BUDGET AND SAVINGS
-  final double budget_amount;         // amount for budget
-  final double savings_amount;        // amount for savings
-  final double total_budgetamount;    // total budget amount
-  final double total_savingsamount;   // total savings amount
+  final double budgetAmount;         // amount for budget
+  final double savingsAmount;        // amount for savings
+  final double totalBudgetAmount;    // total budget amount
+  final double totalSavingsAmount;   // total savings amount
 
   // CALCULATIONS
   final double balance;               // current balance
@@ -28,25 +28,17 @@ class Tracker {
     this.category = '',
     this.account = '',
     this.amount = 0,
-    this.type ='',
+    this.type = '',
     this.date,
     this.icon,
-    this.budget_amount = 0,
-    this.savings_amount = 0,
-    this.total_budgetamount = 0,
-    this.total_savingsamount = 0,
+    this.budgetAmount = 0,
+    this.savingsAmount = 0,
+    this.totalBudgetAmount = 0,
+    this.totalSavingsAmount = 0,
     this.balance = 0,
     this.totalCash = 0,
     this.totalCard = 0,
     this.totalGCash = 0
   });
-
-
-  // ICONS FOR ACCOUNTS
-  static Map<String, IconData> accountIcons = {
-    "CASH": Icons.attach_money_rounded,
-    "CARD": Icons.credit_card,
-    "GCASH": Icons.money_rounded,
-  };
 
 }

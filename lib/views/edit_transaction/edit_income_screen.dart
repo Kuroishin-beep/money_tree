@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
@@ -21,6 +22,10 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   // Variable to hold the selected account & default category
   String selectedAccount = '';
 
+  // for icons
+  IconData? _selectedIconData;
+  int code = 0;
+
 
   // text field controllers
   final TextEditingController _amountController = TextEditingController();
@@ -29,20 +34,24 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
 
 
   // Select date function
+  DateTime? _selectedDate;
+
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100)
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
 
-    if(picked != null) {
+    if (picked != null) {
       setState(() {
-        _dateController.text = picked.toString().split(" ")[0];
+        _selectedDate = picked;
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
+
 
 
   @override
@@ -340,6 +349,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
       onPressed: () {
         setState(() {
           selectedAccount = 'CASH';
+          _selectedIconData = Icons.attach_money_rounded;
         });
       },
       style: ElevatedButton.styleFrom(
@@ -361,6 +371,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
       onPressed: () {
         setState(() {
           selectedAccount = 'CARD';
+          _selectedIconData = Icons.credit_card;
         });
       },
       style: ElevatedButton.styleFrom(
@@ -382,6 +393,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
       onPressed: () {
         setState(() {
           selectedAccount = 'GCASH';
+          _selectedIconData = Icons.money_rounded;
         });
       },
       style: ElevatedButton.styleFrom(
@@ -401,7 +413,10 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   Widget _confirmButton(double sw, double fs) {
     return ElevatedButton(
       onPressed: () async {
+
+
         DateTime selectedDate = DateTime.parse(_dateController.text);
+        code = _selectedIconData!.codePoint;
 
         Tracker newTrack = Tracker(
           name: _nameController.text,
@@ -409,10 +424,11 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
           account: selectedAccount,
           amount: double.parse(_amountController.text),
           type: 'income',
-          date: selectedDate,
+          date: _selectedDate,
+          icon: code
         );
 
-        await firestoreService.updateTrack(widget.docID, newTrack);
+        await firestoreService.updateIncome(widget.docID, newTrack);
 
         _amountController.clear();
         _nameController.clear();

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tree/models/tracker_model.dart';
-
+import 'package:money_tree/views/edit_transaction/edit_savings_popupscreen.dart';
 import '../../controller/tracker_controller.dart';
-import '../edit_transaction/edit_category.dart';
+import '../edit_transaction/edit_budget_popupscreen.dart';
 
-class BuildBudgetlist extends StatelessWidget {
+class BuildBudgetSavelist extends StatelessWidget {
   final Tracker budget;
   final String docID;
 
-  const BuildBudgetlist({
+  const BuildBudgetSavelist({
     super.key,
     required this.budget,
     required this.docID,
@@ -26,7 +26,7 @@ class BuildBudgetlist extends StatelessWidget {
         _showDeleteConfirmationDialog(context, docID);
       },
       child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        margin: const EdgeInsets.symmetric(vertical: 5.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -42,20 +42,14 @@ class BuildBudgetlist extends StatelessWidget {
                 color: Color(0xffA78062),
               ),
               child: Center(
-                child: budget.icon != null
-                    ? Icon(
-                        IconData(
-                            budget.icon!,
-                            fontFamily: 'MaterialIcons'
-                        ),
-                        color: Colors.white,
-                        size: 30,
-                      )
-                    : const Icon(
-                        Icons.category,
-                        color: Colors.white,
-                        size: 30,
-                      ),
+                child: Icon(
+                          IconData(
+                              budget.icon!,
+                              fontFamily: 'MaterialIcons'
+                          ),
+                          color: Colors.white,
+                          size: 30,
+                        )
               ),
             ),
             title: Text(
@@ -66,7 +60,10 @@ class BuildBudgetlist extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              '₱ ${formatter.format(budget.budget_amount) ?? 0} of ₱ ${formatter.format(budget.total_budgetamount) ?? 0}',
+              (budget.type == 'budget'
+                  ? '₱ ${formatter.format(budget.budgetAmount) ?? 0} of ₱ ${formatter.format(budget.totalBudgetAmount) ?? 0}'
+                  : '₱ ${formatter.format(budget.savingsAmount) ?? 0} of ₱ ${formatter.format(budget.totalSavingsAmount) ?? 0}'
+              ),
               style: const TextStyle(
                 fontWeight: FontWeight.w300,
                 fontSize: 16,
@@ -78,7 +75,11 @@ class BuildBudgetlist extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return EditCategoryDialog(docID: docID);
+
+                    if (budget.type == 'budget') {
+                      return EditBudgetPopupscreen(docID: docID);
+                    }
+                    return EditSavingsPopupscreen(docID: docID);
                   },
                 );
               },
@@ -106,7 +107,12 @@ class BuildBudgetlist extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Call the delete method here
-                FirestoreService().deleteTrack(docID);
+                if (budget.type == 'budget') {
+                  FirestoreService().deleteBudget(docID);
+                } else if (budget.type == 'savings') {
+                  FirestoreService().deleteSavings(docID);
+                }
+
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text('Delete'),

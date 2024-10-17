@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
+import '../account_details/account_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import '../constants/build_transaction_list.dart';
@@ -51,11 +52,19 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ),
           ),
           centerTitle: true,
-          actions: const [
-            CircleAvatar(
-              backgroundImage: AssetImage(
-                  'lib/images/pfp.jpg'),
-              radius: 20,
+          actions: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AccountScreen()),
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage: AssetImage(
+                    'lib/images/pfp.jpg'),
+                radius: 20,
+              ),
             ),
             SizedBox(width: 16),
           ],
@@ -125,7 +134,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
                     // List of Expenses from Firestore
                     StreamBuilder<QuerySnapshot>(
-                      stream: firestoreService.getTracksStream(),
+                      stream: firestoreService.getExpenseStream(),
                       builder: (context, snapshot) {
                         // If encountered an error...
                         if (snapshot.hasError) {

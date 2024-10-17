@@ -30,12 +30,12 @@ class TransactionList extends StatelessWidget {
         if (track.type == 'expenses') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EditExpensesScreen(docID: docID,)), // Navigate to EditExpensesScreen
+            MaterialPageRoute(builder: (context) => EditExpensesScreen(docID: docID,)),
           );
         } else {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => EditIncomeScreen(docID: docID,)), // Navigate to EditIncomeScreen
+            MaterialPageRoute(builder: (context) => EditIncomeScreen(docID: docID,)),
           );
         }
       },
@@ -71,16 +71,13 @@ class TransactionList extends StatelessWidget {
                       ],
                     ),
                     child: Icon(
-                      (track.type == 'expenses'
-                          ? IconData(
-                              track.icon!, // Make sure iconCode is of type Icon
-                              fontFamily: 'MaterialIcons'
-                            )
-                          : Tracker.accountIcons[track.account]
+                      IconData(
+                          track.icon!, // Make sure iconCode is of type Icon
+                          fontFamily: 'MaterialIcons'
                       ),
                       size: 25,
-                      color: Colors.white, // Icon color
-                    ),
+                      color: Colors.white,
+                    )
                   ),
                 )
               ],
@@ -136,7 +133,19 @@ class TransactionList extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Call the delete method here
-                FirestoreService().deleteTrack(docID);
+                if (track.type == 'expenses') {
+                  FirestoreService().deleteExpense(docID);
+                } else if (track.type == 'income') {
+                  FirestoreService().deleteIncome(docID);
+                } else if (track.type == 'budget') {
+                  FirestoreService().deleteBudget(docID);
+                } else if (track.type == 'savings') {
+                  FirestoreService().deleteSavings(docID);
+                }
+
+                // TODO: delete this line of code
+                //FirestoreService().deleteTrack(docID);
+
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text('Delete'),

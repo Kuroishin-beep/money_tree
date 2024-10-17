@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:money_tree/models/tracker_model.dart';
-import 'package:money_tree/views/constants/build_budgetsavings.dart';
+import 'package:money_tree/views/account_details/account_screen.dart';
+import 'package:money_tree/views/add_transaction/add_budget_popupscreen.dart';
+import 'package:money_tree/views/add_transaction/add_savings_popupscreen.dart';
+import 'package:money_tree/views/constants/build_budgetsave_list.dart';
 import '../../bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
@@ -23,34 +27,82 @@ class BudgetScreen extends StatefulWidget {
 class _BudgetScreenState extends State<BudgetScreen> {
   final FirestoreService firestoreService = FirestoreService();
 
+  // get current user
+  User? user = FirebaseAuth.instance.currentUser;
+
+  // for calculation
+  double? totalBudget = 0;
+  double? totalSavings = 0;
+  double? budgetAmount = 0;
+  double? savingsAmount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      QuerySnapshot budgetSnapshot = await FirebaseFirestore.instance
+          .collection('budgets')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      QuerySnapshot savingsSnapshot = await FirebaseFirestore.instance
+          .collection('savings')
+          .where('UserEmail', isEqualTo: user!.email)
+          .get();
+
+      double totalBudgetTemp = 0;
+      double totalSavingsTemp = 0;
+      double budgetTemp = 0;
+      double savingsTemp = 0;
+
+
+
+      // Calculate total budget
+      if (budgetSnapshot.docs.isNotEmpty) {
+        for (var doc in budgetSnapshot.docs) {
+          totalBudgetTemp += doc['totalBudgetAmount'];
+          budgetTemp += doc['budgetAmount'];
+        }
+      }
+
+      // Calculate total savings
+      if (savingsSnapshot.docs.isNotEmpty) {
+        for (var doc in savingsSnapshot.docs) {
+          totalSavingsTemp += doc['totalSavingsAmount'];
+          savingsTemp += doc['savingsAmount'];
+        }
+      }
+
+      // Update state with totals
+      setState(() {
+        totalBudget = totalBudgetTemp;
+        totalSavings = totalSavingsTemp;
+        budgetAmount = budgetTemp;
+        savingsAmount = savingsTemp;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  // Number format
+  final NumberFormat formatter = NumberFormat('#,###.##');
+
   final String docID = '';
 
-
-  List<Map<String, dynamic>> expenseCategories = [
-    {"title": "SCHOOL", "amount": 100, "budget": 500},
-    {"title": "CAR", "amount": 467, "budget": 500},
-    {"title": "HEALTH", "amount": 156, "budget": 2000},
-    {"title": "GROCERIES", "amount": 637, "budget": 1500},
-  ];
-
-  List<Map<String, dynamic>> incomeCategories = [
-    {"title": "SCHOOL", "amount": 100, "budget": 500},
-    {"title": "CAR", "amount": 467, "budget": 500},
-    {"title": "HEALTH", "amount": 156, "budget": 2000},
-    {"title": "GROCERIES", "amount": 637, "budget": 1500},
-  ];
 
   TextEditingController amountController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
   TextEditingController titleController = TextEditingController();
   int _icon =  0 ;
 
-
   // Instance of the model to use for icons
-  final Tracker track = Tracker(name: '', budget_amount: 0, type: 'income', savings_amount: 0, amount: 0 );
+  final Tracker track = Tracker(name: '', budgetAmount: 0, type: 'income', savingsAmount: 0, amount: 0 );
 
-  double totalSavings = 4500; // Example total savings amount
-  double totalBudget = 5000; // Example total budget for expenses
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +120,19 @@ class _BudgetScreenState extends State<BudgetScreen> {
             ),
           ),
           centerTitle: true,
-          actions: const [
-            CircleAvatar(
-              backgroundImage: AssetImage(
-                  'lib/images/pfp.jpg'),
-              radius: 20,
+          actions: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AccountScreen()),
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage: AssetImage(
+                    'lib/images/pfp.jpg'),
+                radius: 20,
+              ),
             ),
             SizedBox(width: 16),
           ],
@@ -127,11 +187,17 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 3),
+
+                  // Budget Summary Card
                   _buildBudgetSummaryCard(),
+
                   const SizedBox(height: 3),
+
+                  // Display the list of Budgets
                   StreamBuilder<QuerySnapshot>(
-                    stream: firestoreService.getTracksStream(),
+                    stream: firestoreService.getBudgetStream(),
                     builder: (context, snapshot) {
                       // If encountered an error...
                       if (snapshot.hasError) {
@@ -143,28 +209,19 @@ class _BudgetScreenState extends State<BudgetScreen> {
                         return const Center(child: Text('No transactions found.'));
                       }
 
-                      // Filter the documents to only include those with 'income' type
-                      // final filteredDocs = snapshot.data!.docs.where((doc) {
-                      //   return doc['category'] != 'NULL';
-                      // }).toList();
-                      //
-                      // // If no income transactions exist
-                      // if (filteredDocs.isEmpty) {
-                      //   return const Center(child: Text('No transactions found.'));
-                      // }
-
                       return Column(
                         children: snapshot.data!.docs.map((doc) {
                           // Convert each document to Tracker class model
                           final track = Tracker(
                             category: doc['category'],
-                            budget_amount: doc['budget_amount'],
-                            total_budgetamount: doc['total_budgetamount'],
+                            budgetAmount: doc['budgetAmount'],
+                            totalBudgetAmount: doc['totalBudgetAmount'],
+                            type: doc['type'],
                             icon: doc['icon'],
                           );
 
 
-                          return BuildBudgetlist(
+                          return BuildBudgetSavelist(
                             budget: track,
                             docID: doc.id,
                           );
@@ -172,25 +229,89 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       );
                     },
                   ),
+
+                  // Add Button for Budget
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
                         onPressed:()  {
-                          _showAddCategoryDialog();
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AddBudgetPopupscreen();
+                            },
+                          );
                         },
-                        child: Text('Add')),
+                        child: Text(
+                          'Add Budget',
+                          style: TextStyle(
+                              color: Color(0xffFE5D26)
+                          ),
+                        )
+                    ),
                   ),
-                  //_buildBudgetCategoryList("EXPENSES", expenseCategories, true),
+
                   const SizedBox(height: 64),
+
+                  // Savings Summary Card
                   _buildSavingsSummaryCard(),
+
                   const SizedBox(height: 3),
+
+                  // Display the list of Savings
+                  StreamBuilder<QuerySnapshot>(
+                    stream: firestoreService.getSavingsStream(),
+                    builder: (context, snapshot) {
+                      // If encountered an error...
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      // If there are no transactions available
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(child: Text('No transactions found.'));
+                      }
+
+                      return Column(
+                        children: snapshot.data!.docs.map((doc) {
+                          // Convert each document to Tracker class model
+                          final track = Tracker(
+                            category: doc['category'],
+                            savingsAmount: doc['savingsAmount'],
+                            totalSavingsAmount: doc['totalSavingsAmount'],
+                            type: doc['type'],
+                            icon: doc['icon'],
+                          );
+
+
+                          return BuildBudgetSavelist(
+                            budget: track,
+                            docID: doc.id,
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+
+                  // Add Button for Savings
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
-                        onPressed:() {
-                          _showAddCategoryDialog();
+                        onPressed:()  {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AddSavingsPopupscreen();
+                            },
+                          );
                         },
-                        child: Text('Add')),
+                        child: Text(
+                          'Add Savings',
+                          style: TextStyle(
+                              color: Color(0xffFE5D26)
+                          ),
+                        )
+                    ),
                   ),
                   //_buildBudgetCategoryList("INCOME", incomeCategories, false),
                 ],
@@ -215,14 +336,10 @@ class _BudgetScreenState extends State<BudgetScreen> {
     );
   }
 
-
-  // changed the color of linear progress indicator
+  
   // Build the Budget Summary Card
   Widget _buildBudgetSummaryCard() {
-    double spentAmount = expenseCategories
-        .where((category) => category['category'] != 'NULL')
-        .fold(0, (sum, category) => sum + category["amount"]);
-    double progress = spentAmount / totalBudget;
+    double progress = budgetAmount! / totalBudget!;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -245,10 +362,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
             const SizedBox(height: 8),
 
             Text(
-              "\$${spentAmount.toStringAsFixed(2)} of \$${totalBudget.toStringAsFixed(2)}",
+              "₱${formatter.format(budgetAmount)} of ₱${formatter.format(totalBudget)}",
               style: const TextStyle(fontSize: 16),
             ),
+
             const SizedBox(height: 8),
+
             // Progress bar
             LinearProgressIndicator(
               value: progress.clamp(0.0, 1.0), // value is between 0 and 1
@@ -263,7 +382,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
   // changed the color of linear progress indicator
   Widget _buildSavingsSummaryCard() {
-    double progress = totalSavings / 10000; // Example goal for savings
+    double progress = savingsAmount! / totalSavings!; 
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -277,8 +396,15 @@ class _BudgetScreenState extends State<BudgetScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text("Savings", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+
             const SizedBox(height: 8),
-            Text("\$${totalSavings.toStringAsFixed(2)}"),
+            Text(
+                "₱${formatter.format(savingsAmount)} of ₱${formatter.format(totalSavings)}",
+              style: const TextStyle(fontSize: 16),
+            ),
+
+            const SizedBox(height: 8),
+
             LinearProgressIndicator(
               value: progress.clamp(0.0, 1.0), // Ensure value is between 0 and 1
               backgroundColor: const Color(0xffFFCDAC),
@@ -435,66 +561,16 @@ class _BudgetScreenState extends State<BudgetScreen> {
   //   );
   // }
   // Show dialog to add a new category
-  void _showAddCategoryDialog() {
-     // Reset the icon for each new category
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Add Transaction"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: "Title"),
-              ),
-              TextField(
-                controller: amountController,
-                decoration: const InputDecoration(labelText: "Amount"),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: budgetController,
-                decoration: const InputDecoration(labelText: "Budget"),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 10),
-              // Icon Picker Button
-              TextButton.icon(
-                icon: Icon(selectedIconData ?? Icons.add_circle_outline),
-                label: const Text("Pick Icon"),
-                onPressed: () {
-                  _pickIcon();  // Use the provided _pickIcon method
-                },
-              )
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text("Add"),
-                onPressed:() async {
-                  Tracker newTrack = Tracker(
-                      category: titleController.text,
-                      savings_amount: double.parse(amountController.text),
-                      total_budgetamount: double.parse(budgetController.text)
-                  );
-
-                  await firestoreService.addTrack(newTrack);
-                },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showAddCategoryDialog() {
+  //    // Reset the icon for each new category
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //
+  //     },
+  //   );
+  // }
 }
 
 

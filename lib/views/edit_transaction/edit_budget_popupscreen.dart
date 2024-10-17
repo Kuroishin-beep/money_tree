@@ -3,21 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/Models/icon_picker_icon.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
-
 import '../../controller/tracker_controller.dart';
 import '../../models/tracker_model.dart';
 
-class EditCategoryDialog extends StatefulWidget {
+class EditBudgetPopupscreen extends StatefulWidget {
   final String docID;
 
 
-  EditCategoryDialog({required this.docID});
+  EditBudgetPopupscreen({required this.docID});
 
   @override
-  _EditCategoryDialogState createState() => _EditCategoryDialogState();
+  _EditBudgetPopupscreenState createState() => _EditBudgetPopupscreenState();
 }
 
-class _EditCategoryDialogState extends State<EditCategoryDialog> {
+class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
 
@@ -36,7 +35,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
     IconPickerIcon? icon = await showIconPicker(
       context,
       configuration: SinglePickerConfiguration(
-        iconPackModes: [IconPack.material],  // Specify the icon pack you want
+        iconPackModes: [IconPack.material],
       ),
     );
 
@@ -46,42 +45,41 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
         selected_icon = Icon(icon.data);
 
         code = selectedIconData!.codePoint;
-        // fontFamily = _selectedIconData!.fontFamily;
       });
     }
   }
 
-  // Class-level variable to store the fetched document data
-  late DocumentSnapshot doc;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();  // Load existing data on initialization
-  }
-
-  void _loadData() async {
-    DocumentSnapshot doc = await firestoreService.getExpenseById(widget.docID);
-
-    setState(() {
-      nameController.text = doc['name'] ?? '';
-      amountController.text = doc['amount'].toString() ?? '0';
-      budgetController.text = doc['budget_amount'].toString() ?? '0';
-      if (doc['icon'] != null) {
-        selectedIconData = IconData(doc['icon'], fontFamily: 'MaterialIcons');
-        selected_icon = Icon(selectedIconData);
-        code = doc['icon'];
-      }
-      // Add other fields as necessary
-    });
-  }
+  // // Class-level variable to store the fetched document data
+  // late DocumentSnapshot doc;
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _loadData();  // Load existing data on initialization
+  // }
+  //
+  // void _loadData() async {
+  //   DocumentSnapshot doc = await firestoreService.getExpenseById(widget.docID);
+  //
+  //   setState(() {
+  //     nameController.text = doc['name'] ?? '';
+  //     amountController.text = doc['amount'].toString() ?? '0';
+  //     budgetController.text = doc['budget_amount'].toString() ?? '0';
+  //     if (doc['icon'] != null) {
+  //       selectedIconData = IconData(doc['icon'], fontFamily: 'MaterialIcons');
+  //       selected_icon = Icon(selectedIconData);
+  //       code = doc['icon'];
+  //     }
+  //     // Add other fields as necessary
+  //   });
+  // }
 
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        "EDIT TRANSACTION",
+        "EDIT BUDGET",
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Color(0xffFBC29C),
@@ -120,14 +118,28 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
         TextButton(
           child: const Text("Save"),
           onPressed: () async {
+            if (amountController.text.isEmpty ||
+                budgetController.text.isEmpty ||
+                code == 0) {
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Please fill all fields before proceeding.'),
+                  //backgroundColor: Colors.red,
+                ),
+              );
+              return;
+            }
+
             // Create the updated Tracker object
             Tracker newTrack = Tracker(
-                budget_amount: double.parse(amountController.text),
-                total_budgetamount: double.parse(budgetController.text),
-                icon: code
+              budgetAmount: double.parse(amountController.text),
+              totalBudgetAmount: double.parse(budgetController.text),
+              type: 'budget',
+              icon: code
             );
 
-            await firestoreService.updateTrack(widget.docID, newTrack);
+            await firestoreService.updateBudget(widget.docID, newTrack);
 
             // Clear controllers
             amountController.clear();

@@ -5,6 +5,7 @@ import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 import '../../bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
 import '../../fab.dart';
+import '../account_details/account_screen.dart';
 import '../constants/build_transaction_list.dart';
 
 import '../../models/tracker_model.dart';
@@ -21,7 +22,9 @@ class HistoryDataListState extends State<HistoryScreen> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
 
-
+  // for displaying all income and expenses
+  bool _showIncome = false;
+  bool _showExpense = false;
 
 
   @override
@@ -43,11 +46,19 @@ class HistoryDataListState extends State<HistoryScreen> {
             ),
           ),
           centerTitle: true,
-          actions: const [
-            CircleAvatar(
-              backgroundImage: AssetImage(
-                  'lib/images/pfp.jpg'),
-              radius: 20,
+          actions: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AccountScreen()),
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage: AssetImage(
+                    'lib/images/pfp.jpg'),
+                radius: 20,
+              ),
             ),
             SizedBox(width: 16),
           ],
@@ -121,7 +132,7 @@ class HistoryDataListState extends State<HistoryScreen> {
 
                   // List of Expenses from Firestore
                   StreamBuilder<QuerySnapshot>(
-                    stream: firestoreService.getTracksStream(),
+                    stream: firestoreService.getExpenseStream(),
                     builder: (context, snapshot) {
                       // If encountered an error...
                       if (snapshot.hasError) {
@@ -143,8 +154,11 @@ class HistoryDataListState extends State<HistoryScreen> {
                         return const Center(child: Text('No expense transactions found.'));
                       }
 
+                      // Limit the displayed transactions to a maximum of 3
+                      final limitedDocs = _showExpense ? filteredDocs : filteredDocs.take(3).toList();
+
                       return Column(
-                        children: filteredDocs.map((doc) {
+                        children: limitedDocs.map((doc) {
                           // Convert each document to Tracker class model
                           final track = Tracker(
                             name: doc['name'],
@@ -153,7 +167,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                             amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
                             type: doc['type'],
                             date: (doc['date'] as Timestamp).toDate(),
-                            icon: doc['icon']
+                            icon: doc['icon'],
                           );
 
                           // Format the date to display only the date portion
@@ -169,16 +183,14 @@ class HistoryDataListState extends State<HistoryScreen> {
                     },
                   ),
 
+
                   TextButton(
                     onPressed: () {
-                      // setState(() {
-                      //   expenseList.addAll([
-                      //     Expense(icon: Icons.fastfood, item: 'Dinner', date: 'September 6, 2024', category: 'FOOD', amount: '\$100'),
-                      //     Expense(icon: Icons.coffee, item: 'Coffee', date: 'September 7, 2024', category: 'FOOD', amount: '\$10'),
-                      //   ]);
-                      // });
+                      setState(() {
+                        _showExpense = !_showExpense;
+                      });
                     },
-                    child: const Text('See all'),
+                    child: Text(_showExpense ? 'Show less' : 'See all'),
                   ),
 
                   SizedBox(height: sw * 0.05),
@@ -214,7 +226,7 @@ class HistoryDataListState extends State<HistoryScreen> {
 
                   // List of Income from Firestore
                   StreamBuilder<QuerySnapshot>(
-                    stream: firestoreService.getTracksStream(),
+                    stream: firestoreService.getIncomeStream(),
                     builder: (context, snapshot) {
                       // If encountered an error...
                       if (snapshot.hasError) {
@@ -231,13 +243,16 @@ class HistoryDataListState extends State<HistoryScreen> {
                         return doc['type'] == 'income';
                       }).toList();
 
-                      // If no expense transactions exist
+                      // If no income transactions exist
                       if (filteredDocs.isEmpty) {
-                        return const Center(child: Text('No expense transactions found.'));
+                        return const Center(child: Text('No income transactions found.'));
                       }
 
+                      // Limit the displayed transactions to a maximum of 3
+                      final limitedDocs = _showIncome ? filteredDocs : filteredDocs.take(3).toList();
+
                       return Column(
-                        children: filteredDocs.map((doc) {
+                        children: limitedDocs.map((doc) {
                           // Convert each document to Tracker class model
                           final track = Tracker(
                             name: doc['name'],
@@ -246,6 +261,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                             amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
                             type: doc['type'],
                             date: (doc['date'] as Timestamp).toDate(),
+                            icon: doc['icon'],
                           );
 
                           // Format the date to display only the date portion
@@ -261,15 +277,14 @@ class HistoryDataListState extends State<HistoryScreen> {
                     },
                   ),
 
+
                   TextButton(
                     onPressed: () {
-                      // setState(() {
-                      //   incomeList.addAll([
-                      //     Income(icon: Icons.attach_money, name: 'Freelance', date: 'September 7, 2024', category: 'CARD', amount: '\$100'),
-                      //   ]);
-                      // });
+                      setState(() {
+                        _showIncome = !_showIncome;
+                      });
                     },
-                    child: const Text('See all'),
+                    child: Text(_showIncome ? 'Show less' : 'See all'),
                   ),
                 ],
               ),

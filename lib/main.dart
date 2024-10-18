@@ -5,6 +5,7 @@ import 'package:money_tree/views/account_details/account_birthdate_screen.dart';
 import 'package:money_tree/views/account_details/account_email_screen.dart';
 import 'package:money_tree/views/account_details/account_mobileno_screen.dart';
 import 'models/financial_data_service.dart';
+import 'models/tracker_model.dart';
 import 'views/start_screens/login_screen.dart';
 import 'views/dashboard/dashboard_screen.dart';
 import 'views/start_screens/get_started_screen.dart';
@@ -18,6 +19,7 @@ import 'views/financial_report/monthlyFR_screen.dart';
 import 'views/start_screens/loading_screen.dart';
 import 'views/account_details/account_name_screen.dart';
 import 'views/account_details/account_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,8 +59,7 @@ class BudgetTracker extends StatelessWidget {
         '/account': (context) => AccountScreen(),
         '/account_email': (context) => AccountEmailScreen(),
         '/account_mobileno': (context) => AccountMobileNoScreen(),
-      },
+      }
     );
   }
 }
-

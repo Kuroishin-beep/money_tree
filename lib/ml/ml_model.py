@@ -1,62 +1,67 @@
-import pandas as pd
-import numpy as np
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
+from venv import logger
+
 import joblib
 import os
+import pandas as pd
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.tree import DecisionTreeRegressor
 
 MODEL_PATH = 'financial_advice_model.joblib'
 
 
 def train_decision_tree():
     try:
-        df = pd.read_csv(r'D:\Github\Project\money_tree\lib\ml\expenses.csv')
+        # Load data from the user_data.csv
+        df = pd.read_csv('user_data.csv')
 
-        df['Balance'].fillna(0, inplace=True)
-        df['Category'] = df['Category'].str.lower().str.strip()
-        df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
-        df['DayOfWeek'] = df['Date'].dt.day_name()
-        df['Month'] = df['Date'].dt.month_name()
-        df['Item'] = df['Item'].str.replace(r'[^\w\s]', '', regex=True).str.strip()
+        # Validate required columns
+        required_columns = ['Total Amount', 'Type', 'Date']
+        if not all(col in df.columns for col in required_columns):
+            raise ValueError(f"Missing required columns in CSV: {required_columns}")
 
-        df['TotalSpending'] = df.groupby('Category')['Amount'].transform('sum')
-        df['AverageDailyBalance'] = df.groupby('Date')['Balance'].transform('mean')
+        # Clean and preprocess the data
+        df.fillna(0, inplace=True)
+        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 
-        X = df[['Amount', 'Balance', 'TotalSpending', 'AverageDailyBalance']]
-        categorical_features = ['Category', 'DayOfWeek', 'Month']
-        X_categorical = df[categorical_features]
+        # Separate income, expenses, savings, and budgets
+        df['TotalIncome'] = df['Total Amount'].where(df['Type'] == 'Income', 0)
+        df['TotalExpenses'] = df['Total Amount'].where(df['Type'] == 'Expense', 0)
+        df['TotalSavings'] = df['Total Amount'].where(df['Type'] == 'Savings', 0)
+        df['TotalBudgets'] = df['Total Amount'].where(df['Type'] == 'Budget', 0)
 
-        df['advice_score'] = (df['Balance'] / df['TotalSpending']).clip(0, 1)
-        y = df['advice_score']
+        # Aggregate data
+        grouped_data = df.groupby('Date').agg({
+            'TotalIncome': 'sum',
+            'TotalExpenses': 'sum',
+            'TotalSavings': 'sum',
+            'TotalBudgets': 'sum'
+        }).reset_index()
 
+        # Define features and target variable
+        X = grouped_data[['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']]
+        y = (grouped_data['TotalSavings'] / grouped_data['TotalBudgets']).clip(0, 1)
+
+        # Split data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        X_cat_train, X_cat_test = train_test_split(X_categorical, test_size=0.2, random_state=42)
 
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('num', 'passthrough',
-                 ['Amount', 'Balance', 'TotalSpending', 'AverageDailyBalance']),
-                ('cat', OneHotEncoder(drop='first', sparse=False), categorical_features)
-            ])
+        # Create and fit the model
+        model = Pipeline([('regressor', DecisionTreeRegressor(random_state=42))])
+        model.fit(X_train, y_train)
 
-        model = Pipeline([
-            ('preprocessor', preprocessor),
-            ('regressor', DecisionTreeRegressor(random_state=42))
-        ])
-
-        model.fit(X_train.join(X_cat_train), y_train)
-        y_pred = model.predict(X_test.join(X_cat_test))
+        # Evaluate the model
+        y_pred = model.predict(X_test)
         mse = mean_squared_error(y_test, y_pred)
-        print(f"Model MSE: {mse}")
+        r2 = r2_score(y_test, y_pred)
+        logger.info(f"Model MSE: {mse}, R²: {r2}")
 
+        # Save the model
         joblib.dump(model, MODEL_PATH)
-        print("Model trained and saved successfully.")
+        logger.info("Model trained and saved successfully.")
+
     except Exception as e:
-        print(f"Error training model: {e}")
+        logger.error(f"Error training model: {e}")
 
 
 def predict_financial_advice(income, expenses, budget, savings):
@@ -65,13 +70,10 @@ def predict_financial_advice(income, expenses, budget, savings):
 
     model = joblib.load(MODEL_PATH)
     data = pd.DataFrame({
-        'Amount': [expenses],
-        'Balance': [income - expenses],
-        'TotalSpending': [expenses],
-        'AverageDailyBalance': [income - expenses],
-        'Category': ['custom'],
-        'DayOfWeek': ['Monday'],
-        'Month': ['January']
+        'TotalIncome': [income],
+        'TotalExpenses': [expenses],
+        'TotalSavings': [savings],
+        'TotalBudgets': [budget]
     })
 
     prediction = model.predict(data)
@@ -79,9 +81,35 @@ def predict_financial_advice(income, expenses, budget, savings):
 
 
 def create_financial_advice(income, expenses, budget, savings):
-    advice = predict_financial_advice(income, expenses, budget, savings)
+    advice = ""
 
-    if advice < 0.5:
-        return "You might want to reduce your spending."
-    else:
-        return "Your financial status looks good!"
+    # Scenario 1: High income but high expenses, low savings
+    if income > expenses and expenses > savings:
+        advice += "Your income is good, but you are spending too much. Consider reducing your discretionary spending to increase your savings.\n"
+
+    # Scenario 2: Expenses greater than savings
+    if expenses > savings:
+        advice += "Your expenses exceed your savings. It's important to cut back on non-essential expenses to improve your financial health.\n"
+
+    # Scenario 3: Savings are greater than expenses
+    if savings > expenses:
+        advice += "Great job! Your savings exceed your expenses. Keep up the good work and consider investing your extra savings for future growth.\n"
+
+    # Scenario 4: Low budget with high income and high expenses
+    if budget < expenses and income > expenses:
+        advice += "Your budget is low compared to your expenses. Review your budget and consider adjusting it to better reflect your financial situation.\n"
+
+    # Scenario 5: Adequate savings but very low budget
+    if savings > expenses and budget < expenses:
+        advice += "While your savings are good, your budget might be too low. Reassess your budget to ensure you can cover your essential expenses.\n"
+
+    # Scenario 6: High savings and a balanced budget
+    if savings > expenses and expenses <= budget:
+        advice += "You are doing well! Your savings are high and your expenses are within your budget. Continue this strategy for long-term success.\n"
+
+    # Fallback advice if no specific scenario matched
+    if not advice:
+        advice = "Your financial status looks balanced. Keep monitoring your expenses and savings!"
+
+    return advice.strip()  # Clean up any leading/trailing whitespace
+

@@ -1,24 +1,35 @@
+import os
+import threading
 from fastapi import FastAPI, APIRouter
 from pydantic import BaseModel
 from ml_model import predict_financial_advice, create_financial_advice, train_decision_tree
 from firebase_utils import get_income_brackets
 import firebase_admin
 from firebase_admin import credentials
-import threading
-from firebase_utils import initialize_firebase
 
-# Call the function to initialize Firebase
-initialize_firebase()
 
-# Initialize Firebase Admin SDK
+# Initialize Firebase Admin SDK using environment variables
 def initialize_firebase():
-    cred = credentials.Certificate(
-        "D:\\Github\\Project\\money_tree\\serviceAccountKey_moneytree.json")
+    service_account_info = {
+        'type': 'service_account',
+        'project_id': os.getenv('FIREBASE_ADMIN_PROJECT_ID', 'moneytree-49dc0'),
+        'private_key_id': os.getenv('FIREBASE_ADMIN_PRIVATE_KEY_ID'),
+        'private_key': os.getenv('FIREBASE_ADMIN_PRIVATE_KEY').replace('\\n', '\n'),
+        'client_email': os.getenv('FIREBASE_ADMIN_CLIENT_EMAIL'),
+        'client_id': os.getenv('FIREBASE_ADMIN_CLIENT_ID'),
+        'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+        'token_uri': 'https://oauth2.googleapis.com/token',
+        'auth_provider_x509_cert_url': os.getenv('FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL'),
+        'client_x509_cert_url': os.getenv('FIREBASE_ADMIN_CLIENT_X509_CERT_URL'),
+    }
+
     if not firebase_admin._apps:
+        cred = credentials.Certificate(service_account_info)
         firebase_admin.initialize_app(cred)
         print("Firebase initialized successfully.")
     else:
         print("Firebase app already initialized.")
+
 
 # Call the function to initialize Firebase
 initialize_firebase()
@@ -26,6 +37,7 @@ initialize_firebase()
 # Create FastAPI app and router
 app = FastAPI()
 api_router = APIRouter()
+
 
 # Define the Tracker model
 class Tracker(BaseModel):
@@ -45,10 +57,12 @@ class Tracker(BaseModel):
     totalCard: float = 0
     totalGCash: float = 0
 
+
 @api_router.get("/predict")
 async def predict():
     """A simple prediction endpoint that provides a message."""
     return {"message": "This is a prediction endpoint"}
+
 
 @api_router.post("/financial_predict")
 def financial_predict(input_data: Tracker):
@@ -60,6 +74,7 @@ def financial_predict(input_data: Tracker):
         savings=input_data.savingsAmount
     )
     return {"financial_advice": advice}
+
 
 @api_router.post("/create_advice")
 def create_advice(input_data: Tracker):
@@ -88,8 +103,10 @@ def train_model():
     train_decision_tree()
     return {"message": "Model training initiated."}
 
+
 # Include API router
 app.include_router(api_router)
+
 
 @app.on_event("startup")
 def startup_event():
@@ -97,13 +114,16 @@ def startup_event():
     for route in app.routes:
         print(route)
 
+
 # Start periodic model training in a separate thread
 def start_model_training():
     train_decision_tree()
     threading.Timer(7 * 24 * 60 * 60, start_model_training).start()  # Run every 7 days
 
+
 start_model_training()
 
 if __name__ == '__main__':
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

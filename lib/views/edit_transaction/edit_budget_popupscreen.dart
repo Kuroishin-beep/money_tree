@@ -8,8 +8,6 @@ import '../../models/tracker_model.dart';
 
 class EditBudgetPopupscreen extends StatefulWidget {
   final String docID;
-
-
   EditBudgetPopupscreen({required this.docID});
 
   @override
@@ -49,37 +47,12 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
     }
   }
 
-  // // Class-level variable to store the fetched document data
-  // late DocumentSnapshot doc;
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadData();  // Load existing data on initialization
-  // }
-  //
-  // void _loadData() async {
-  //   DocumentSnapshot doc = await firestoreService.getExpenseById(widget.docID);
-  //
-  //   setState(() {
-  //     nameController.text = doc['name'] ?? '';
-  //     amountController.text = doc['amount'].toString() ?? '0';
-  //     budgetController.text = doc['budget_amount'].toString() ?? '0';
-  //     if (doc['icon'] != null) {
-  //       selectedIconData = IconData(doc['icon'], fontFamily: 'MaterialIcons');
-  //       selected_icon = Icon(selectedIconData);
-  //       code = doc['icon'];
-  //     }
-  //     // Add other fields as necessary
-  //   });
-  // }
-
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        "EDIT BUDGET",
+        "EDIT FULL BUDGET",
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Color(0xffFBC29C),
@@ -91,8 +64,12 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: "Title"),
+          ),
+          TextField(
             controller: amountController,
-            decoration: const InputDecoration(labelText: "Amount"),
+            decoration: const InputDecoration(labelText: "Amount Used"),
             keyboardType: TextInputType.number,
           ),
           TextField(
@@ -120,6 +97,7 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
           onPressed: () async {
             if (amountController.text.isEmpty ||
                 budgetController.text.isEmpty ||
+                nameController.text.isEmpty ||
                 code == 0) {
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -133,6 +111,7 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
 
             // Create the updated Tracker object
             Tracker newTrack = Tracker(
+              category: nameController.text,
               budgetAmount: double.parse(amountController.text),
               totalBudgetAmount: double.parse(budgetController.text),
               type: 'budget',

@@ -13,7 +13,7 @@ import '../dashboard/dashboard_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// For Cupertino icon pack
+
 
 
 class BudgetScreen extends StatefulWidget {
@@ -336,7 +336,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
     );
   }
 
-  
+
   // Build the Budget Summary Card
   Widget _buildBudgetSummaryCard() {
     double progress = budgetAmount! / totalBudget!;
@@ -382,7 +382,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
   // changed the color of linear progress indicator
   Widget _buildSavingsSummaryCard() {
-    double progress = savingsAmount! / totalSavings!; 
+    double progress = savingsAmount! / totalSavings!;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -399,7 +399,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
             const SizedBox(height: 8),
             Text(
-                "₱${formatter.format(savingsAmount)} of ₱${formatter.format(totalSavings)}",
+              "₱${formatter.format(savingsAmount)} of ₱${formatter.format(totalSavings)}",
               style: const TextStyle(fontSize: 16),
             ),
 
@@ -434,12 +434,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
   //     ],
   //   );
   // }
-
-
-
-
-
-
 
 // Function to build month divider
   Widget _buildMonthDivider() {
@@ -491,88 +485,84 @@ class _BudgetScreenState extends State<BudgetScreen> {
     }
   }
 
-  // Show dialog to edit a category
-  // void _showEditCategoryDialog(BuildContext context) {
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text("EDIT TRANSACTION",
-  //           textAlign: TextAlign.center,
-  //           style: const TextStyle(
-  //             color: Color(0xffFBC29C),
-  //             fontFamily: 'Inter Regular',
-  //             fontWeight: FontWeight.w800,
-  //           ),
-  //         ),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextField(
-  //               controller: amountController,
-  //               decoration: const InputDecoration(labelText: "Amount"),
-  //               keyboardType: TextInputType.number,
-  //             ),
-  //             TextField(
-  //               controller: budgetController,
-  //               decoration: const InputDecoration(labelText: "Budget"),
-  //               keyboardType: TextInputType.number,
-  //             ),
-  //             const SizedBox(height: 10),
-  //             // Icon Picker Button
-  //             TextButton.icon(
-  //               icon: Icon(selectedIconData ?? Icons.add_circle_outline),
-  //               label: const Text("Pick Icon"),
-  //               onPressed: () {
-  //                 _pickIcon();  // Use the provided _pickIcon method
-  //               },
-  //             )
-  //           ],
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text("Cancel"),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: const Text("Save"),
-  //             onPressed: () async {
-  //               Tracker newTrack = Tracker(
-  //                   category: titleController.text,
-  //                   savings_amount: double.parse(amountController.text),
-  //                   total_budgetamount: double.parse(budgetController.text)
-  //               );
-  //
-  //               await firestoreService.updateTrack(docID, newTrack);
-  //
-  //               amountController.clear();
-  //               budgetController.clear();
-  //
-  //               Navigator.pop(context);
-  //
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-  // Show dialog to add a new category
-  // void _showAddCategoryDialog() {
-  //    // Reset the icon for each new category
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //
-  //     },
-  //   );
-  // }
+// Show dialog to edit a category
+// void _showEditCategoryDialog(BuildContext context) {
+//
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: Text("EDIT TRANSACTION",
+//           textAlign: TextAlign.center,
+//           style: const TextStyle(
+//             color: Color(0xffFBC29C),
+//             fontFamily: 'Inter Regular',
+//             fontWeight: FontWeight.w800,
+//           ),
+//         ),
+//         content: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             TextField(
+//               controller: amountController,
+//               decoration: const InputDecoration(labelText: "Amount"),
+//               keyboardType: TextInputType.number,
+//             ),
+//             TextField(
+//               controller: budgetController,
+//               decoration: const InputDecoration(labelText: "Budget"),
+//               keyboardType: TextInputType.number,
+//             ),
+//             const SizedBox(height: 10),
+//             // Icon Picker Button
+//             TextButton.icon(
+//               icon: Icon(selectedIconData ?? Icons.add_circle_outline),
+//               label: const Text("Pick Icon"),
+//               onPressed: () {
+//                 _pickIcon();  // Use the provided _pickIcon method
+//               },
+//             )
+//           ],
+//         ),
+//         actions: [
+//           TextButton(
+//             child: const Text("Cancel"),
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//           ),
+//           TextButton(
+//             child: const Text("Save"),
+//             onPressed: () async {
+//               Tracker newTrack = Tracker(
+//                   category: titleController.text,
+//                   savings_amount: double.parse(amountController.text),
+//                   total_budgetamount: double.parse(budgetController.text)
+//               );
+//
+//               await firestoreService.updateTrack(docID, newTrack);
+//
+//               amountController.clear();
+//               budgetController.clear();
+//
+//               Navigator.pop(context);
+//
+//             },
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
+// Show dialog to add a new category
+// void _showAddCategoryDialog() {
+//    // Reset the icon for each new category
+//
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//
+//     },
+//   );
+// }
 }
-
-
-
-

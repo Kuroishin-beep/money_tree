@@ -1,99 +1,87 @@
-# ml_model.py
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 import joblib
-from firebase_utils import firestore
+import os
 
-
-def load_data_from_firestore():
-    """Load data from Firestore collections for different income brackets."""
-    db = firestore.client()
-    low_data = db.collection("low_income_bracket").get()
-    middle_data = db.collection("middle_income_bracket").get()
-    high_data = db.collection("high_income_bracket").get()
-
-    # Convert Firestore documents to DataFrames
-    low_df = pd.DataFrame([doc.to_dict() for doc in low_data])
-    middle_df = pd.DataFrame([doc.to_dict() for doc in middle_data])
-    high_df = pd.DataFrame([doc.to_dict() for doc in high_data])
-
-    # Combine DataFrames
-    combined_df = pd.concat([low_df, middle_df, high_df], ignore_index=True)
-    return combined_df
+MODEL_PATH = 'financial_advice_model.joblib'
 
 
 def train_decision_tree():
-    """Train a Decision Tree model using data from Firestore."""
-    df = load_data_from_firestore()
-    features = df[['income', 'expenses', 'budget', 'savings']]
-    labels = df['financial_advice']
+    try:
+        df = pd.read_csv(r'D:\Github\Project\money_tree\lib\ml\expenses.csv')
 
-    # Encode labels
-    label_encoder = LabelEncoder()
-    labels = label_encoder.fit_transform(labels)
+        df['Balance'].fillna(0, inplace=True)
+        df['Category'] = df['Category'].str.lower().str.strip()
+        df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
+        df['DayOfWeek'] = df['Date'].dt.day_name()
+        df['Month'] = df['Date'].dt.month_name()
+        df['Item'] = df['Item'].str.replace(r'[^\w\s]', '', regex=True).str.strip()
 
-    # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2,
-                                                        random_state=42)
+        df['TotalSpending'] = df.groupby('Category')['Amount'].transform('sum')
+        df['AverageDailyBalance'] = df.groupby('Date')['Balance'].transform('mean')
 
-    # Train the Decision Tree model
-    model = DecisionTreeClassifier()
-    model.fit(X_train, y_train)
+        X = df[['Amount', 'Balance', 'TotalSpending', 'AverageDailyBalance']]
+        categorical_features = ['Category', 'DayOfWeek', 'Month']
+        X_categorical = df[categorical_features]
 
-    # Save the model and label encoder
-    joblib.dump(model, 'decision_tree_model.pkl')
-    joblib.dump(label_encoder, 'label_encoder.pkl')
+        df['advice_score'] = (df['Balance'] / df['TotalSpending']).clip(0, 1)
+        y = df['advice_score']
 
-    print("Decision Tree model trained and saved.")
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_cat_train, X_cat_test = train_test_split(X_categorical, test_size=0.2, random_state=42)
 
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', 'passthrough',
+                 ['Amount', 'Balance', 'TotalSpending', 'AverageDailyBalance']),
+                ('cat', OneHotEncoder(drop='first', sparse=False), categorical_features)
+            ])
 
-def load_model():
-    """Load the trained model and label encoder from disk."""
-    model = joblib.load('decision_tree_model.pkl')
-    label_encoder = joblib.load('label_encoder.pkl')
-    return model, label_encoder
+        model = Pipeline([
+            ('preprocessor', preprocessor),
+            ('regressor', DecisionTreeRegressor(random_state=42))
+        ])
+
+        model.fit(X_train.join(X_cat_train), y_train)
+        y_pred = model.predict(X_test.join(X_cat_test))
+        mse = mean_squared_error(y_test, y_pred)
+        print(f"Model MSE: {mse}")
+
+        joblib.dump(model, MODEL_PATH)
+        print("Model trained and saved successfully.")
+    except Exception as e:
+        print(f"Error training model: {e}")
 
 
 def predict_financial_advice(income, expenses, budget, savings):
-    """Predict financial advice based on input features."""
-    model, label_encoder = load_model()
-    features = [[income, expenses, budget, savings]]
-    prediction = model.predict(features)
-    return label_encoder.inverse_transform(prediction)[0]
+    if not os.path.exists(MODEL_PATH):
+        train_decision_tree()
+
+    model = joblib.load(MODEL_PATH)
+    data = pd.DataFrame({
+        'Amount': [expenses],
+        'Balance': [income - expenses],
+        'TotalSpending': [expenses],
+        'AverageDailyBalance': [income - expenses],
+        'Category': ['custom'],
+        'DayOfWeek': ['Monday'],
+        'Month': ['January']
+    })
+
+    prediction = model.predict(data)
+    return prediction[0]
 
 
 def create_financial_advice(income, expenses, budget, savings):
-    """Generate financial advice based on income, expenses, budget, and savings."""
-    advice = []
+    advice = predict_financial_advice(income, expenses, budget, savings)
 
-    # Calculate savings rate
-    savings_rate = (savings / income) * 100 if income > 0 else 0
-
-    # Basic advice based on income and expenses
-    if expenses > income:
-        advice.append("Your expenses exceed your income. Consider reducing your expenses.")
-    elif expenses < income * 0.5:
-        advice.append(
-            "Great job! Your expenses are well below your income. Consider increasing your savings or investments.")
-
-    # Budgeting advice
-    if budget < expenses:
-        advice.append(
-            "Your budget is less than your expenses. Re-evaluate your budget to ensure it covers your needs.")
-    elif budget > expenses * 1.2:
-        advice.append(
-            "Your budget is significantly higher than your expenses. You might want to adjust it to save more.")
-
-    # Savings advice
-    if savings_rate < 10:
-        advice.append(
-            "Consider increasing your savings rate to at least 10% of your income for better financial security.")
-    elif savings_rate >= 20:
-        advice.append("Excellent! You're saving more than 20% of your income. Keep it up!")
-
-    # Final advice
-    advice.append("Review your financial goals regularly to stay on track.")
-
-    return " ".join(advice)
+    if advice < 0.5:
+        return "You might want to reduce your spending."
+    else:
+        return "Your financial status looks good!"

@@ -435,6 +435,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
   //   );
   // }
 
+
+
+
+
+
+
 // Function to build month divider
   Widget _buildMonthDivider() {
     return Row(
@@ -566,3 +572,4 @@ class _BudgetScreenState extends State<BudgetScreen> {
 //   );
 // }
 }
+

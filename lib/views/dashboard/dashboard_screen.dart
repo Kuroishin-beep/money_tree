@@ -857,7 +857,7 @@ class _DashboardState extends State<Dashboard> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const BudgetScreen()),
+          MaterialPageRoute(builder: (context) => BudgetScreen()),
         );
       },
       onTapDown: (_) {

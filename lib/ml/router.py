@@ -1,15 +1,11 @@
-# router.py
-from fastapi import APIRouter, Depends
-from dependencies import get_token_header
+import firebase_admin
+from firebase_admin import credentials, firestore
 
-router = APIRouter()
-
-
-@router.get("/")
-async def hello():
-    return {"msg": "Hello World!"}
+firebase_admin.initialize_app()
+db = firestore.client()
 
 
-@router.get("/userid")
-async def get_userid(user: dict = Depends(get_token_header)):
-    return {"id": user["uid"]}  # Ensure user dictionary is passed correctly
+def get_income_brackets():
+    income_brackets_ref = db.collection(u'income_brackets').document(u'brackets')
+    income_brackets = income_brackets_ref.get().to_dict()
+    return income_brackets

@@ -2,9 +2,6 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 
-import firebase_admin
-from firebase_admin import credentials, firestore
-
 def initialize_firebase():
     """
     Initialize Firebase Admin SDK.
@@ -29,6 +26,7 @@ def get_income_brackets():
     """
     db = firestore.client()  # Initialize Firestore client here
 
+    # Fetch documents from the respective collections
     low = db.collection("low_income_bracket").get()
     middle = db.collection("middle_income_bracket").get()
     high = db.collection("high_income_bracket").get()

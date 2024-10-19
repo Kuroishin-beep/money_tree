@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../../bottom_navigation.dart';
 import '../../fab.dart';
 
@@ -17,8 +18,9 @@ class MonthlyReport extends StatefulWidget {
 class _MonthlyReportState extends State<MonthlyReport> {
   Map<String, double> expenses = {};
   Map<String, double> incomes = {'CASH': 0, 'CARD': 0, 'GCASH': 0};
-  User? user = FirebaseAuth.instance.currentUser ;
+  User? user = FirebaseAuth.instance.currentUser;
   String financialAdvice = "Your financial advice will appear here.";
+  List<double> forecastedExpenses = [];
 
   @override
   void initState() {
@@ -28,112 +30,91 @@ class _MonthlyReportState extends State<MonthlyReport> {
     fetchFinancialAdvice();
   }
 
-  List<Color> getShades(Color baseColor, int length) {
-    return List<Color>.generate(length, (index) {
-      double shadeFactor = 1 - (index * 0.1);
-      return baseColor.withOpacity(shadeFactor.clamp(0.4, 1.0));
-    });
-  }
-
   Future<void> fetchCategoriesAndExpenses() async {
     try {
-      QuerySnapshot categorySnapshot = await FirebaseFirestore.instance
-          .collection('categories')
-          .where('User Email', isEqualTo: user!.email)
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('expenses')
+          .where('userId', isEqualTo: user?.uid)
           .get();
 
-      Map<String, double> tempExpenses = {};
-      for (var categoryDoc in categorySnapshot.docs) {
-        List<dynamic> categoryList = categoryDoc['categoriesArray'];
-        for (var category in categoryList) {
-          QuerySnapshot expenseSnapshot = await FirebaseFirestore.instance
-              .collection('expenses')
-              .where('category', isEqualTo: category)
-              .where('User Email', isEqualTo: user!.email)
-              .get();
-
-          double totalAmount = 0.0;
-          for (var expenseDoc in expenseSnapshot.docs) {
-            totalAmount += expenseDoc['amount'];
-          }
-
-          tempExpenses[category] = totalAmount;
-        }
+      Map<String, double> fetchedExpenses = {};
+      for (var doc in snapshot.docs) {
+        String category = doc['category'];
+        double amount = doc['amount'].toDouble();
+        fetchedExpenses[category] =
+            (fetchedExpenses[category] ?? 0) + amount;
       }
 
-      if (mounted) {
-        setState(() {
-          expenses = tempExpenses;
-        });
-      }
+      setState(() {
+        expenses = fetchedExpenses;
+      });
     } catch (e) {
-      showError('Error fetching categories or expenses: $e');
+      print('Error fetching expenses: $e');
     }
   }
 
   Future<void> fetchIncomes() async {
     try {
-      QuerySnapshot incomeSnapshot = await FirebaseFirestore.instance
-          .collection('income')
-          .where('User Email', isEqualTo: user!.email)
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('incomes')
+          .where('userId', isEqualTo: user?.uid)
           .get();
 
-      Map<String, double> tempIncomes = {'CASH': 0, 'CARD': 0, 'GCASH': 0};
-
-      for (var incomeDoc in incomeSnapshot.docs) {
-        String accountType = incomeDoc['accounts'];
-        double amount = incomeDoc['amount'];
-
-        if (tempIncomes.containsKey(accountType)) {
-          tempIncomes[accountType] = tempIncomes[accountType]! + amount;
-        }
+      Map<String, double> fetchedIncomes = {'CASH': 0, 'CARD': 0, 'GCASH': 0};
+      for (var doc in snapshot.docs) {
+        String type = doc['type'];
+        double amount = doc['amount'].toDouble();
+        fetchedIncomes[type] = (fetchedIncomes[type] ?? 0) + amount;
       }
 
-      if (mounted) {
-        setState(() {
-          incomes = tempIncomes;
-        });
-      }
+      setState(() {
+        incomes = fetchedIncomes;
+      });
     } catch (e) {
-      showError('Error fetching incomes: $e');
+      print('Error fetching incomes: $e');
     }
+  }
+
+  List<Color> getShades(Color baseColor, int count) {
+    List<Color> shades = [];
+    for (int i = 0; i < count; i++) {
+      shades.add(baseColor.withOpacity(1 - (i * 0.1)));
+    }
+    return shades;
   }
 
   Future<void> fetchFinancialAdvice() async {
     try {
+      double totalIncome = incomes.values.reduce((a, b) => a + b);
+      double totalExpenses = expenses.values.reduce((a, b) => a + b);
+      double savings = totalIncome - totalExpenses;
+
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/predict'), // Adjust the URL as needed
+        Uri.parse('http://localhost:8000/financial_predict'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'income': 5000,
-          'expenses': 4000,
-          'budget': 600,
-          'savings': 500,
+        body: json.encode({
+          'income': totalIncome,
+          'expenses': totalExpenses,
+          'budget': totalExpenses,
+          'savings': savings,
         }),
       );
 
       if (response.statusCode == 200) {
-        if (mounted) {
-          setState(() {
-            financialAdvice = jsonDecode(response.body)['financial_advice'];
-          });
-        }
+        Map<String, dynamic> data = json.decode(response.body);
+        setState(() {
+          financialAdvice = data['financial_advice'];
+          forecastedExpenses = List<double>.from(data['forecasted_expenses']);
+        });
       } else {
-        showError('Failed to fetch financial advice.');
+        throw Exception('Failed to load financial advice');
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          financialAdvice = "Error: ${e.toString()}";
-        });
-      }
+      print('Error fetching financial advice: $e');
+      setState(() {
+        financialAdvice = "Unable to fetch financial advice at this time.";
+      });
     }
-  }
-
-  void showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override
@@ -142,7 +123,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color (0xffFFF8ED),
+        backgroundColor: const Color(0xffFFF8ED),
         title: const Text(
           'FINANCIAL REPORT',
           style: TextStyle(
@@ -155,6 +136,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
       ),
       body: Stack(
         children: [
+          // Background gradient
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -168,9 +150,11 @@ class _MonthlyReportState extends State<MonthlyReport> {
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: sw * 0.04, vertical: sw * 0.01),
+              padding: EdgeInsets.symmetric(
+                  horizontal: sw * 0.04, vertical: sw * 0.01),
               child: Column(
                 children: [
+                  // Expenses Pie Chart
                   expenses.isNotEmpty
                       ? PieChart(
                     dataMap: expenses,
@@ -181,7 +165,10 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     ),
                   )
                       : const Center(child: CircularProgressIndicator()),
-                  const SizedBox(height: 20),
+
+                  SizedBox(height: 20),
+
+                  // Incomes Pie Chart
                   incomes.isNotEmpty
                       ? PieChart(
                     dataMap: incomes,
@@ -196,11 +183,14 @@ class _MonthlyReportState extends State<MonthlyReport> {
                     ),
                   )
                       : const Center(child: CircularProgressIndicator()),
-                  const SizedBox(height: 20),
-                  Text(
-                    financialAdvice,
-                    style: const TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
+
+                  SizedBox(height: sw * 0.05),
+
+                  // Financial Advice Section
+                  FinancialAdviceSection(
+                    financialAdvice: financialAdvice,
+                    forecastedExpenses: forecastedExpenses,
+                    fontSize: sw,
                   ),
                 ],
               ),
@@ -218,6 +208,67 @@ class _MonthlyReportState extends State<MonthlyReport> {
           history: Colors.white,
           settings: Colors.white,
         ),
+      ),
+    );
+  }
+}
+
+class FinancialAdviceSection extends StatelessWidget {
+  final String financialAdvice;
+  final List<double> forecastedExpenses;
+  final double fontSize;
+
+  const FinancialAdviceSection({
+    super.key,
+    required this.financialAdvice,
+    required this.forecastedExpenses,
+    required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: const Color(0xffFFF8ED),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            spreadRadius: 6,
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'FINANCIAL ADVICE',
+            style: TextStyle(
+              color: const Color(0xff9A9BEB),
+              fontWeight: FontWeight.w800,
+              fontSize: fontSize * 0.05,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          Text(
+            financialAdvice,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: fontSize * 0.04,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            'Forecasted Expenses: ${forecastedExpenses.join(", ")}',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: fontSize * 0.04,
+            ),
+          ),
+        ],
       ),
     );
   }

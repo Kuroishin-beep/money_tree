@@ -4,8 +4,6 @@ import 'package:money_tree/firebase_options.dart';
 import 'package:money_tree/views/account_details/account_birthdate_screen.dart';
 import 'package:money_tree/views/account_details/account_email_screen.dart';
 import 'package:money_tree/views/account_details/account_mobileno_screen.dart';
-import 'models/financial_data_service.dart';
-import 'models/tracker_model.dart';
 import 'views/start_screens/login_screen.dart';
 import 'views/dashboard/dashboard_screen.dart';
 import 'views/start_screens/get_started_screen.dart';
@@ -25,13 +23,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Call the data insertion functions if needed
-  FinancialDataService financialDataService = FinancialDataService();
-  await financialDataService.insertLowIncomeData();
-  await financialDataService.insertMiddleIncomeData();
-  await financialDataService.insertHighIncomeData();
 
-  runApp(BudgetTracker());
+  runApp(const BudgetTracker());
 }
 
 class BudgetTracker extends StatelessWidget {

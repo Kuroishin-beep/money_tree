@@ -3,8 +3,8 @@ import 'package:money_tree/views/dashboard/dashboard_screen.dart';
 import 'package:money_tree/views/account_details/account_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
 
-import '../../bottom_navigation.dart';
-import '../../fab.dart';
+import '../constants/bottom_navigation.dart';
+import '../constants/fab.dart';
 import 'package:money_tree/views/start_screens/login_screen.dart';
 
 // CustomSectionTitle widget

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../bottom_navigation.dart';
-import '../../fab.dart';
+import '../constants/bottom_navigation.dart';
+import '../constants/fab.dart';
 
 class AccountMobileNoScreen extends StatelessWidget {
   const AccountMobileNoScreen({super.key});

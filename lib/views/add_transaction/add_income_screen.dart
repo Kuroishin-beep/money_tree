@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:money_tree/views/add_transaction/add_expenses_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../../models/tracker_model.dart';
 
 class NewIncomeScreen extends StatefulWidget {
@@ -288,6 +288,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
             borderSide: BorderSide.none
         ),
       ),
+      keyboardType: TextInputType.number,
     );
   }
 

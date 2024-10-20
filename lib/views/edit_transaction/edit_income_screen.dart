@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../../models/tracker_model.dart';
 
 
@@ -262,6 +262,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
             borderSide: BorderSide.none
         ),
       ),
+      keyboardType: TextInputType.number,
     );
   }
 

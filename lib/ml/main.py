@@ -2,7 +2,7 @@ import os
 import threading
 from fastapi import FastAPI, APIRouter
 from pydantic import BaseModel
-from ml_model import predict_financial_advice, create_financial_advice, train_decision_tree
+from ml_model import create_financial_advice, train_decision_tree
 from firebase_utils import get_income_brackets
 import firebase_admin
 from firebase_admin import credentials
@@ -12,7 +12,7 @@ import os
 import threading
 from fastapi import FastAPI, APIRouter
 from pydantic import BaseModel
-from ml_model import predict_financial_advice, create_financial_advice, train_decision_tree
+from ml_model import create_financial_advice, train_decision_tree
 from firebase_utils import get_income_brackets
 import firebase_admin
 from firebase_admin import credentials
@@ -85,13 +85,13 @@ async def predict():
 @api_router.post("/financial_predict")
 def financial_predict(input_data: Tracker):
     """Predict financial advice based on Tracker instance."""
-    advice = predict_financial_advice(
-        income=input_data.totalCash + input_data.totalCard + input_data.totalGCash,
-        expenses=input_data.amount,
-        budget=input_data.budgetAmount,
-        savings=input_data.savingsAmount
-    )
-    return {"financial_advice": advice}
+    # advice = predict_financial_advice(
+    #     income=input_data.totalCash + input_data.totalCard + input_data.totalGCash,
+    #     expenses=input_data.amount,
+    #     budget=input_data.budgetAmount,
+    #     savings=input_data.savingsAmount
+    # )
+    # return {"financial_advice": advice}
 
 
 @api_router.post("/create_advice")

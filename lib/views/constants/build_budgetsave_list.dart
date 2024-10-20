@@ -90,7 +90,7 @@ class BuildBudgetSavelist extends StatelessWidget {
                     ),
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.black
                     ),
                   )
@@ -99,7 +99,7 @@ class BuildBudgetSavelist extends StatelessWidget {
                   '  of  ',
                   style: const TextStyle(
                     fontWeight: FontWeight.w300,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
                 TextButton(
@@ -127,7 +127,7 @@ class BuildBudgetSavelist extends StatelessWidget {
                       ),
                       style: const TextStyle(
                           fontWeight: FontWeight.w500,
-                          fontSize: 16,
+                          fontSize: 14,
                           color: Colors.black
                       ),
                     )

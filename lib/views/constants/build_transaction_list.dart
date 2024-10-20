@@ -90,14 +90,14 @@ class TransactionList extends StatelessWidget {
                 formattedDate,
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
-                    fontSize: fs * 0.035
+                    fontSize: fs * 0.03
                 ),
               ),
               Text(
                 track.name,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: fs * 0.05
+                    fontWeight: FontWeight.w800,
+                    fontSize: fs * 0.045
                 ),
               ),
             ],
@@ -106,7 +106,7 @@ class TransactionList extends StatelessWidget {
           trailing: Text(
             '₱ ${formatter.format(track.amount)}',
             style: TextStyle(
-                fontSize: fs * 0.04,
+                fontSize: fs * 0.035,
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold
             ),

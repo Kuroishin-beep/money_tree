@@ -5,8 +5,10 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../../bottom_navigation.dart';
-import '../../fab.dart';
+import '../account_details/account_screen.dart';
+import '../constants/bottom_navigation.dart';
+import '../constants/fab.dart';
+import '../dashboard/dashboard_screen.dart';
 
 class MonthlyReport extends StatefulWidget {
   const MonthlyReport({super.key});
@@ -28,6 +30,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
     fetchCategoriesAndExpenses();
     fetchIncomes();
     fetchFinancialAdvice();
+    _getUserProfileImage();
   }
 
   Future<void> fetchCategoriesAndExpenses() async {
@@ -117,6 +120,32 @@ class _MonthlyReportState extends State<MonthlyReport> {
     }
   }
 
+
+  String? _profileImage;
+
+  // Get user profile image
+  Future<void> _getUserProfileImage() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Check if the user is authenticated with Google
+      if (user.photoURL != null) {
+        setState(() {
+          _profileImage = user.photoURL;
+        });
+      } else {
+        // If not using Google account, retrieve profile image from Firestore
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          _profileImage = userData['profileImage'];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -133,6 +162,32 @@ class _MonthlyReportState extends State<MonthlyReport> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AccountScreen()),
+              );
+            },
+            child: CircleAvatar(
+              backgroundImage: _profileImage != null
+                  ? NetworkImage(_profileImage!)
+                  : const AssetImage('lib/images/pfp.jpg') as ImageProvider,
+              radius: 20,
+            ),
+          ),
+          SizedBox(width: 16),
+        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0XFF639DF0)),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
+          },
+        )
       ),
       body: Stack(
         children: [

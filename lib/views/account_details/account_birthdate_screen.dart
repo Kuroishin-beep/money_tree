@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart'; // Import intl package for date formatting
 import 'package:table_calendar/table_calendar.dart'; // Import the TableCalendar package
-import '../../bottom_navigation.dart';
-import '../../fab.dart';
+import '../constants/bottom_navigation.dart';
+import '../constants/fab.dart';
 
 class AccountBirthdateScreen extends StatefulWidget {
   const AccountBirthdateScreen({super.key});

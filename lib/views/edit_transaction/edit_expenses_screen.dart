@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../../models/tracker_model.dart';
 
 
@@ -361,6 +361,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
             borderSide: BorderSide.none
         ),
       ),
+      keyboardType: TextInputType.number,
     );
   }
 

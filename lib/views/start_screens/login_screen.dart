@@ -375,7 +375,7 @@ class _LoginState extends State<Login> {
       style: TextStyle(
         color: Colors.white,
         fontFamily: "Inter Regular",
-        fontSize: 20.0,
+        fontSize: 15.0,
         fontWeight: FontWeight.w300,
         decoration: TextDecoration.underline,
         decorationColor: Colors.white,
@@ -455,7 +455,7 @@ class _LoginState extends State<Login> {
         "Don't have an account? Sign up",
         style: TextStyle(
           color: Colors.white,
-          fontSize: 18.0,
+          fontSize: 15.0,
           fontWeight: FontWeight.w100,
         ),
       ),

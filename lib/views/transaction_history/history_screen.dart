@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../account_details/account_screen.dart';
 import '../constants/build_transaction_list.dart';
 
@@ -25,6 +26,37 @@ class HistoryDataListState extends State<HistoryScreen> {
   // for displaying all income and expenses
   bool _showIncome = false;
   bool _showExpense = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserProfileImage();
+  }
+
+  String? _profileImage;
+
+  // Get user profile image
+  Future<void> _getUserProfileImage() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Check if the user is authenticated with Google
+      if (user.photoURL != null) {
+        setState(() {
+          _profileImage = user.photoURL;
+        });
+      } else {
+        // If not using Google account, retrieve profile image from Firestore
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          _profileImage = userData['profileImage'];
+        });
+      }
+    }
+  }
 
 
   @override
@@ -55,8 +87,9 @@ class HistoryDataListState extends State<HistoryScreen> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: AssetImage(
-                    'lib/images/pfp.jpg'),
+                backgroundImage: _profileImage != null
+                    ? NetworkImage(_profileImage!)
+                    : const AssetImage('lib/images/pfp.jpg') as ImageProvider,
                 radius: 20,
               ),
             ),
@@ -149,6 +182,13 @@ class HistoryDataListState extends State<HistoryScreen> {
                         return doc['type'] == 'expenses';
                       }).toList();
 
+                      // Sort the filtered documents by date in descending order (newest first)
+                      filteredDocs.sort((a, b) {
+                        final dateA = (a['date'] as Timestamp).toDate();
+                        final dateB = (b['date'] as Timestamp).toDate();
+                        return dateB.compareTo(dateA); // Sort by date descending
+                      });
+
                       // If no expense transactions exist
                       if (filteredDocs.isEmpty) {
                         return const Center(child: Text('No expense transactions found.'));
@@ -182,7 +222,6 @@ class HistoryDataListState extends State<HistoryScreen> {
                       );
                     },
                   ),
-
 
                   TextButton(
                     onPressed: () {
@@ -222,6 +261,7 @@ class HistoryDataListState extends State<HistoryScreen> {
                       ),
                     ],
                   ),
+
                   SizedBox(height: sw * 0.025),
 
                   // List of Income from Firestore
@@ -242,6 +282,13 @@ class HistoryDataListState extends State<HistoryScreen> {
                       final filteredDocs = snapshot.data!.docs.where((doc) {
                         return doc['type'] == 'income';
                       }).toList();
+
+                      // Sort the filtered documents by date in descending order (newest first)
+                      filteredDocs.sort((a, b) {
+                        final dateA = (a['date'] as Timestamp).toDate();
+                        final dateB = (b['date'] as Timestamp).toDate();
+                        return dateB.compareTo(dateA); // Sort by date descending
+                      });
 
                       // If no income transactions exist
                       if (filteredDocs.isEmpty) {
@@ -277,7 +324,6 @@ class HistoryDataListState extends State<HistoryScreen> {
                     },
                   ),
 
-
                   TextButton(
                     onPressed: () {
                       setState(() {
@@ -286,6 +332,8 @@ class HistoryDataListState extends State<HistoryScreen> {
                     },
                     child: Text(_showIncome ? 'Show less' : 'See all'),
                   ),
+
+                  SizedBox(height: sw * 0.04),
                 ],
               ),
             ),

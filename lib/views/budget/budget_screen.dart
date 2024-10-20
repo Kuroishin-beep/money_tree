@@ -6,9 +6,9 @@ import 'package:money_tree/views/account_details/account_screen.dart';
 import 'package:money_tree/views/add_transaction/add_budget_popupscreen.dart';
 import 'package:money_tree/views/add_transaction/add_savings_popupscreen.dart';
 import 'package:money_tree/views/constants/build_budgetsave_list.dart';
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -40,6 +40,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
   void initState() {
     super.initState();
     fetchData();
+    _getUserProfileImage();
   }
 
   Future<void> fetchData() async {
@@ -89,6 +90,32 @@ class _BudgetScreenState extends State<BudgetScreen> {
     }
   }
 
+
+  String? _profileImage;
+
+  // Get user profile image
+  Future<void> _getUserProfileImage() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Check if the user is authenticated with Google
+      if (user.photoURL != null) {
+        setState(() {
+          _profileImage = user.photoURL;
+        });
+      } else {
+        // If not using Google account, retrieve profile image from Firestore
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          _profileImage = userData['profileImage'];
+        });
+      }
+    }
+  }
+
   // Number format
   final NumberFormat formatter = NumberFormat('#,###.##');
 
@@ -129,8 +156,9 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: AssetImage(
-                    'lib/images/pfp.jpg'),
+                backgroundImage: _profileImage != null
+                    ? NetworkImage(_profileImage!)
+                    : const AssetImage('lib/images/pfp.jpg') as ImageProvider,
                 radius: 20,
               ),
             ),

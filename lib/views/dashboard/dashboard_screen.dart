@@ -10,9 +10,10 @@ import 'package:money_tree/views/income/income_screen.dart';
 import 'package:money_tree/views/expenses/expenses_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../bottom_navigation.dart';
+import '../account_details/account_screen.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -221,6 +222,7 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
 
+          // Main Body
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -268,11 +270,19 @@ class _DashboardState extends State<Dashboard> {
                                 )
                               ]
                           ),
-                          child: CircleAvatar(
-                            radius: sw * 0.12,
-                            backgroundImage: _profileImage != null 
-                              ? NetworkImage(_profileImage!) // Use NetworkImage for the URL from Firestore
-                              : const AssetImage('lib/images/pfp.jpg') as ImageProvider, // Fallback image
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AccountScreen()),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: sw * 0.12,
+                              backgroundImage: _profileImage != null
+                                  ? NetworkImage(_profileImage!)
+                                  : const AssetImage('lib/images/pfp.jpg') as ImageProvider,
+                            ),
                           ),
                         ),
                       )
@@ -375,6 +385,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  // displays the total balance and income breakdowns (CASH, CARD, GCASH)
   Widget _accountSummaryBox() {
     double sw = MediaQuery
         .of(context)
@@ -568,6 +579,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  // holds the income
   Widget _incomeBox(double income) {
     double sw = MediaQuery
         .of(context)
@@ -707,6 +719,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  // holds the expenses
   Widget _expensesBox(double expenses) {
     double sw = MediaQuery
         .of(context)
@@ -845,6 +858,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  // holds the budget
   Widget _budgetBox() {
     double progress = budgetAmount! / totalBudget!;
     double sw = MediaQuery
@@ -951,7 +965,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-
+  // display recent transaction
   Widget _recentTransactionBox() {
     double sw = MediaQuery
         .of(context)
@@ -991,8 +1005,6 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
 
-
-
             StreamBuilder<List<QuerySnapshot>>(
               stream: CombineLatestStream.list([
                 firestoreService.getExpenseStream(),
@@ -1023,8 +1035,6 @@ class _DashboardState extends State<Dashboard> {
                 // Limit to the latest 5 transactions
                 var limitedDocs = docs.take(5).toList();
 
-                // Calculate income and expenses here
-                //_calculateTotals(limitedDocs);
 
                 // Display the sorted and limited list
                 return Column(
@@ -1052,9 +1062,6 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
             ),
-
-
-
 
           ],
         ),

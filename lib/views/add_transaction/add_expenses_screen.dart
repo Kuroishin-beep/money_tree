@@ -6,8 +6,8 @@ import 'package:money_tree/controller/tracker_controller.dart';
 import 'package:money_tree/models/tracker_model.dart';
 import 'package:money_tree/views/add_transaction/add_income_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
-import '../../bottom_navigation.dart';
-import '../../fab.dart';
+import '../constants/bottom_navigation.dart';
+import '../constants/fab.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 class NewExpenseScreen extends StatefulWidget {

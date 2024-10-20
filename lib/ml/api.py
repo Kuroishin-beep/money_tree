@@ -15,7 +15,6 @@ load_dotenv()
 # Initialize FastAPI app
 app = FastAPI()
 
-
 # Initialize Firebase Admin SDK using environment variables
 def initialize_firebase():
     private_key = os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n') if os.getenv("FIREBASE_PRIVATE_KEY") else None
@@ -42,12 +41,10 @@ def initialize_firebase():
     else:
         print("Firebase app already initialized.")
 
-
 initialize_firebase()
 
 # Initialize Firestore
 db = firestore.client()
-
 
 class Tracker(BaseModel):
     totalCash: float
@@ -56,7 +53,6 @@ class Tracker(BaseModel):
     amount: float
     budgetAmount: float
     savingsAmount: float
-
 
 @app.post("/financial_predict")
 def financial_predict(input_data: Tracker):
@@ -70,17 +66,22 @@ def financial_predict(input_data: Tracker):
     )
     return {"financial_advice": advice}
 
-
 @app.on_event("startup")
 def startup_event():
     print("Available routes:")
     for route in app.routes:
         print(route)
 
-    # Fetch initial data and train the model if CSV is available
-    fetch_data('test@gmail.com')  # Replace with appropriate user email
-    train_decision_tree()
+    # Start periodic tasks
+    user_email = 'test@gmail.com'  # Replace with appropriate user email
+    threading.Thread(target=periodic_tasks, args=(user_email,), daemon=True).start()
 
+def periodic_tasks(user_email):
+    """Fetch data and train the model periodically."""
+    while True:
+        fetch_data(user_email)
+        train_decision_tree()
+        time.sleep(3600)  # Run every 1 hour
 
 def fetch_data(user_email):
     data = {
@@ -138,14 +139,14 @@ def fetch_data(user_email):
                 additional_data = {field: doc_data.get(field, '') for field in fields['additional_fields']}
 
                 # Check for date; if not present, set it to now
-                date = doc_data.get('date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))  # Set to current datetime if not present
+                date = doc_data.get('date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
                 # Construct the entry with the specified fields
                 entry = {
                     'amount': amount,
                     'total_amount': total_amount,
                     'date': date,
-                    **additional_data  # Include any additional fields
+                    **additional_data
                 }
 
                 data[key].append(entry)
@@ -154,9 +155,6 @@ def fetch_data(user_email):
 
     except Exception as e:
         print(f"Error fetching data: {e}")
-
-        save_to_csv(data)
-
 
 def save_to_csv(data, filename='user_budget_data.csv'):
     """Saves the fetched data into a CSV file."""
@@ -182,15 +180,10 @@ def save_to_csv(data, filename='user_budget_data.csv'):
                     total_amount,
                     entry['date']
                 ]
-
             rows.append(row)
 
     columns = ['Type', 'Amount', 'Total Amount', 'Date']
     df = pd.DataFrame(rows, columns=columns)
-
-    missing_columns = [col for col in ['Total Amount', 'Type', 'Date'] if col not in df.columns]
-    if missing_columns:
-        print(f"Missing columns in DataFrame: {missing_columns}")
 
     df['Date'] = pd.to_datetime(df['Date'], errors='coerce', utc=True)
     df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
@@ -198,16 +191,8 @@ def save_to_csv(data, filename='user_budget_data.csv'):
     df.to_csv(filename, index=False)
     print(f"CSV file '{filename}' created successfully.")
 
-
-# Start periodic model training in a separate thread
-def start_model_training():
-    train_decision_tree()
-    threading.Timer(60 * 60, start_model_training).start()  # Run every 1 hour
-
-
-start_model_training()
-
 if __name__ == '__main__':
     import uvicorn
+    import time  # Import time for the sleep functionality
 
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -7,20 +7,35 @@ from firebase_utils import get_income_brackets
 import firebase_admin
 from firebase_admin import credentials
 
+# Initialize Firebase Admin SDK using environment variables
+import os
+import threading
+from fastapi import FastAPI, APIRouter
+from pydantic import BaseModel
+from ml_model import predict_financial_advice, create_financial_advice, train_decision_tree
+from firebase_utils import get_income_brackets
+import firebase_admin
+from firebase_admin import credentials
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 
 # Initialize Firebase Admin SDK using environment variables
 def initialize_firebase():
     service_account_info = {
-        'type': 'service_account',
-        'project_id': os.getenv('FIREBASE_ADMIN_PROJECT_ID', 'moneytree-49dc0'),
-        'private_key_id': os.getenv('FIREBASE_ADMIN_PRIVATE_KEY_ID'),
-        'private_key': os.getenv('FIREBASE_ADMIN_PRIVATE_KEY').replace('\\n', '\n'),
-        'client_email': os.getenv('FIREBASE_ADMIN_CLIENT_EMAIL'),
-        'client_id': os.getenv('FIREBASE_ADMIN_CLIENT_ID'),
-        'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-        'token_uri': 'https://oauth2.googleapis.com/token',
-        'auth_provider_x509_cert_url': os.getenv('FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL'),
-        'client_x509_cert_url': os.getenv('FIREBASE_ADMIN_CLIENT_X509_CERT_URL'),
+        "type": os.getenv("FIREBASE_TYPE"),
+        "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+        "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+        "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n'),
+        # Correctly format the private key
+        "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+        "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+        "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
+        "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
+        "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
+        "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
     }
 
     if not firebase_admin._apps:
@@ -33,6 +48,9 @@ def initialize_firebase():
 
 # Call the function to initialize Firebase
 initialize_firebase()
+
+# Continue with the rest of your FastAPI code...
+
 
 # Create FastAPI app and router
 app = FastAPI()
@@ -115,15 +133,4 @@ def startup_event():
         print(route)
 
 
-# Start periodic model training in a separate thread
-def start_model_training():
-    train_decision_tree()
-    threading.Timer(7 * 24 * 60 * 60, start_model_training).start()  # Run every 7 days
 
-
-start_model_training()
-
-if __name__ == '__main__':
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)

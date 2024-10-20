@@ -1,12 +1,11 @@
-from venv import logger
-
 import joblib
 import os
 import pandas as pd
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeRegressor
+from venv import logger
 
 MODEL_PATH = 'financial_advice_model.joblib'
 
@@ -17,21 +16,21 @@ def train_decision_tree():
         df = pd.read_csv('user_data.csv')
 
         # Validate required columns
-        required_columns = ['Total Amount', 'Type', 'Date']
+        required_columns = ['Amount', 'Type', 'Date']
         if not all(col in df.columns for col in required_columns):
             raise ValueError(f"Missing required columns in CSV: {required_columns}")
 
         # Clean and preprocess the data
-        df.fillna(0, inplace=True)
+        df.fillna(0, inplace=True)  # Replace NaN values with 0
         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 
         # Separate income, expenses, savings, and budgets
-        df['TotalIncome'] = df['Total Amount'].where(df['Type'] == 'Income', 0)
-        df['TotalExpenses'] = df['Total Amount'].where(df['Type'] == 'Expense', 0)
-        df['TotalSavings'] = df['Total Amount'].where(df['Type'] == 'Savings', 0)
-        df['TotalBudgets'] = df['Total Amount'].where(df['Type'] == 'Budget', 0)
+        df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
+        df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
+        df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
+        df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
 
-        # Aggregate data
+        # Aggregate data by date
         grouped_data = df.groupby('Date').agg({
             'TotalIncome': 'sum',
             'TotalExpenses': 'sum',
@@ -41,7 +40,8 @@ def train_decision_tree():
 
         # Define features and target variable
         X = grouped_data[['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']]
-        y = (grouped_data['TotalSavings'] / grouped_data['TotalBudgets']).clip(0, 1)
+        y = (grouped_data['TotalSavings'] / (grouped_data['TotalBudgets'].replace(0, 1))).clip(0,
+                                                                                               1)  # Avoid division by zero
 
         # Split data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -113,3 +113,19 @@ def create_financial_advice(income, expenses, budget, savings):
 
     return advice.strip()  # Clean up any leading/trailing whitespace
 
+
+# Example to run the training function (if desired)
+if __name__ == "__main__":
+    # Example values for testing
+    income = 1000
+    expenses = 500
+    budget = 400
+    savings = 200
+
+    # Run training and prediction
+    train_decision_tree()
+    prediction = predict_financial_advice(income, expenses, budget, savings)
+    print(f"Predicted financial advice value: {prediction}")
+
+    advice = create_financial_advice(income, expenses, budget, savings)
+    print(f"Financial advice: {advice}")

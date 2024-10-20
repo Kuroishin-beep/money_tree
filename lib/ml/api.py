@@ -1,33 +1,49 @@
 import os
 import threading
-
 import firebase_admin
 import pandas as pd
 from fastapi import FastAPI
 from firebase_admin import credentials, firestore
 from pydantic import BaseModel
-
+from dotenv import load_dotenv
 from ml_model import train_decision_tree, create_financial_advice
+from datetime import datetime
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize FastAPI app
 app = FastAPI()
 
-# Initialize Firebase Admin SDK using environment variables
-service_account_info = {
-    'type': 'service_account',
-    'project_id': os.getenv('FIREBASE_ADMIN_PROJECT_ID', 'moneytree-49dc0'),
-    'private_key_id': os.getenv('FIREBASE_ADMIN_PRIVATE_KEY_ID'),
-    'private_key': os.getenv('FIREBASE_ADMIN_PRIVATE_KEY').replace('\\n', '\n'),
-    'client_email': os.getenv('FIREBASE_ADMIN_CLIENT_EMAIL'),
-    'client_id': os.getenv('FIREBASE_ADMIN_CLIENT_ID'),
-    'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-    'token_uri': 'https://oauth2.googleapis.com/token',
-    'auth_provider_x509_cert_url': os.getenv('FIREBASE_ADMIN_AUTH_PROVIDER_X509_CERT_URL'),
-    'client_x509_cert_url': os.getenv('FIREBASE_ADMIN_CLIENT_X509_CERT_URL'),
-}
 
-# Initialize the app with the service account
-cred = credentials.Certificate(service_account_info)
-firebase_admin.initialize_app(cred)
+# Initialize Firebase Admin SDK using environment variables
+def initialize_firebase():
+    private_key = os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n') if os.getenv("FIREBASE_PRIVATE_KEY") else None
+    if not private_key:
+        raise ValueError("FIREBASE_PRIVATE_KEY is missing.")
+
+    service_account_info = {
+        "type": os.getenv("FIREBASE_TYPE"),
+        "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+        "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+        "private_key": private_key,
+        "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+        "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+        "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
+        "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
+        "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
+        "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
+    }
+
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(service_account_info)
+        firebase_admin.initialize_app(cred)
+        print("Firebase initialized successfully.")
+    else:
+        print("Firebase app already initialized.")
+
+
+initialize_firebase()
 
 # Initialize Firestore
 db = firestore.client()
@@ -70,7 +86,7 @@ def fetch_data(user_email):
     data = {
         'budgets': [],
         'savings': [],
-        'income': [],
+        'incomes': [],
         'expenses': []
     }
 
@@ -82,13 +98,29 @@ def fetch_data(user_email):
         print("Test query executed successfully.")
 
         collections = {
-            'budgets': 'budgetAmount',
-            'savings': 'savingsAmount',
-            'income': 'amount',
-            'expenses': 'amount'
+            'budgets': {
+                'amount_field': 'budgetAmount',
+                'total_amount_field': 'totalBudgetAmount',
+                'additional_fields': ['UserEmail', 'category', 'type']
+            },
+            'savings': {
+                'amount_field': 'savingsAmount',
+                'total_amount_field': 'totalSavingsAmount',
+                'additional_fields': ['UserEmail', 'type']
+            },
+            'incomes': {
+                'amount_field': 'amount',
+                'total_amount_field': 'totalAmount',
+                'additional_fields': []
+            },
+            'expenses': {
+                'amount_field': 'amount',
+                'total_amount_field': 'totalAmount',
+                'additional_fields': []
+            }
         }
 
-        for key, amount_field in collections.items():
+        for key, fields in collections.items():
             print(f"Fetching {key}...")
             docs = db.collection(key).where('UserEmail', '==', user_email).stream()
             docs_list = list(docs)  # Convert stream to list
@@ -97,16 +129,33 @@ def fetch_data(user_email):
             for doc in docs_list:
                 doc_data = doc.to_dict()
                 print(f"Processing document: {doc_data}")
-                data[key].append({
-                    'amount': doc_data.get(amount_field),
-                    'total_amount': doc_data.get(f'total{amount_field.capitalize()}', ''),
-                    'date': doc_data.get('date')
-                })
+
+                # Extract amount and total_amount
+                amount = doc_data.get(fields['amount_field'], 0)
+                total_amount = doc_data.get(fields['total_amount_field'], 0)
+
+                # Extract additional fields, if any
+                additional_data = {field: doc_data.get(field, '') for field in fields['additional_fields']}
+
+                # Check for date; if not present, set it to now
+                date = doc_data.get('date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))  # Set to current datetime if not present
+
+                # Construct the entry with the specified fields
+                entry = {
+                    'amount': amount,
+                    'total_amount': total_amount,
+                    'date': date,
+                    **additional_data  # Include any additional fields
+                }
+
+                data[key].append(entry)
 
         save_to_csv(data)
 
     except Exception as e:
         print(f"Error fetching data: {e}")
+
+        save_to_csv(data)
 
 
 def save_to_csv(data, filename='user_budget_data.csv'):
@@ -118,25 +167,47 @@ def save_to_csv(data, filename='user_budget_data.csv'):
     rows = []
     for key, entries in data.items():
         for entry in entries:
-            rows.append(
-                [key.capitalize(), entry['amount'], entry.get('total_amount', ''), entry['date']]
-            )
+            if key.lower() in ['incomes', 'expenses']:
+                row = [
+                    key.capitalize(),
+                    entry['amount'],
+                    '',
+                    entry['date']
+                ]
+            else:
+                total_amount = entry.get('total_amount', 0)
+                row = [
+                    key.capitalize(),
+                    entry['amount'],
+                    total_amount,
+                    entry['date']
+                ]
 
-    df = pd.DataFrame(rows, columns=['Type', 'Amount', 'Total Amount', 'Date'])
+            rows.append(row)
 
-    # Format dates for consistent output
-    df['Date'] = pd.to_datetime(df['Date'], errors='coerce').dt.strftime('%Y-%m-%d')
+    columns = ['Type', 'Amount', 'Total Amount', 'Date']
+    df = pd.DataFrame(rows, columns=columns)
 
-    # Save DataFrame to CSV
+    missing_columns = [col for col in ['Total Amount', 'Type', 'Date'] if col not in df.columns]
+    if missing_columns:
+        print(f"Missing columns in DataFrame: {missing_columns}")
+
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce', utc=True)
+    df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+
     df.to_csv(filename, index=False)
     print(f"CSV file '{filename}' created successfully.")
 
 
 # Start periodic model training in a separate thread
 def start_model_training():
-    fetch_data('test@gmail.com')  # Replace with appropriate user email
     train_decision_tree()
-    threading.Timer(7 * 24 * 60 * 60, start_model_training).start()
+    threading.Timer(60 * 60, start_model_training).start()  # Run every 1 hour
 
 
 start_model_training()
+
+if __name__ == '__main__':
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)

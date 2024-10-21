@@ -1,15 +1,16 @@
-from datetime import datetime
-import os
 import logging
-import time
-import pandas as pd
+import os
+from datetime import datetime
+
 import firebase_admin
+import pandas as pd
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from firebase_admin import credentials, firestore, auth
-from ml_model import train_decision_tree, predict_financial_advice_from_csv, create_financial_advice
+
+from ml_model import train_decision_tree, create_financial_advice
 
 # Load environment variables
 load_dotenv()

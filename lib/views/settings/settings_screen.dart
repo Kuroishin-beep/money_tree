@@ -64,6 +64,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
+
   bool notificationsPaused = false;
   bool darkMode = false;
   bool isExpandedNotif = false;

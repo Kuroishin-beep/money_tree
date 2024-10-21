@@ -10,16 +10,16 @@ import '../constants/bottom_navigation.dart';
 import '../constants/fab.dart';
 import '../dashboard/dashboard_screen.dart';
 
-class MonthlyReport extends StatefulWidget {
-  const MonthlyReport({super.key});
+class FinancialReport extends StatefulWidget {
+  const FinancialReport({super.key});
 
   @override
-  State<MonthlyReport> createState() => _MonthlyReportState();
+  State<FinancialReport> createState() => _FinancialReportState();
 }
 
-class _MonthlyReportState extends State<MonthlyReport> {
+class _FinancialReportState extends State<FinancialReport> {
   Map<String, double> expenses = {};
-  Map<String, double> incomes = {'CASH': 0, 'CARD': 0, 'GCASH': 0};
+  Map<String, double> incomes = {};
   User? user = FirebaseAuth.instance.currentUser;
   String financialAdvice = "Your financial advice will appear here.";
   List<double> forecastedExpenses = [];
@@ -33,59 +33,78 @@ class _MonthlyReportState extends State<MonthlyReport> {
     _getUserProfileImage();
   }
 
+  // get color
+  List<Color> getShades(Color baseColor, int length) {
+    return List<Color>.generate(length, (index) {
+      double shadeFactor = 1 - (index * 0.3);
+      return baseColor.withOpacity(shadeFactor.clamp(0.4, 1.0));
+    });
+  }
+
+  // get expenses and categories
   Future<void> fetchCategoriesAndExpenses() async {
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('expenses')
-          .where('userId', isEqualTo: user?.uid)
+      QuerySnapshot categorySnapshot = await FirebaseFirestore.instance
+          .collection('categories')
+          .where('UserEmail', isEqualTo: user!.email)
           .get();
 
-      Map<String, double> fetchedExpenses = {};
-      for (var doc in snapshot.docs) {
-        String category = doc['category'];
-        double amount = doc['amount'].toDouble();
-        fetchedExpenses[category] =
-            (fetchedExpenses[category] ?? 0) + amount;
+      Map<String, double> tempExpenses = {};
+
+      for (var categoryDoc in categorySnapshot.docs) {
+        List<dynamic> categoryList = categoryDoc['categoriesArray'];
+
+
+        for (var category in categoryList) {
+          QuerySnapshot expenseSnapshot = await FirebaseFirestore.instance
+              .collection('expenses')
+              .where('category', isEqualTo: category)
+              .where('UserEmail', isEqualTo: user!.email)
+              .get();
+
+          double totalAmount = 0.0;
+          for (var expenseDoc in expenseSnapshot.docs) {
+            totalAmount += expenseDoc['amount'];
+          }
+
+          tempExpenses[category] = totalAmount;
+        }
       }
 
       setState(() {
-        expenses = fetchedExpenses;
+        expenses = tempExpenses;
       });
     } catch (e) {
-      print('Error fetching expenses: $e');
+      print('Error fetching categories or expenses: $e');
     }
   }
 
+  // get incomes
   Future<void> fetchIncomes() async {
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      QuerySnapshot incomeSnapshot = await FirebaseFirestore.instance
           .collection('incomes')
-          .where('userId', isEqualTo: user?.uid)
+          .where('UserEmail', isEqualTo: user!.email)
           .get();
 
-      Map<String, double> fetchedIncomes = {'CASH': 0, 'CARD': 0, 'GCASH': 0};
-      for (var doc in snapshot.docs) {
-        String type = doc['type'];
+      Map<String, double> tempIncomes = {};
+
+      for (var doc in incomeSnapshot.docs) {
+        String income = doc['account'];
         double amount = doc['amount'].toDouble();
-        fetchedIncomes[type] = (fetchedIncomes[type] ?? 0) + amount;
+        tempIncomes[income] = (tempIncomes[income] ?? 0) + amount;
       }
 
       setState(() {
-        incomes = fetchedIncomes;
+        incomes = tempIncomes;
       });
+
     } catch (e) {
       print('Error fetching incomes: $e');
     }
   }
 
-  List<Color> getShades(Color baseColor, int count) {
-    List<Color> shades = [];
-    for (int i = 0; i < count; i++) {
-      shades.add(baseColor.withOpacity(1 - (i * 0.1)));
-    }
-    return shades;
-  }
-
+  // get financial advice
   Future<void> fetchFinancialAdvice() async {
     try {
       double totalIncome = incomes.values.reduce((a, b) => a + b);
@@ -119,7 +138,6 @@ class _MonthlyReportState extends State<MonthlyReport> {
       });
     }
   }
-
 
   String? _profileImage;
 
@@ -203,18 +221,21 @@ class _MonthlyReportState extends State<MonthlyReport> {
               ),
             ),
           ),
+
+          // Main Body
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: sw * 0.04, vertical: sw * 0.01),
               child: Column(
                 children: [
+
                   // Expenses Pie Chart
                   expenses.isNotEmpty
                       ? PieChart(
                     dataMap: expenses,
                     chartRadius: sw / 1.7,
-                    colorList: getShades(Colors.red, expenses.length),
+                    colorList: getShades(Colors.pinkAccent, expenses.length),
                     chartValuesOptions: const ChartValuesOptions(
                       showChartValuesInPercentage: true,
                     ),

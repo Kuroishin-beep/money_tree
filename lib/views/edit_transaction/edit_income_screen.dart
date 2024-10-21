@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -23,6 +24,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   String selectedAccount = '';
 
   // for icons
+  Icon? _icon;
   IconData? _selectedIconData;
   int code = 0;
 
@@ -31,6 +33,41 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initialIncomeData();
+  }
+
+  Future<void> initialIncomeData() async {
+    try {
+      DocumentSnapshot incomeDoc = await FirebaseFirestore.instance
+          .collection('incomes')
+          .doc(widget.docID)
+          .get();
+
+      if (incomeDoc.exists) {
+        setState(() {
+          _amountController.text = incomeDoc['amount'].toString();
+          _nameController.text = incomeDoc['name'];
+          _dateController.text = incomeDoc['date'].toDate().toString().split(" ")[0];
+          selectedAccount = incomeDoc['account'];
+
+          // If icon was saved, display the icon again
+          if (incomeDoc['icon'] != null) {
+            code = incomeDoc['icon'];
+            _selectedIconData = IconData(code, fontFamily: 'MaterialIcons');
+            _icon = Icon(_selectedIconData, size: 30, color: const Color(0xff9A9BEB));
+          }
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
 
 
   // Select date function
@@ -420,7 +457,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
         code = _selectedIconData!.codePoint;
 
         Tracker newTrack = Tracker(
-          name: _nameController.text,
+          name: _nameController.text.toLowerCase(),
           category: 'NULL',
           account: selectedAccount,
           amount: double.parse(_amountController.text),

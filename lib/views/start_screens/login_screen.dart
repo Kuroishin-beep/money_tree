@@ -36,6 +36,8 @@ class _LoginState extends State<Login> {
   String password = '';
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  bool show = true;
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -198,6 +200,17 @@ class _LoginState extends State<Login> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
+        suffixIcon: IconButton(
+          onPressed: () {
+            setState(() {
+              show = !show;
+            });
+          },
+          icon: Icon(
+              show == true ? Icons.remove_red_eye_outlined : Icons.remove_red_eye,
+            color: Colors.white,
+          ),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(color: Colors.white, width: 1.5),
@@ -208,7 +221,7 @@ class _LoginState extends State<Login> {
         ),
       ),
       keyboardType: TextInputType.visiblePassword,
-      obscureText: true,
+      obscureText: show,
     );
   }
 

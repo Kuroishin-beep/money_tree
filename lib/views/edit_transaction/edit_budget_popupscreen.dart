@@ -23,8 +23,42 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
   TextEditingController amountController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    initialBudgetData();
+  }
+
+  Future<void> initialBudgetData() async {
+    try {
+      DocumentSnapshot budgetDoc = await FirebaseFirestore.instance
+          .collection('budgets')
+          .doc(widget.docID)
+          .get();
+
+      if (budgetDoc.exists) {
+        setState(() {
+          amountController.text = budgetDoc['budgetAmount'].toString();
+          nameController.text = budgetDoc['category'];
+          budgetController.text = budgetDoc['totalBudgetAmount'].toString();
+
+          // If icon was saved, display the icon again
+          if (budgetDoc['icon'] != null) {
+            code = budgetDoc['icon'];
+            selectedIconData = IconData(code, fontFamily: 'MaterialIcons');
+            _icon = Icon(selectedIconData, size: 30, color: const Color(0xff9A9BEB));
+          }
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
+
   // for icon picker
-  Icon? selected_icon;
+  Icon? _icon;
   IconData? selectedIconData;
   int code = 0;
 
@@ -40,7 +74,7 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
     if (icon != null) {
       setState(() {
         selectedIconData = icon.data;
-        selected_icon = Icon(icon.data);
+        _icon = Icon(icon.data);
 
         code = selectedIconData!.codePoint;
       });

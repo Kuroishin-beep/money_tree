@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../controller/tracker_controller.dart';
@@ -17,6 +18,32 @@ class _EditSavingsamountPopupscreenState extends State<EditSavingsamountPopupscr
 
   // Controllers for textfields
   TextEditingController amountController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initialSavingsData();
+  }
+
+  Future<void> initialSavingsData() async {
+    try {
+      DocumentSnapshot savingsDoc = await FirebaseFirestore.instance
+          .collection('savings')
+          .doc(widget.docID)
+          .get();
+
+      if (savingsDoc.exists) {
+        setState(() {
+          amountController.text = savingsDoc['savingsAmount'].toString();
+
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
 
 
   @override

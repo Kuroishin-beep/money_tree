@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../controller/tracker_controller.dart';
@@ -18,6 +19,32 @@ class _EditTotalbudgetPopupscreenState extends State<EditTotalbudgetPopupscreen>
   // Controllers for textfields
   TextEditingController amountController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    initialBudgetData();
+  }
+
+  Future<void> initialBudgetData() async {
+    try {
+      DocumentSnapshot budgetDoc = await FirebaseFirestore.instance
+          .collection('budgets')
+          .doc(widget.docID)
+          .get();
+
+      if (budgetDoc.exists) {
+        setState(() {
+          amountController.text = budgetDoc['totalBudgetAmount'].toString();
+
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +63,7 @@ class _EditTotalbudgetPopupscreenState extends State<EditTotalbudgetPopupscreen>
         children: [
           TextField(
             controller: amountController,
-            decoration: const InputDecoration(labelText: "Budget"),
+            decoration: const InputDecoration(labelText: "Budget Amount"),
             keyboardType: TextInputType.number,
           ),
         ],

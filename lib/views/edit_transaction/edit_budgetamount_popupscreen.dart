@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/Models/icon_picker_icon.dart';
@@ -20,6 +21,32 @@ class _EditBudgetamountPopupscreenState extends State<EditBudgetamountPopupscree
 
   // Controllers for textfields
   TextEditingController amountController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initialBudgetData();
+  }
+
+  Future<void> initialBudgetData() async {
+    try {
+      DocumentSnapshot budgetDoc = await FirebaseFirestore.instance
+          .collection('budgets')
+          .doc(widget.docID)
+          .get();
+
+      if (budgetDoc.exists) {
+        setState(() {
+          amountController.text = budgetDoc['budgetAmount'].toString();
+
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
 
 
   @override

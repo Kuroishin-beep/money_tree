@@ -78,11 +78,42 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
     super.initState();
     fetchData();
     fetchExistingCategories();
+    initialExpenseData();
   }
+
+  Future<void> initialExpenseData() async {
+    try {
+      DocumentSnapshot expenseDoc = await FirebaseFirestore.instance
+          .collection('expenses')
+          .doc(widget.docID)
+          .get();
+
+      if (expenseDoc.exists) {
+        setState(() {
+          _amountController.text = expenseDoc['amount'].toString();
+          _nameController.text = expenseDoc['name'];
+          _dateController.text = expenseDoc['date'].toDate().toString().split(" ")[0];
+          _categoryController.text = expenseDoc['category'];
+          selectedAccount = expenseDoc['account'];
+
+          // If icon was saved, display the icon again
+          if (expenseDoc['icon'] != null) {
+            code = expenseDoc['icon'];
+            _selectedIconData = IconData(code, fontFamily: 'MaterialIcons');
+            _icon = Icon(_selectedIconData, size: 30, color: const Color(0xff9A9BEB));
+          }
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
+
 
   Future<void> fetchData() async {
     try {
-      // Fetch categories from the Firestore categories collection
       QuerySnapshot categorySnapshot = await FirebaseFirestore.instance
           .collection('categories')
           .where('UserEmail', isEqualTo: user!.email)
@@ -92,7 +123,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
 
       // Collect category names
       for (var doc in categorySnapshot.docs) {
-        // Assuming categoriesArray is an array of strings
+
         if (doc['categoriesArray'] is List) {
           List<String> categories = List<String>.from(doc['categoriesArray']);
           categoryTempList.addAll(categories); // Append categories to the list
@@ -101,12 +132,11 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
         }
       }
 
-      // Update state with fetched categories
       setState(() {
-        predefinedValues = categoryTempList; // Assign the list of categories to predefinedValues
+        predefinedValues = categoryTempList;
       });
 
-      print('Fetched categories: $predefinedValues'); // Debug print to see fetched categories
+      print('Fetched categories: $predefinedValues');
     } catch (e) {
       print('Error fetching categories: $e');
     }
@@ -603,7 +633,7 @@ class _EditExpensesScreenState extends State<EditExpensesScreen> {
 
 
         Tracker newTrack = Tracker(
-          name: _nameController.text,
+          name: _nameController.text.toLowerCase(),
           category: _categoryController.text ?? selectedValue,
           account: selectedAccount,
           amount: double.parse(_amountController.text),

@@ -109,6 +109,48 @@ class FirestoreService {
         .snapshots();
   }
 
+  // FOR DISPLAYING SEARCH IN EXPENSES
+  Stream<QuerySnapshot> getExpenseSearch({String searchQuery = ''}) {
+    final collection = FirebaseFirestore.instance.collection('expenses');
+
+    // Apply search filter only if searchQuery is not empty
+    if (searchQuery.isNotEmpty) {
+      // Convert the search query to lowercase
+      String lowercaseSearchQuery = searchQuery.toLowerCase();
+
+      return collection
+          .where('name', isGreaterThanOrEqualTo: lowercaseSearchQuery)
+          .where('name', isLessThanOrEqualTo: lowercaseSearchQuery + '\uf8ff')
+          .snapshots();
+    } else {
+      return collection
+          .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+          .snapshots();
+    }
+  }
+
+  // FOR DISPLAYING SEARCH IN INCOMES
+  Stream<QuerySnapshot> getIncomeSearch({String searchQuery = ''}) {
+    final collection = FirebaseFirestore.instance.collection('incomes');
+
+
+    // Apply search filter only if searchQuery is not empty
+    if (searchQuery.isNotEmpty) {
+      // Convert the search query to lowercase
+      String lowercaseSearchQuery = searchQuery.toLowerCase();
+
+      return collection
+          .where('name', isGreaterThanOrEqualTo: lowercaseSearchQuery)
+          .where('name', isLessThanOrEqualTo: lowercaseSearchQuery + '\uf8ff')
+          .snapshots();
+    } else {
+      return collection
+          .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+          .snapshots();
+    }
+  }
+
+
 
 
 

@@ -650,7 +650,7 @@ class _NewExpenseScreenState extends State<NewExpenseScreen> {
         DateTime selectedDate = DateTime.parse(_dateController.text);
 
         Tracker newTrack = Tracker(
-          name: _nameController.text,
+          name: _nameController.text.toLowerCase(),
           category: _categoryController.text ?? selectedValue,
           account: selectedAccount,
           amount: double.parse(_amountController.text),

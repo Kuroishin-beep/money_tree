@@ -44,6 +44,9 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
+  bool showCreate = true;
+  bool showConfirm = true;
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -194,6 +197,17 @@ class _SignUpState extends State<SignUp> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
+        suffixIcon: IconButton(
+          onPressed: () {
+            setState(() {
+              showCreate = !showCreate;
+            });
+          },
+          icon: Icon(
+            showCreate == true ? Icons.remove_red_eye_outlined : Icons.remove_red_eye,
+            color: Colors.white,
+          ),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(color: Colors.white, width: 1.5),
@@ -204,7 +218,7 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
       keyboardType: TextInputType.visiblePassword,
-      obscureText: true,
+      obscureText: showCreate,
     );
   }
 
@@ -214,6 +228,17 @@ class _SignUpState extends State<SignUp> {
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         filled: false,
+        suffixIcon: IconButton(
+          onPressed: () {
+            setState(() {
+              showConfirm = !showConfirm;
+            });
+          },
+          icon: Icon(
+            showConfirm == true ? Icons.remove_red_eye_outlined : Icons.remove_red_eye,
+            color: Colors.white,
+          ),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: const BorderSide(color: Colors.white, width: 1.5),
@@ -224,7 +249,7 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
       keyboardType: TextInputType.visiblePassword,
-      obscureText: true,
+      obscureText: showConfirm,
     );
   }
 

@@ -458,7 +458,7 @@ class _NewIncomeScreenState extends State<NewIncomeScreen> {
         code = _selectedIconData!.codePoint;
 
         Tracker newTrack = Tracker(
-            name: _nameController.text,
+            name: _nameController.text.toLowerCase(),
             category: 'NULL',
             account: selectedAccount,
             amount: double.parse(_amountController.text),

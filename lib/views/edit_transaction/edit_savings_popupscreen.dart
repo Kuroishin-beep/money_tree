@@ -24,6 +24,40 @@ class _EditSavingsPopupscreenState extends State<EditSavingsPopupscreen> {
   TextEditingController amountController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    initialSavingsData();
+  }
+
+  Future<void> initialSavingsData() async {
+    try {
+      DocumentSnapshot savingsDoc = await FirebaseFirestore.instance
+          .collection('savings')
+          .doc(widget.docID)
+          .get();
+
+      if (savingsDoc.exists) {
+        setState(() {
+          amountController.text = savingsDoc['savingsAmount'].toString();
+          nameController.text = savingsDoc['category'];
+          budgetController.text = savingsDoc['totalSavingsAmount'].toString();
+
+          // If icon was saved, display the icon again
+          if (savingsDoc['icon'] != null) {
+            code = savingsDoc['icon'];
+            selectedIconData = IconData(code, fontFamily: 'MaterialIcons');
+            selected_icon = Icon(selectedIconData, size: 30, color: const Color(0xff9A9BEB));
+          }
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
+
   // for icon picker
   Icon? selected_icon;
   IconData? selectedIconData;

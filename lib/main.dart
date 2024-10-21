@@ -13,7 +13,7 @@ import 'views/transaction_history/history_screen.dart';
 import 'views/settings/settings_screen.dart';
 import 'views/add_transaction/add_income_screen.dart';
 import 'views/add_transaction/add_expenses_screen.dart';
-import 'views/financial_report/monthlyFR_screen.dart';
+import 'views/financial_report/financial_report_screen.dart';
 import 'views/start_screens/loading_screen.dart';
 import 'views/account_details/account_name_screen.dart';
 import 'views/account_details/account_screen.dart';
@@ -23,12 +23,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-
   runApp(const BudgetTracker());
 }
 
 class BudgetTracker extends StatelessWidget {
   const BudgetTracker({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class BudgetTracker extends StatelessWidget {
         '/settings': (context) => SettingsScreen(),
         '/add_transaction': (context) => NewIncomeScreen(),
         '/add_expense': (context) => NewExpenseScreen(),
-        '/financial_report': (context) => MonthlyReport(),
+        '/financial_report': (context) => FinancialReport(),
         '/account_name': (context) => AccountNameScreen(),
         '/account_birthdate': (context) => AccountBirthdateScreen(),
         '/account': (context) => AccountScreen(),

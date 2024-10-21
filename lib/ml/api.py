@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime, timedelta
 
 import firebase_admin
@@ -8,9 +9,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials, firestore, auth
 from starlette.responses import JSONResponse
-import uvicorn
+
 from lib.ml.ml_model import train_decision_tree, create_financial_advice
-import os
 
 logging.info(f"Current Working Directory: {os.getcwd()}")
 
@@ -225,7 +225,6 @@ async def read_root():
 @app.on_event("startup")
 def startup_event():
     """Run tasks at startup and set up Firestore listeners."""
-    global uvicorn
     logging.info("FastAPI startup: Routes available.")
     for route in app.routes:
         logging.info(route)
@@ -238,5 +237,4 @@ def startup_event():
     logging.info("Firestore listeners set up for data changes.")
 
 
-if __name__ == "__main__":
-    uvicorn.run(app)
+

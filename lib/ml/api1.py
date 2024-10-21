@@ -19,7 +19,7 @@ TYPES = ['Budgets', 'Savings', 'Incomes', 'Expenses']
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def generate_random_data(num_entries=20):
+def generate_random_data(num_entries=50):
     """Generate random financial data."""
     data = []
     for _ in range(num_entries):

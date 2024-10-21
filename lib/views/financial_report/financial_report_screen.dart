@@ -36,7 +36,7 @@ class _FinancialReportState extends State<FinancialReport> {
   // get color
   List<Color> getShades(Color baseColor, int length) {
     return List<Color>.generate(length, (index) {
-      double shadeFactor = 1 - (index * 0.3);
+      double shadeFactor = 1 - (index * 0.2);
       return baseColor.withOpacity(shadeFactor.clamp(0.4, 1.0));
     });
   }
@@ -262,12 +262,13 @@ class _FinancialReportState extends State<FinancialReport> {
 
                   SizedBox(height: sw * 0.05),
 
-                  // Financial Advice Section
-                  FinancialAdviceSection(
-                    financialAdvice: financialAdvice,
-                    forecastedExpenses: forecastedExpenses,
-                    fontSize: sw,
-                  ),
+                  /// Financial Advice Section
+              FinancialAdviceSection(
+                userEmail: user?.email ?? "", // Add this line to provide the required parameter
+                financialAdvice: financialAdvice,
+                forecastedExpenses: forecastedExpenses,
+                fontSize: sw,
+                ),
                 ],
               ),
             ),
@@ -289,17 +290,59 @@ class _FinancialReportState extends State<FinancialReport> {
   }
 }
 
-class FinancialAdviceSection extends StatelessWidget {
+class FinancialAdviceSection extends StatefulWidget {
+  final String userEmail; // This parameter is required.
   final String financialAdvice;
   final List<double> forecastedExpenses;
   final double fontSize;
 
   const FinancialAdviceSection({
     super.key,
+    required this.userEmail,
     required this.financialAdvice,
     required this.forecastedExpenses,
     required this.fontSize,
   });
+
+  @override
+  _FinancialAdviceSectionState createState() => _FinancialAdviceSectionState();
+}
+
+
+
+class _FinancialAdviceSectionState extends State<FinancialAdviceSection> {
+  String financialAdvice = "Fetching financial advice...";
+  List<double> forecastedExpenses = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFinancialAdvice();
+  }
+
+  Future<void> fetchFinancialAdvice() async {
+    final url = Uri.parse('http://10.0.2.2:8000/financial_advice/${widget.userEmail}');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          financialAdvice = data['financial_advice'];
+          forecastedExpenses = List<double>.from(data['forecasted_expenses']);
+        });
+      } else {
+        setState(() {
+          financialAdvice = "Error fetching financial advice.";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        financialAdvice = "Error: $e";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -325,7 +368,7 @@ class FinancialAdviceSection extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xff9A9BEB),
               fontWeight: FontWeight.w800,
-              fontSize: fontSize * 0.05,
+              fontSize: widget.fontSize * 0.05,
             ),
           ),
           const SizedBox(height: 16.0),
@@ -333,7 +376,7 @@ class FinancialAdviceSection extends StatelessWidget {
             financialAdvice,
             style: TextStyle(
               color: Colors.black,
-              fontSize: fontSize * 0.04,
+              fontSize: widget.fontSize * 0.04,
             ),
           ),
           const SizedBox(height: 8.0),
@@ -341,7 +384,7 @@ class FinancialAdviceSection extends StatelessWidget {
             'Forecasted Expenses: ${forecastedExpenses.join(", ")}',
             style: TextStyle(
               color: Colors.black,
-              fontSize: fontSize * 0.04,
+              fontSize: widget.fontSize * 0.04,
             ),
           ),
         ],

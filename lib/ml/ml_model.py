@@ -47,7 +47,7 @@ def train_decision_tree():
         y = (grouped_data['TotalSavings'] / grouped_data['TotalBudgets'].replace(0, 1)).clip(0, 1)
 
         # Split data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
         # Create and fit the model
         model = Pipeline([('regressor', DecisionTreeRegressor(random_state=42))])
@@ -165,7 +165,5 @@ def create_financial_advice(income, expenses, budget, savings):
 
     # Combine all advice messages
     final_advice = "\n".join(advice)
-    logger.info(f"Generated financial advice:\n{final_advice}")
 
     return final_advice
-

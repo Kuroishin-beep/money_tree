@@ -81,4 +81,3 @@ class GetStarted extends StatelessWidget {
     );
   }
 }
-

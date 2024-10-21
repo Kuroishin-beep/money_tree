@@ -1,22 +1,14 @@
-import os
-import threading
-from fastapi import FastAPI, APIRouter
-from pydantic import BaseModel
-from ml_model import create_financial_advice, train_decision_tree
-from firebase_utils import get_income_brackets
-import firebase_admin
-from firebase_admin import credentials
-
 # Initialize Firebase Admin SDK using environment variables
 import os
-import threading
-from fastapi import FastAPI, APIRouter
-from pydantic import BaseModel
-from ml_model import create_financial_advice, train_decision_tree
-from firebase_utils import get_income_brackets
+
 import firebase_admin
-from firebase_admin import credentials
 from dotenv import load_dotenv
+from fastapi import FastAPI, APIRouter
+from firebase_admin import credentials
+from pydantic import BaseModel
+
+from firebase_utils import get_income_brackets
+from ml_model import create_financial_advice, train_decision_tree
 
 # Load environment variables from .env file
 load_dotenv()
@@ -131,6 +123,3 @@ def startup_event():
     print("Available routes:")
     for route in app.routes:
         print(route)
-
-
-

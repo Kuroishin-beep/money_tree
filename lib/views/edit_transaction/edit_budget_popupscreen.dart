@@ -162,8 +162,6 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
             Navigator.pop(context); // Close the dialog
           },
         ),
-
-
       ],
     );
   }

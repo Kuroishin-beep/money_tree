@@ -600,4 +600,3 @@ class _BudgetScreenState extends State<BudgetScreen> {
 //   );
 // }
 }
-

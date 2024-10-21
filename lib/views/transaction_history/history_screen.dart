@@ -478,6 +478,4 @@ class HistoryDataListState extends State<HistoryScreen> {
       ),
     );
   }
-
-
 }

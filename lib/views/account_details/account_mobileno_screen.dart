@@ -109,4 +109,3 @@ Widget buildTextField(String label, String value, bool required) {
     ),
   );
 }
-

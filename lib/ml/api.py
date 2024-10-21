@@ -1,21 +1,33 @@
 import logging
-import os
 from datetime import datetime, timedelta
 
 import firebase_admin
 import pandas as pd
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials, firestore, auth
 from starlette.responses import JSONResponse
 
 from lib.ml.ml_model import train_decision_tree, create_financial_advice
+import os
+
+logging.info(f"Current Working Directory: {os.getcwd()}")
 
 # Load environment variables
 load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to your frontend URL for production
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -126,6 +138,10 @@ def save_to_csv(data, filename='user_budget_data.csv'):
 def process_and_generate_advice():
     """Process data and generate financial advice."""
     try:
+        if not os.path.exists('user_budget_data.csv'):
+            logging.error("CSV file not found. Please ensure it is created.")
+            return None, []
+
         df = pd.read_csv('user_budget_data.csv')
         df.fillna(0, inplace=True)
         df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
@@ -209,6 +225,7 @@ async def read_root():
 @app.on_event("startup")
 def startup_event():
     """Run tasks at startup and set up Firestore listeners."""
+    global uvicorn
     logging.info("FastAPI startup: Routes available.")
     for route in app.routes:
         logging.info(route)
@@ -220,8 +237,7 @@ def startup_event():
 
     logging.info("Firestore listeners set up for data changes.")
 
+    if __name__ == "__main__":
+        import uvicorn
 
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app)  # This will use the default host and port

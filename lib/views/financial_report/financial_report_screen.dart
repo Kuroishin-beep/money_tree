@@ -321,7 +321,7 @@ class _FinancialAdviceSectionState extends State<FinancialAdviceSection> {
   }
 
   Future<void> fetchFinancialAdvice() async {
-    final url = Uri.parse('http://10.0.2.2:8000/financial_advice/${widget.userEmail}');
+    final url = Uri.parse('https://money-tree-w78q.onrender.com/${widget.userEmail}');
 
     try {
       final response = await http.get(url);

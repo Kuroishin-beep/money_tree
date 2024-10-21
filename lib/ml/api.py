@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials, firestore, auth
 from starlette.responses import JSONResponse
-
+import uvicorn
 from lib.ml.ml_model import train_decision_tree, create_financial_advice
 import os
 
@@ -237,7 +237,6 @@ def startup_event():
 
     logging.info("Firestore listeners set up for data changes.")
 
-    if __name__ == "__main__":
-        import uvicorn
 
-    uvicorn.run(app)  # This will use the default host and port
+if __name__ == "__main__":
+    uvicorn.run(app)

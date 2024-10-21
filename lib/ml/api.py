@@ -201,6 +201,11 @@ async def get_financial_advice(user_email: str):
         )
 
 
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to the Financial Advice API!"}
+
+
 @app.on_event("startup")
 def startup_event():
     """Run tasks at startup and set up Firestore listeners."""

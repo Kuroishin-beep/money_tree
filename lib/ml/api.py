@@ -135,42 +135,6 @@ def save_to_csv(data, filename='user_budget_data.csv'):
     logging.info(f"CSV file '{filename}' created successfully.")
 
 
-def process_and_generate_advice():
-    """Process data and generate financial advice."""
-    try:
-        if not os.path.exists('user_budget_data.csv'):
-            logging.error("CSV file not found. Please ensure it is created.")
-            return None, []
-
-        df = pd.read_csv('user_budget_data.csv')
-        df.fillna(0, inplace=True)
-        df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
-        df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
-        df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
-        df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
-
-        latest_data = df.groupby('Date').agg({
-            'TotalIncome': 'sum',
-            'TotalExpenses': 'sum',
-            'TotalSavings': 'sum',
-            'TotalBudgets': 'sum'
-        }).reset_index().iloc[-1]
-
-        # Generate financial advice based on the latest data
-        advice = create_financial_advice(
-            latest_data['TotalIncome'], latest_data['TotalExpenses'],
-            latest_data['TotalBudgets'], latest_data['TotalSavings']
-        )
-
-        forecasted_expenses = df[df['Type'] == 'Expenses']['Amount'].tolist()
-
-        logging.info(f"Financial advice: {advice}")
-        return advice, forecasted_expenses
-    except Exception as e:
-        logging.error(f"Error generating financial advice: {e}")
-        return None, []
-
-
 def listen_for_changes(user_email):
     """Listen for updates in the user's Firestore collections."""
 
@@ -190,18 +154,16 @@ def listen_for_changes(user_email):
 
 @app.get("/financial_advice/{user_email}")
 async def get_financial_advice(user_email: str):
-    """Endpoint to get the latest financial advice and forecasted expenses."""
+    logging.info(f"Fetching financial advice for: {user_email}")
     try:
-        # Fetch the latest data and generate advice
         fetch_data(user_email)  # Fetch latest data for the user
         advice, forecasted_expenses = process_and_generate_advice()  # Process data and generate advice
 
         if advice is None:
-            return JSONResponse(
-                content={"error": "Could not generate financial advice"},
-                status_code=500
-            )
+            logging.warning("Generated advice is None")
+            return JSONResponse(content={"error": "Could not generate financial advice"}, status_code=500)
 
+        logging.info(f"Successfully generated financial advice for {user_email}")
         return JSONResponse(
             content={
                 "financial_advice": advice,
@@ -211,10 +173,8 @@ async def get_financial_advice(user_email: str):
         )
     except Exception as e:
         logging.error(f"Error fetching financial advice: {e}")
-        return JSONResponse(
-            content={"error": "Could not fetch financial advice"},
-            status_code=500
-        )
+        return JSONResponse(content={"error": "Could not fetch financial advice"}, status_code=500)
+
 
 
 @app.get("/")

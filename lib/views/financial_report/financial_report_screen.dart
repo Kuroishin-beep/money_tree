@@ -321,10 +321,12 @@ class _FinancialAdviceSectionState extends State<FinancialAdviceSection> {
   }
 
   Future<void> fetchFinancialAdvice() async {
-    final url = Uri.parse('https://money-tree-w78q.onrender.com/${widget.userEmail}');
+    final url = Uri.parse('https://money-tree-w78q.onrender.com/financial_advice/${widget.userEmail}');
 
     try {
       final response = await http.get(url);
+      print('Response status: ${response.statusCode}');  // Print status code
+      print('Response body: ${response.body}');          // Print the response body
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -343,6 +345,8 @@ class _FinancialAdviceSectionState extends State<FinancialAdviceSection> {
       });
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

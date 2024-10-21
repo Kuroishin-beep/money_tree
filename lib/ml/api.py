@@ -12,8 +12,6 @@ from starlette.responses import JSONResponse
 
 from lib.ml.ml_model import train_decision_tree, create_financial_advice
 
-logging.info(f"Current Working Directory: {os.getcwd()}")
-
 # Load environment variables
 load_dotenv()
 
@@ -25,13 +23,12 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Change this to your frontend URL for production
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
 
 # Initialize Firebase Admin SDK
 def initialize_firebase():
@@ -54,12 +51,10 @@ def initialize_firebase():
         firebase_admin.initialize_app(cred)
         logging.info("Firebase initialized successfully.")
 
-
 initialize_firebase()
 
 # Initialize Firestore
 db = firestore.client()
-
 
 def list_recent_users(hours=24):
     """Fetch users who have logged in within the last `hours` hours."""
@@ -70,12 +65,9 @@ def list_recent_users(hours=24):
 
         while page:
             for user in page.users:
-                # Check if the user has logged in recently
                 last_sign_in = user.user_metadata.last_sign_in_timestamp
                 if last_sign_in:
                     last_sign_in_time = datetime.fromtimestamp(last_sign_in / 1000.0)
-
-                    # Log for debugging
                     logging.info(f"User: {user.email}, Last Sign-In: {last_sign_in_time}")
 
                     if last_sign_in_time >= time_threshold:
@@ -89,7 +81,6 @@ def list_recent_users(hours=24):
 
     return recent_users
 
-
 def fetch_data(user_email):
     """Fetch data from Firestore for a given user and save to CSV."""
     data = {'budgets': [], 'savings': [], 'incomes': [], 'expenses': []}
@@ -97,8 +88,7 @@ def fetch_data(user_email):
         logging.info(f"Fetching data for user: {user_email}")
         collections = {
             'budgets': {'amount_field': 'budgetAmount', 'total_amount_field': 'totalBudgetAmount'},
-            'savings': {'amount_field': 'savingsAmount',
-                        'total_amount_field': 'totalSavingsAmount'},
+            'savings': {'amount_field': 'savingsAmount', 'total_amount_field': 'totalSavingsAmount'},
             'incomes': {'amount_field': 'amount', 'total_amount_field': 'totalAmount'},
             'expenses': {'amount_field': 'amount', 'total_amount_field': 'totalAmount'}
         }
@@ -118,7 +108,6 @@ def fetch_data(user_email):
     except Exception as e:
         logging.error(f"Error fetching data for {user_email}: {e}")
 
-
 def save_to_csv(data, filename='user_budget_data.csv'):
     """Save fetched data to a CSV file."""
     if not data or all(len(v) == 0 for v in data.values()):
@@ -134,6 +123,40 @@ def save_to_csv(data, filename='user_budget_data.csv'):
     df.to_csv(filename, index=False)
     logging.info(f"CSV file '{filename}' created successfully.")
 
+def process_and_generate_advice():
+    """Process data and generate financial advice."""
+    try:
+        if not os.path.exists('user_budget_data.csv'):
+            logging.error("CSV file not found. Please ensure it is created.")
+            return None, []
+
+        df = pd.read_csv('user_budget_data.csv')
+        df.fillna(0, inplace=True)
+        df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
+        df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
+        df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
+        df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
+
+        latest_data = df.groupby('Date').agg({
+            'TotalIncome': 'sum',
+            'TotalExpenses': 'sum',
+            'TotalSavings': 'sum',
+            'TotalBudgets': 'sum'
+        }).reset_index().iloc[-1]
+
+        # Generate financial advice based on the latest data
+        advice = create_financial_advice(
+            latest_data['TotalIncome'], latest_data['TotalExpenses'],
+            latest_data['TotalBudgets'], latest_data['TotalSavings']
+        )
+
+        forecasted_expenses = df[df['Type'] == 'Expenses']['Amount'].tolist()
+
+        logging.info(f"Financial advice: {advice}")
+        return advice, forecasted_expenses
+    except Exception as e:
+        logging.error(f"Error generating financial advice: {e}")
+        return None, []
 
 def listen_for_changes(user_email):
     """Listen for updates in the user's Firestore collections."""
@@ -143,27 +166,27 @@ def listen_for_changes(user_email):
             if change.type.name in ('ADDED', 'MODIFIED', 'REMOVED'):
                 logging.info(f'Document {change.document.id} has changed.')
                 fetch_data(user_email)
-                train_decision_tree()
-                process_and_generate_advice()
+                train_decision_tree()  # Ensure your training function is called appropriately
+                process_and_generate_advice()  # Make sure this is defined
 
     collections = ['budgets', 'savings', 'incomes', 'expenses']
     for collection_name in collections:
         collection_ref = db.collection(collection_name).where('UserEmail', '==', user_email)
         collection_ref.on_snapshot(on_snapshot)
 
-
 @app.get("/financial_advice/{user_email}")
 async def get_financial_advice(user_email: str):
-    logging.info(f"Fetching financial advice for: {user_email}")
+    """Endpoint to get the latest financial advice and forecasted expenses."""
     try:
         fetch_data(user_email)  # Fetch latest data for the user
         advice, forecasted_expenses = process_and_generate_advice()  # Process data and generate advice
 
         if advice is None:
-            logging.warning("Generated advice is None")
-            return JSONResponse(content={"error": "Could not generate financial advice"}, status_code=500)
+            return JSONResponse(
+                content={"error": "Could not generate financial advice"},
+                status_code=500
+            )
 
-        logging.info(f"Successfully generated financial advice for {user_email}")
         return JSONResponse(
             content={
                 "financial_advice": advice,
@@ -173,14 +196,14 @@ async def get_financial_advice(user_email: str):
         )
     except Exception as e:
         logging.error(f"Error fetching financial advice: {e}")
-        return JSONResponse(content={"error": "Could not fetch financial advice"}, status_code=500)
-
-
+        return JSONResponse(
+            content={"error": "Could not fetch financial advice"},
+            status_code=500
+        )
 
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Financial Advice API!"}
-
 
 @app.on_event("startup")
 def startup_event():
@@ -195,6 +218,3 @@ def startup_event():
         listen_for_changes(user.email)
 
     logging.info("Firestore listeners set up for data changes.")
-
-
-

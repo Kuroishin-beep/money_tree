@@ -41,9 +41,6 @@ def initialize_firebase():
 # Call the function to initialize Firebase
 initialize_firebase()
 
-# Continue with the rest of your FastAPI code...
-
-
 # Create FastAPI app and router
 app = FastAPI()
 api_router = APIRouter()

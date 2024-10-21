@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../account_details/account_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:money_tree/models/tracker_model.dart';
@@ -21,18 +22,43 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
 
-  String month = 'September';
-
-  List<Tracker> trackerData = [
-    Tracker(name: 'Tire Repair', category: 'CAR', amount: 250, type: 'expenses'),
-    Tracker(name: 'Tuition fee', category: 'SCHOOL', amount: 250, type: 'expenses'),
-    // Add more items for testing
-  ];
 
   // Get current month as a string
   String _getCurrentMonth() {
     return DateFormat('MMMM').format(DateTime.now());
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserProfileImage();
+  }
+
+  String? _profileImage;
+
+  // Get user profile image
+  Future<void> _getUserProfileImage() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Check if the user is authenticated with Google
+      if (user.photoURL != null) {
+        setState(() {
+          _profileImage = user.photoURL; // Use the Google profile image
+        });
+      } else {
+        // If not using Google account, retrieve profile image from Firestore
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          _profileImage = userData['profileImage']; // Get profile image URL from Firestore
+        });
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +87,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 );
               },
               child: CircleAvatar(
-                backgroundImage: AssetImage(
-                    'lib/images/pfp.jpg'),
+                backgroundImage: _profileImage != null
+                    ? NetworkImage(_profileImage!)
+                    : const AssetImage('lib/images/pfp.jpg') as ImageProvider,
                 radius: 20,
               ),
             ),
@@ -151,6 +178,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                           return doc['type'] == 'expenses';
                         }).toList();
 
+                        // Sort the filtered documents by date in descending order
+                        filteredDocs.sort((a, b) {
+                          final dateA = (a['date'] as Timestamp).toDate();
+                          final dateB = (b['date'] as Timestamp).toDate();
+                          return dateB.compareTo(dateA); // Sort by date descending (newest first)
+                        });
+
                         // If no expense transactions exist
                         if (filteredDocs.isEmpty) {
                           return const Center(child: Text('No transactions found.'));
@@ -181,6 +215,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                         );
                       },
                     )
+
                   ],
                 ),
               )
@@ -206,5 +241,3 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 }
-
-

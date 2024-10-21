@@ -3,25 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/Models/icon_picker_icon.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+
 import '../../controller/tracker_controller.dart';
 import '../../models/tracker_model.dart';
 
-class EditBudgetPopupscreen extends StatefulWidget {
+class EditBudgetamountPopupscreen extends StatefulWidget {
   final String docID;
-  EditBudgetPopupscreen({required this.docID});
+  EditBudgetamountPopupscreen({required this.docID});
 
   @override
-  _EditBudgetPopupscreenState createState() => _EditBudgetPopupscreenState();
+  State<EditBudgetamountPopupscreen> createState() => _EditBudgetamountPopupscreenState();
 }
 
-class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
+class _EditBudgetamountPopupscreenState extends State<EditBudgetamountPopupscreen> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
 
   // Controllers for textfields
-  TextEditingController nameController = TextEditingController();
   TextEditingController amountController = TextEditingController();
-  TextEditingController budgetController = TextEditingController();
 
   @override
   void initState() {
@@ -39,15 +38,7 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
       if (budgetDoc.exists) {
         setState(() {
           amountController.text = budgetDoc['budgetAmount'].toString();
-          nameController.text = budgetDoc['category'];
-          budgetController.text = budgetDoc['totalBudgetAmount'].toString();
 
-          // If icon was saved, display the icon again
-          if (budgetDoc['icon'] != null) {
-            code = budgetDoc['icon'];
-            selectedIconData = IconData(code, fontFamily: 'MaterialIcons');
-            _icon = Icon(selectedIconData, size: 30, color: const Color(0xff9A9BEB));
-          }
         });
       } else {
         print('Document does not exist');
@@ -57,36 +48,12 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
     }
   }
 
-  // for icon picker
-  Icon? _icon;
-  IconData? selectedIconData;
-  int code = 0;
-
-  // Icon picker method
-  _pickIcon() async {
-    IconPickerIcon? icon = await showIconPicker(
-      context,
-      configuration: SinglePickerConfiguration(
-        iconPackModes: [IconPack.material],
-      ),
-    );
-
-    if (icon != null) {
-      setState(() {
-        selectedIconData = icon.data;
-        _icon = Icon(icon.data);
-
-        code = selectedIconData!.codePoint;
-      });
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        "EDIT FULL BUDGET",
+        "EDIT BUDGET AMOUNT",
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Color(0xffFBC29C),
@@ -98,24 +65,9 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: nameController,
-            decoration: const InputDecoration(labelText: "Title"),
-          ),
-          TextField(
             controller: amountController,
             decoration: const InputDecoration(labelText: "Amount Used"),
             keyboardType: TextInputType.number,
-          ),
-          TextField(
-            controller: budgetController,
-            decoration: const InputDecoration(labelText: "Budget"),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 10),
-          TextButton.icon(
-            icon: Icon(selectedIconData ?? Icons.add_circle_outline),
-            label: const Text("Pick Icon"),
-            onPressed: _pickIcon,
           ),
         ],
       ),
@@ -129,10 +81,7 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
         TextButton(
           child: const Text("Save"),
           onPressed: () async {
-            if (amountController.text.isEmpty ||
-                budgetController.text.isEmpty ||
-                nameController.text.isEmpty ||
-                code == 0) {
+            if (amountController.text.isEmpty) {
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -145,23 +94,20 @@ class _EditBudgetPopupscreenState extends State<EditBudgetPopupscreen> {
 
             // Create the updated Tracker object
             Tracker newTrack = Tracker(
-              category: nameController.text,
-              budgetAmount: double.parse(amountController.text),
-              totalBudgetAmount: double.parse(budgetController.text),
-              type: 'budget',
-              icon: code
+                budgetAmount: double.parse(amountController.text),
+                type: 'budget',
             );
 
-            await firestoreService.updateBudget(widget.docID, newTrack);
+            await firestoreService.updateBudgetAmount(widget.docID, newTrack);
 
             // Clear controllers
             amountController.clear();
-            budgetController.clear();
-            nameController.clear();
 
             Navigator.pop(context); // Close the dialog
           },
         ),
+
+
       ],
     );
   }

@@ -128,68 +128,156 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     double sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Color(0xff2882A5),
       appBar: AppBar(
-        title: const Text('Complete Your Profile'),
+        backgroundColor: Color(0xff2882A5),
+        title: const Text(
+          'Complete Your Profile',
+          style: TextStyle(
+            color: const Color(0xfffff5e4),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
+          },
+        ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: sw * 0.05),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: sw * 0.05),
-            Center(
-              child: GestureDetector(
-                onTap: _showImageSourceSelection,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage:
-                      _profileImage != null ? FileImage(_profileImage!) : null,
-                  child: _profileImage == null
-                      ? const Icon(Icons.add_a_photo, size: 40)
-                      : null,
-                ),
-              ),
-            ),
-            SizedBox(height: sw * 0.05),
-            const Text('First Name', style: TextStyle(fontSize: 18)),
-            TextField(controller: _firstNameController),
-            SizedBox(height: sw * 0.02),
-            const Text('Last Name', style: TextStyle(fontSize: 18)),
-            TextField(controller: _lastNameController),
-            SizedBox(height: sw * 0.02),
-            const Text('Birthday', style: TextStyle(fontSize: 18)),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _selectedBirthday != null
-                        ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!)
-                        : 'Select your birthday',
-                    style: const TextStyle(fontSize: 16),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: sw * 0.05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: sw * 0.05),
+              Center(
+                child: GestureDetector(
+                  onTap: _showImageSourceSelection,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage:
+                    _profileImage != null ? FileImage(_profileImage!) : null,
+                    child: _profileImage == null
+                        ? const Icon(Icons.add_a_photo, size: 40)
+                        : null,
                   ),
                 ),
-                TextButton(
-                  onPressed: _showDatePicker,
-                  child: const Text('Select Date'),
-                ),
-              ],
-            ),
-            SizedBox(height: sw * 0.05),
-            const Text('Confirm Email', style: TextStyle(fontSize: 18)),
-            Text(
-              _auth.currentUser?.email ?? '',
-              style: const TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: sw * 0.05),
-            ElevatedButton(
-              onPressed: _submit,
-              style: ButtonStyle(
-                minimumSize:
-                    MaterialStateProperty.all(const Size(double.infinity, 50)),
               ),
-              child: const Text('Proceed to Dashboard'),
-            ),
-          ],
+              SizedBox(height: sw * 0.05),
+              const Text(
+                'First Name',
+                style: TextStyle(
+                  color: Color(0xfffff5e4),
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w100,
+                ),
+              ),
+              SizedBox(height: sw * 0.02),
+              _firstNameTextField(),
+
+              SizedBox(height: sw * 0.04),
+
+              const Text(
+                'Last Name',
+                style: TextStyle(
+                  color: Color(0xfffff5e4),
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w100,
+                ),
+              ),
+              _lastNameTextField(),
+
+              SizedBox(height: sw * 0.04),
+
+              const Text(
+                'Birthday',
+                style: TextStyle(
+                  color: Color(0xfffff5e4),
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w100,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selectedBirthday != null
+                          ? DateFormat('yyyy-MM-dd').format(_selectedBirthday!)
+                          : 'Select your birthday',
+                      style: const TextStyle(fontSize: 16, color: Color(0xfffff5e4)),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _showDatePicker,
+                    child: const Text('Select Date', style: TextStyle(color: Color(0xff013D5A), fontWeight: FontWeight.w600, fontFamily: 'Inter Regular'),),
+                  ),
+                ],
+              ),
+              SizedBox(height: sw * 0.05),
+              const Text(
+                'Confirm Email',
+                style: TextStyle(
+                  color: Color(0xfffff5e4),
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w100,
+                ),
+              ),
+              Text(
+                _auth.currentUser?.email ?? '',
+                style: const TextStyle(fontSize: 16, color: Color(0xfffff5e4),),
+              ),
+              SizedBox(height: sw * 0.05),
+              ElevatedButton(
+                onPressed: _submit,
+                style: ButtonStyle(
+                  minimumSize:
+                  WidgetStateProperty.all(const Size(double.infinity, 50)),
+                ),
+                child: const Text('Proceed to Dashboard'),
+              ),
+            ],
+          ),
+        ),
+      )
+    );
+  }
+
+  Widget _firstNameTextField() {
+    return TextField(
+      controller: _firstNameController,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        filled: false,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
+        ),
+      ),
+    );
+  }
+
+  Widget _lastNameTextField() {
+    return TextField(
+      controller: _lastNameController,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        filled: false,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.white, width: 1.5),
         ),
       ),
     );

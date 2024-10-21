@@ -17,6 +17,11 @@ class TransactionList extends StatelessWidget {
     required this.docID,
   });
 
+  String capitalizeFirstLetter(String text) {
+    if (text.isEmpty) return text; // Check for empty string
+    return text[0].toUpperCase() + text.substring(1); // Capitalize first letter and append the rest
+  }
+
   @override
   Widget build(BuildContext context) {
     double sw = MediaQuery.of(context).size.width;
@@ -90,14 +95,14 @@ class TransactionList extends StatelessWidget {
                 formattedDate,
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
-                    fontSize: fs * 0.035
+                    fontSize: fs * 0.03
                 ),
               ),
               Text(
-                track.name,
+                capitalizeFirstLetter(track.name),
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: fs * 0.05
+                    fontWeight: FontWeight.w800,
+                    fontSize: fs * 0.045
                 ),
               ),
             ],
@@ -106,7 +111,7 @@ class TransactionList extends StatelessWidget {
           trailing: Text(
             '₱ ${formatter.format(track.amount)}',
             style: TextStyle(
-                fontSize: fs * 0.04,
+                fontSize: fs * 0.035,
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold
             ),

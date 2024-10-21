@@ -49,17 +49,30 @@ initialize_firebase()
 db = firestore.client()
 
 
-def list_all_users():
-    """Fetch all authenticated users."""
-    users = []
+def list_recent_users(hours=24):
+    """Fetch users who have logged in within the last `hours` hours."""
+    recent_users = []
     try:
+        time_threshold = datetime.now() - timedelta(hours=hours)
         page = auth.list_users()
+
         while page:
-            users.extend(page.users)
+            for user in page.users:
+                # Check if the user has logged in recently
+                last_sign_in = user.user_metadata.last_sign_in_timestamp
+                if last_sign_in:
+                    last_sign_in_time = datetime.fromtimestamp(last_sign_in / 1000.0)
+                    if last_sign_in_time >= time_threshold:
+                        recent_users.append(user)
+
             page = page.get_next_page()
+
+        logging.info(f"Found {len(recent_users)} recently active users.")
     except Exception as e:
-        logging.error(f"Error fetching users: {e}")
-    return users
+        logging.error(f"Error fetching recent users: {e}")
+
+    return recent_users
+
 
 
 def fetch_data(user_email):
@@ -190,7 +203,7 @@ def startup_event():
         logging.info(route)
 
     # Set up real-time listeners for user data changes
-    users = list_all_users()
+    users = list_recent_users()
     for user in users:
         listen_for_changes(user.email)
 

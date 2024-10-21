@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from firebase_admin import credentials, firestore, auth
 from starlette.responses import JSONResponse
 
-from ml_model import train_decision_tree, create_financial_advice
+from lib.ml.ml_model import train_decision_tree, create_financial_advice
 
 # Load environment variables
 load_dotenv()
@@ -163,6 +163,7 @@ def listen_for_changes(user_email):
             if change.type.name in ('ADDED', 'MODIFIED', 'REMOVED'):
                 logging.info(f'Document {change.document.id} has changed.')
                 fetch_data(user_email)
+                train_decision_tree()
                 process_and_generate_advice()
 
     collections = ['budgets', 'savings', 'incomes', 'expenses']

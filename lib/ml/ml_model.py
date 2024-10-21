@@ -75,79 +75,97 @@ def train_decision_tree():
 
 def predict_financial_advice_from_csv():
     """Use data from the CSV to test the model prediction."""
-    if not os.path.exists(MODEL_PATH):
-        train_decision_tree()
+    try:
+        # Train model if it does not exist
+        if not os.path.exists(MODEL_PATH):
+            train_decision_tree()
 
-    model = joblib.load(MODEL_PATH)
-    df = pd.read_csv('user_budget_data.csv')
+        # Load the trained model
+        model = joblib.load(MODEL_PATH)
+        df = pd.read_csv('user_budget_data.csv')
 
-    # Clean and preprocess data for prediction
-    df.fillna(0, inplace=True)
-    df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
-    df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
-    df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
-    df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
+        # Clean and preprocess the data
+        df.fillna(0, inplace=True)
+        df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
+        df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
+        df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
+        df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
 
-    # Aggregate data by date
-    grouped_data = df.groupby('Date').agg({
-        'TotalIncome': 'sum',
-        'TotalExpenses': 'sum',
-        'TotalSavings': 'sum',
-        'TotalBudgets': 'sum'
-    }).reset_index()
+        # Aggregate data by date
+        grouped_data = df.groupby('Date').agg({
+            'TotalIncome': 'sum',
+            'TotalExpenses': 'sum',
+            'TotalSavings': 'sum',
+            'TotalBudgets': 'sum'
+        }).reset_index()
 
-    # Check if grouped_data has any data before trying to access the last row
-    if grouped_data.empty:
-        logger.error("No data available for predictions after aggregation.")
+        # Check if the dataset is empty
+        if grouped_data.empty:
+            logger.error("No data available for predictions after aggregation.")
+            return None
+
+        # Use the latest data for prediction
+        latest_data = grouped_data.iloc[-1]
+
+        # Validate the required keys exist
+        required_keys = ['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']
+        if not all(key in latest_data.index for key in required_keys):
+            logger.error(f"Missing required keys in latest data: {required_keys}")
+            return None
+
+        # Prepare the input for prediction
+        data = pd.DataFrame([latest_data[required_keys]])
+
+        # Perform prediction
+        prediction = model.predict(data)[0]
+        logger.info(f"Predicted financial advice value: {prediction}")
+
+        return prediction
+
+    except Exception as e:
+        logger.error(f"Error during prediction: {e}")
         return None
-
-    # Use the most recent entry for prediction
-    latest_data = grouped_data.iloc[-1]
-
-    # Check if the required columns exist
-    required_keys = ['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']
-    if not all(key in latest_data.index for key in required_keys):
-        logger.error(f"Missing required keys in latest data: {required_keys}")
-        return None
-
-    data = pd.DataFrame([latest_data[required_keys]])
-
-    # Predict financial advice value
-    prediction = model.predict(data)[0]
-    logger.info(f"Predicted financial advice value: {prediction}")
-
-    return prediction
 
 
 def create_financial_advice(income, expenses, budget, savings):
-    advice = ""
+    advice = []
 
     # Scenario 1: High income but high expenses, low savings
     if income > expenses and expenses > savings:
-        advice += "Your income is good, but you are spending too much. Consider reducing your discretionary spending to increase your savings.\n"
+        advice.append("Your income is good, but you are spending too much. "
+                      "Consider reducing discretionary spending to increase savings.")
 
     # Scenario 2: Expenses greater than savings
     if expenses > savings:
-        advice += "Your expenses exceed your savings. It's important to cut back on non-essential expenses to improve your financial health.\n"
+        advice.append("Your expenses exceed your savings. Cut back on non-essential expenses.")
 
-    # Scenario 3: Savings are greater than expenses
+    # Scenario 3: Savings greater than expenses
     if savings > expenses:
-        advice += "Great job! Your savings exceed your expenses. Keep up the good work and consider investing your extra savings for future growth.\n"
+        advice.append("Great job! Your savings exceed expenses. Consider investing your savings.")
 
     # Scenario 4: Low budget with high income and high expenses
     if budget < expenses and income > expenses:
-        advice += "Your budget is low compared to your expenses. Review your budget and consider adjusting it to better reflect your financial situation.\n"
+        advice.append("Your budget is low compared to expenses. Adjust your budget accordingly.")
 
     # Scenario 5: Adequate savings but very low budget
     if savings > expenses and budget < expenses:
-        advice += "While your savings are good, your budget might be too low. Reassess your budget to ensure you can cover your essential expenses.\n"
+        advice.append("Your savings are good, but your budget might be too low. Reassess it.")
 
-    # Scenario 6: High savings and a balanced budget
+    # Scenario 6: High savings and balanced budget
     if savings > expenses and expenses <= budget:
-        advice += "You are doing well! Your savings are high and your expenses are within your budget. Continue this strategy for long-term success.\n"
+        advice.append("Excellent! Your savings are high, and expenses are within budget.")
+
+    # Additional Advice: Emergency Fund
+    if savings < 3 * expenses:
+        advice.append("Consider building an emergency fund to cover at least 3 months of expenses.")
 
     # Fallback advice if no specific scenario matched
     if not advice:
-        advice = "Your financial status looks balanced. Keep monitoring your expenses and savings!"
+        advice.append("Your financial status looks balanced. Keep monitoring expenses and savings.")
 
-    return advice.strip()
+    # Combine all advice messages
+    final_advice = "\n".join(advice)
+    logger.info(f"Generated financial advice:\n{final_advice}")
+
+    return final_advice
+

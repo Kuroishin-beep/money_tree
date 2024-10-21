@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../bottom_navigation.dart';
+import '../constants/bottom_navigation.dart';
 import '../../controller/tracker_controller.dart';
-import '../../fab.dart';
+import '../constants/fab.dart';
 import '../account_details/account_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'package:money_tree/models/tracker_model.dart';
@@ -20,14 +21,41 @@ class _IncomeScreenState extends State<IncomeScreen> {
   // call firestore service
   final FirestoreService firestoreService = FirestoreService();
 
-  List<Tracker> trackerData = [
-    Tracker(name: 'Freelance', account: 'CARD', amount: 250, type: 'income'),
-    Tracker(name: 'XYZ Company', account: 'CASH', amount: 250, type: 'income'),
-  ];
 
   // Get current month as a string
   String _getCurrentMonth() {
     return DateFormat('MMMM').format(DateTime.now());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserProfileImage();
+  }
+
+  String? _profileImage;
+
+  // Get user profile image
+  Future<void> _getUserProfileImage() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Check if the user is authenticated with Google
+      if (user.photoURL != null) {
+        setState(() {
+          _profileImage = user.photoURL;
+        });
+      } else {
+        // If not using Google account, retrieve profile image from Firestore
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          _profileImage = userData['profileImage'];
+        });
+      }
+    }
   }
 
   @override
@@ -60,9 +88,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
               );
             },
             child: CircleAvatar(
-              backgroundImage: AssetImage(
-                  'lib/images/pfp.jpg'),
-              radius: 20,
+              child: CircleAvatar(
+                backgroundImage: _profileImage != null
+                    ? NetworkImage(_profileImage!)
+                    : const AssetImage('lib/images/pfp.jpg') as ImageProvider,
+                radius: 20,
+              ),
             ),
           ),
           SizedBox(width: 16),
@@ -147,6 +178,13 @@ class _IncomeScreenState extends State<IncomeScreen> {
                         return doc['type'] == 'income';
                       }).toList();
 
+                      // Sort the filtered documents by date in descending order
+                      filteredDocs.sort((a, b) {
+                        final dateA = (a['date'] as Timestamp).toDate();
+                        final dateB = (b['date'] as Timestamp).toDate();
+                        return dateB.compareTo(dateA); // Sort by date descending (newest first)
+                      });
+
                       // If no income transactions exist
                       if (filteredDocs.isEmpty) {
                         return const Center(child: Text('No transactions found.'));
@@ -162,7 +200,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                             amount: double.tryParse(doc['amount'].toString()) ?? 0.0,
                             type: doc['type'],
                             date: (doc['date'] as Timestamp).toDate(),
-                            icon: doc['icon']
+                            icon: doc['icon'],
                           );
 
                           // Format the date to display only the date portion

@@ -7,7 +7,6 @@ class FirestoreService {
   User? user = FirebaseAuth.instance.currentUser;
 
   // Collections
-  final CollectionReference tracks = FirebaseFirestore.instance.collection('tracks');
   final CollectionReference incomes = FirebaseFirestore.instance.collection('incomes');
   final CollectionReference expenses = FirebaseFirestore.instance.collection('expenses');
   final CollectionReference budgets = FirebaseFirestore.instance.collection('budgets');
@@ -109,20 +108,49 @@ class FirestoreService {
         .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
         .snapshots();
   }
-  // //FOR CALCULATIONS
-  // Stream<QuerySnapshot> getCalculateStream() {
-  //   return calculations
-  //       .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
-  //       .snapshots();
-  // }
 
+  // FOR DISPLAYING SEARCH IN EXPENSES
+  Stream<QuerySnapshot> getExpenseSearch({String searchQuery = ''}) {
+    final collection = FirebaseFirestore.instance.collection('expenses');
 
+    // Apply search filter only if searchQuery is not empty
+    if (searchQuery.isNotEmpty) {
+      // Convert the search query to lowercase
+      String lowercaseSearchQuery = searchQuery.toLowerCase();
 
-
-  // FIXME: Do not delete yet
-  Future<DocumentSnapshot> getExpenseById(String docID) async {
-    return await FirebaseFirestore.instance.collection('your_collection_name').doc(docID).get();
+      return collection
+          .where('name', isGreaterThanOrEqualTo: lowercaseSearchQuery)
+          .where('name', isLessThanOrEqualTo: lowercaseSearchQuery + '\uf8ff')
+          .snapshots();
+    } else {
+      return collection
+          .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+          .snapshots();
+    }
   }
+
+  // FOR DISPLAYING SEARCH IN INCOMES
+  Stream<QuerySnapshot> getIncomeSearch({String searchQuery = ''}) {
+    final collection = FirebaseFirestore.instance.collection('incomes');
+
+
+    // Apply search filter only if searchQuery is not empty
+    if (searchQuery.isNotEmpty) {
+      // Convert the search query to lowercase
+      String lowercaseSearchQuery = searchQuery.toLowerCase();
+
+      return collection
+          .where('name', isGreaterThanOrEqualTo: lowercaseSearchQuery)
+          .where('name', isLessThanOrEqualTo: lowercaseSearchQuery + '\uf8ff')
+          .snapshots();
+    } else {
+      return collection
+          .where('UserEmail', isEqualTo: user!.email) // Filter by current user's email
+          .snapshots();
+    }
+  }
+
+
 
 
 
@@ -219,9 +247,9 @@ class FirestoreService {
 
       Map<String, dynamic> updates = {};
 
-      // if (newBudget.category != null) {
-      //   updates['category'] = newBudget.category;
-      // }
+      if (newBudget.category != null) {
+        updates['category'] = newBudget.category;
+      }
       if (newBudget.budgetAmount != null && newBudget.budgetAmount != 0) {
         updates['budgetAmount'] = newBudget.budgetAmount;
       }
@@ -241,7 +269,53 @@ class FirestoreService {
     }
   }
 
-// FOR SAVINGS
+  Future<void> updateBudgetAmount(String docID, Tracker newBudget) async {
+    try {
+      DocumentSnapshot existingDoc = await budgets.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+      if (newBudget.budgetAmount != null && newBudget.budgetAmount != 0) {
+        updates['budgetAmount'] = newBudget.budgetAmount;
+      }
+      if (newBudget.type != null) {
+        updates['type'] = newBudget.type;
+      }
+
+      return budgets.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating budget: $e");
+    }
+  }
+
+  Future<void> updateTotalBudgetAmount(String docID, Tracker newBudget) async {
+    try {
+      DocumentSnapshot existingDoc = await budgets.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+      if (newBudget.totalBudgetAmount != null && newBudget.totalBudgetAmount != 0) {
+        updates['totalBudgetAmount'] = newBudget.totalBudgetAmount;
+      }
+      if (newBudget.type != null) {
+        updates['type'] = newBudget.type;
+      }
+
+      return budgets.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating budget: $e");
+    }
+  }
+
+  // FOR SAVINGS
   Future<void> updateSavings(String docID, Tracker newSavings) async {
     try {
       DocumentSnapshot existingDoc = await savings.doc(docID).get();
@@ -252,7 +326,9 @@ class FirestoreService {
 
       Map<String, dynamic> updates = {};
 
-
+      if (newSavings.category != null) {
+        updates['category'] = newSavings.category;
+      }
       if (newSavings.savingsAmount != null && newSavings.savingsAmount != 0) {
         updates['savingsAmount'] = newSavings.savingsAmount;
       }
@@ -272,35 +348,51 @@ class FirestoreService {
     }
   }
 
-// // FOR CALCULATIONS
-//   Future<void> updateCalculation(String docID, Tracker newCalc) async {
-//     try {
-//       DocumentSnapshot existingDoc = await calculations.doc(docID).get();
-//
-//       if (!existingDoc.exists) {
-//         throw Exception("Document does not exist");
-//       }
-//
-//       Map<String, dynamic> updates = {};
-//
-//       if (newCalc.balance != null) {
-//         updates['balance'] = newCalc.balance;
-//       }
-//       if (newCalc.totalCash != null) {
-//         updates['totalCash'] = newCalc.totalCash;
-//       }
-//       if (newCalc.totalCard != null) {
-//         updates['totalCard'] = newCalc.totalCard;
-//       }
-//       if (newCalc.totalGCash != null) {
-//         updates['totalGCash'] = newCalc.totalGCash;
-//       }
-//
-//       return calculations.doc(docID).update(updates);
-//     } catch (e) {
-//       print("Error updating calculation: $e");
-//     }
-//   }
+  Future<void> updateSavingsAmount(String docID, Tracker newSavings) async {
+    try {
+      DocumentSnapshot existingDoc = await savings.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+      if (newSavings.savingsAmount != null && newSavings.savingsAmount != 0) {
+        updates['savingsAmount'] = newSavings.savingsAmount;
+      }
+      if (newSavings.type != null) {
+        updates['type'] = newSavings.type;
+      }
+
+      return savings.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating savings: $e");
+    }
+  }
+
+  Future<void> updateTotalSavingsAmount(String docID, Tracker newSavings) async {
+    try {
+      DocumentSnapshot existingDoc = await savings.doc(docID).get();
+
+      if (!existingDoc.exists) {
+        throw Exception("Document does not exist");
+      }
+
+      Map<String, dynamic> updates = {};
+
+      if (newSavings.totalSavingsAmount != null && newSavings.totalSavingsAmount != 0) {
+        updates['totalSavingsAmount'] = newSavings.totalSavingsAmount;
+      }
+      if (newSavings.type != null) {
+        updates['type'] = newSavings.type;
+      }
+
+      return savings.doc(docID).update(updates);
+    } catch (e) {
+      print("Error updating savings: $e");
+    }
+  }
 
 
 
@@ -352,20 +444,5 @@ class FirestoreService {
       print("Error deleting category document: $e");
     }
   }
-
-
-// // FOR CALCULATION
-  // Future<void> deleteCalculation(String docID) async {
-  //   try {
-  //     await calculations.doc(docID).delete();
-  //     print("Calculation document with ID: $docID deleted successfully.");
-  //   } catch (e) {
-  //     print("Error deleting calculation document: $e");
-  //   }
-  // }
-
-
-
-
 
 }

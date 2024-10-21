@@ -24,6 +24,40 @@ class _EditSavingsPopupscreenState extends State<EditSavingsPopupscreen> {
   TextEditingController amountController = TextEditingController();
   TextEditingController budgetController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    initialSavingsData();
+  }
+
+  Future<void> initialSavingsData() async {
+    try {
+      DocumentSnapshot savingsDoc = await FirebaseFirestore.instance
+          .collection('savings')
+          .doc(widget.docID)
+          .get();
+
+      if (savingsDoc.exists) {
+        setState(() {
+          amountController.text = savingsDoc['savingsAmount'].toString();
+          nameController.text = savingsDoc['category'];
+          budgetController.text = savingsDoc['totalSavingsAmount'].toString();
+
+          // If icon was saved, display the icon again
+          if (savingsDoc['icon'] != null) {
+            code = savingsDoc['icon'];
+            selectedIconData = IconData(code, fontFamily: 'MaterialIcons');
+            selected_icon = Icon(selectedIconData, size: 30, color: const Color(0xff9A9BEB));
+          }
+        });
+      } else {
+        print('Document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching expense data: $e');
+    }
+  }
+
   // for icon picker
   Icon? selected_icon;
   IconData? selectedIconData;
@@ -48,37 +82,12 @@ class _EditSavingsPopupscreenState extends State<EditSavingsPopupscreen> {
     }
   }
 
-  // // Class-level variable to store the fetched document data
-  // late DocumentSnapshot doc;
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadData();  // Load existing data on initialization
-  // }
-  //
-  // void _loadData() async {
-  //   DocumentSnapshot doc = await firestoreService.getExpenseById(widget.docID);
-  //
-  //   setState(() {
-  //     nameController.text = doc['name'] ?? '';
-  //     amountController.text = doc['amount'].toString() ?? '0';
-  //     budgetController.text = doc['budget_amount'].toString() ?? '0';
-  //     if (doc['icon'] != null) {
-  //       selectedIconData = IconData(doc['icon'], fontFamily: 'MaterialIcons');
-  //       selected_icon = Icon(selectedIconData);
-  //       code = doc['icon'];
-  //     }
-  //     // Add other fields as necessary
-  //   });
-  // }
-
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        "EDIT SAVINGS",
+        "EDIT FULL SAVINGS",
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Color(0xffFBC29C),
@@ -90,13 +99,17 @@ class _EditSavingsPopupscreenState extends State<EditSavingsPopupscreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: "Title"),
+          ),
+          TextField(
             controller: amountController,
-            decoration: const InputDecoration(labelText: "Amount"),
+            decoration: const InputDecoration(labelText: "Amount Used"),
             keyboardType: TextInputType.number,
           ),
           TextField(
             controller: budgetController,
-            decoration: const InputDecoration(labelText: "Budget"),
+            decoration: const InputDecoration(labelText: "Savings"),
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 10),
@@ -119,6 +132,7 @@ class _EditSavingsPopupscreenState extends State<EditSavingsPopupscreen> {
           onPressed: () async {
             if (amountController.text.isEmpty ||
                 budgetController.text.isEmpty ||
+                nameController.text.isEmpty ||
                 code == 0) {
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -132,10 +146,11 @@ class _EditSavingsPopupscreenState extends State<EditSavingsPopupscreen> {
 
             // Create the updated Tracker object
             Tracker newTrack = Tracker(
-                savingsAmount: double.parse(amountController.text),
-                totalSavingsAmount: double.parse(budgetController.text),
-                type: 'savings',
-                icon: code
+              category: nameController.text,
+              savingsAmount: double.parse(amountController.text),
+              totalSavingsAmount: double.parse(budgetController.text),
+              type: 'savings',
+              icon: code
             );
 
             await firestoreService.updateSavings(widget.docID, newTrack);

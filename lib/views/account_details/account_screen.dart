@@ -8,8 +8,8 @@ import 'package:money_tree/views/account_details/account_birthdate_screen.dart';
 import 'package:money_tree/views/account_details/account_email_screen.dart';
 import 'package:money_tree/views/account_details/account_mobileno_screen.dart';
 import 'package:money_tree/views/account_details/account_name_screen.dart';
-import '../../bottom_navigation.dart';
-import '../../fab.dart';
+import '../constants/bottom_navigation.dart';
+import '../constants/fab.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});

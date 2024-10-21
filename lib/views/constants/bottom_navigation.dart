@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_tree/views/financial_report/monthlyFR_screen.dart';
+import 'package:money_tree/views/financial_report/financial_report_screen.dart';
 import 'package:money_tree/views/settings/settings_screen.dart';
 import 'package:money_tree/views/transaction_history/history_screen.dart';
 import 'package:money_tree/views/dashboard/dashboard_screen.dart';
@@ -35,7 +35,7 @@ class NavBottomAppBar extends StatelessWidget {
             icon: Icon(Icons.bar_chart, color: fReport, size: 33),
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const MonthlyReport()));
+                  context, MaterialPageRoute(builder: (context) => const FinancialReport()));
             },
           ),
           const SizedBox(width: 80), // Spacer for FAB

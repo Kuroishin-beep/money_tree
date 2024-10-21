@@ -133,37 +133,59 @@ def create_financial_advice(income, expenses, budget, savings):
     # Scenario 1: High income but high expenses, low savings
     if income > expenses and expenses > savings:
         advice.append("Your income is good, but you are spending too much. "
-                      "Consider reducing discretionary spending to increase savings.")
+                      "Consider reducing discretionary spending and reviewing your fixed expenses.")
 
     # Scenario 2: Expenses greater than savings
     if expenses > savings:
-        advice.append("Your expenses exceed your savings. Cut back on non-essential expenses.")
+        advice.append("Your expenses exceed your savings. It's essential to cut back on non-essential expenses "
+                      "and look for ways to increase your income.")
 
     # Scenario 3: Savings greater than expenses
     if savings > expenses:
-        advice.append("Great job! Your savings exceed expenses. Consider investing your savings.")
+        advice.append("Great job! Your savings exceed your expenses. Consider allocating a portion of your savings "
+                      "towards investments to grow your wealth.")
 
     # Scenario 4: Low budget with high income and high expenses
     if budget < expenses and income > expenses:
-        advice.append("Your budget is low compared to expenses. Adjust your budget accordingly.")
+        advice.append("Your budget is low compared to your expenses. It's advisable to adjust your budget "
+                      "to better reflect your spending habits or find ways to reduce expenses.")
 
     # Scenario 5: Adequate savings but very low budget
     if savings > expenses and budget < expenses:
-        advice.append("Your savings are good, but your budget might be too low. Reassess it.")
+        advice.append("Your savings are good, but your budget might be too low. Reassess your budget to ensure "
+                      "it aligns with your spending patterns.")
 
     # Scenario 6: High savings and balanced budget
     if savings > expenses and expenses <= budget:
-        advice.append("Excellent! Your savings are high, and expenses are within budget.")
+        advice.append("Excellent! Your savings are high, and your expenses are within budget. Keep up the good work "
+                      "and consider investing some of your savings for future growth.")
 
-    # Additional Advice: Emergency Fund
+    # Scenario 7: Emergency Fund recommendation
     if savings < 3 * expenses:
-        advice.append("Consider building an emergency fund to cover at least 3 months of expenses.")
+        advice.append("Consider building an emergency fund to cover at least 3 months of expenses. This safety net "
+                      "can protect you against unforeseen circumstances.")
+
+    # Scenario 8: Income less than expenses
+    if income < expenses:
+        advice.append("Warning: Your income is less than your expenses. Review your budget and spending immediately. "
+                      "Consider finding ways to either reduce your expenses or increase your income.")
+
+    # Scenario 9: Balanced financial status
+    if income == expenses and savings == 0:
+        advice.append("Your income and expenses are balanced, but you have no savings. Aim to save at least a small percentage "
+                      "of your income for future needs.")
+
+    # Scenario 10: Excessive savings with no income growth
+    if savings > expenses and income == 0:
+        advice.append("While you have significant savings, relying solely on savings without income can be risky. "
+                      "Consider ways to generate income.")
 
     # Fallback advice if no specific scenario matched
     if not advice:
-        advice.append("Your financial status looks balanced. Keep monitoring expenses and savings.")
+        advice.append("Your financial status looks balanced. Keep monitoring your expenses and savings regularly.")
 
     # Combine all advice messages
     final_advice = "\n".join(advice)
 
     return final_advice
+

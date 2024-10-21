@@ -21,3 +21,5 @@ python-dotenv~=1.0.1
 
 # APScheduler for scheduling tasks
 APScheduler==3.10.1
+
+starlette~=0.26.1

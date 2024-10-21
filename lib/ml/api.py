@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import firebase_admin
 import pandas as pd
@@ -62,6 +62,10 @@ def list_recent_users(hours=24):
                 last_sign_in = user.user_metadata.last_sign_in_timestamp
                 if last_sign_in:
                     last_sign_in_time = datetime.fromtimestamp(last_sign_in / 1000.0)
+
+                    # Log for debugging
+                    logging.info(f"User: {user.email}, Last Sign-In: {last_sign_in_time}")
+
                     if last_sign_in_time >= time_threshold:
                         recent_users.append(user)
 
@@ -74,7 +78,6 @@ def list_recent_users(hours=24):
     return recent_users
 
 
-
 def fetch_data(user_email):
     """Fetch data from Firestore for a given user and save to CSV."""
     data = {'budgets': [], 'savings': [], 'incomes': [], 'expenses': []}
@@ -82,7 +85,8 @@ def fetch_data(user_email):
         logging.info(f"Fetching data for user: {user_email}")
         collections = {
             'budgets': {'amount_field': 'budgetAmount', 'total_amount_field': 'totalBudgetAmount'},
-            'savings': {'amount_field': 'savingsAmount', 'total_amount_field': 'totalSavingsAmount'},
+            'savings': {'amount_field': 'savingsAmount',
+                        'total_amount_field': 'totalSavingsAmount'},
             'incomes': {'amount_field': 'amount', 'total_amount_field': 'totalAmount'},
             'expenses': {'amount_field': 'amount', 'total_amount_field': 'totalAmount'}
         }
@@ -153,6 +157,7 @@ def process_and_generate_advice():
 
 def listen_for_changes(user_email):
     """Listen for updates in the user's Firestore collections."""
+
     def on_snapshot(col_snapshot, changes, read_time):
         for change in changes:
             if change.type.name in ('ADDED', 'MODIFIED', 'REMOVED'):
@@ -213,4 +218,4 @@ def startup_event():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

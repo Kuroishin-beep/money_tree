@@ -151,31 +151,3 @@ def create_financial_advice(income, expenses, budget, savings):
         advice = "Your financial status looks balanced. Keep monitoring your expenses and savings!"
 
     return advice.strip()
-
-
-if __name__ == "__main__":
-    # Train the model and predict using the most recent data from CSV
-    train_decision_tree()
-    prediction = predict_financial_advice_from_csv()
-
-    if prediction is not None:
-        # Use the same preprocessing logic to get the latest aggregated data
-        df = pd.read_csv('user_budget_data.csv')
-        df.fillna(0, inplace=True)
-        df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
-        df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
-        df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
-        df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
-
-        latest_data = df.groupby('Date').agg({
-            'TotalIncome': 'sum',
-            'TotalExpenses': 'sum',
-            'TotalSavings': 'sum',
-            'TotalBudgets': 'sum'
-        }).reset_index().iloc[-1]
-
-        advice = create_financial_advice(
-            latest_data['TotalIncome'], latest_data['TotalExpenses'],
-            latest_data['TotalBudgets'], latest_data['TotalSavings']
-        )
-        print(f"Financial advice: {advice}")

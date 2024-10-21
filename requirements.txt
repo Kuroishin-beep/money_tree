@@ -1,9 +1,23 @@
+# FastAPI and related dependencies
 fastapi==0.95.0
 uvicorn==0.22.0
+
+# Firebase Admin SDK
 firebase-admin==6.0.1
+
+# Pydantic for data validation
 pydantic~=1.10.9
+
+# Machine learning and numerical computing
 scikit-learn==1.2.0
 numpy==1.24.0
-pandas==2.0.0
 joblib~=1.4.2
+
+# Data manipulation with pandas
+pandas==2.0.0
+
+# Python Dotenv for environment variables
 python-dotenv~=1.0.1
+
+# APScheduler for scheduling tasks
+APScheduler==3.10.1

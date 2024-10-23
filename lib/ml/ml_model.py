@@ -14,18 +14,19 @@ logger = logging.getLogger(__name__)
 MODEL_PATH = 'financial_advice_model.joblib'
 
 
-def train_decision_tree():
+def preprocess_data(file_path='user_budget_data.csv'):
+    """Load and preprocess the CSV data."""
     try:
         # Load data from the CSV
-        df = pd.read_csv('user_budget_data.csv')
+        df = pd.read_csv(file_path)
 
         # Validate required columns
         required_columns = ['Amount', 'Type', 'Date']
         if not all(col in df.columns for col in required_columns):
             raise ValueError(f"Missing required columns in CSV: {required_columns}")
 
-        # Clean and preprocess the data
-        df.fillna(0, inplace=True)  # Replace NaN values with 0
+        # Fill NaN values with 0 and convert 'Date' to datetime
+        df.fillna(0, inplace=True)
         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 
         # Separate income, expenses, savings, and budgets
@@ -42,6 +43,23 @@ def train_decision_tree():
             'TotalBudgets': 'sum'
         }).reset_index()
 
+        # Check if data is available after aggregation
+        if grouped_data.empty:
+            raise ValueError("No data available after aggregation.")
+
+        return grouped_data
+
+    except Exception as e:
+        logger.error(f"Error in preprocessing: {e}")
+        raise
+
+
+def train_decision_tree():
+    """Train and save the Decision Tree model."""
+    try:
+        # Preprocess the data
+        grouped_data = preprocess_data()
+
         # Define features and target variable
         X = grouped_data[['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']]
         y = (grouped_data['TotalSavings'] / grouped_data['TotalBudgets'].replace(0, 1)).clip(0, 1)
@@ -56,14 +74,7 @@ def train_decision_tree():
         # Evaluate the model
         y_pred = model.predict(X_test)
         mse = mean_squared_error(y_test, y_pred)
-
-        # Check for sufficient test samples to compute R²
-        if len(X_test) > 1:
-            r2 = r2_score(y_test, y_pred)
-            logger.info(f"Model MSE: {mse}, R²: {r2}")
-        else:
-            logger.warning("Not enough test samples to calculate R².")
-            logger.info(f"Model MSE: {mse}")
+        logger.info(f"Model MSE: {mse}")
 
         # Save the model
         joblib.dump(model, MODEL_PATH)
@@ -72,48 +83,24 @@ def train_decision_tree():
     except Exception as e:
         logger.error(f"Error training model: {e}")
 
-
 def predict_financial_advice_from_csv():
-    """Use data from the CSV to test the model prediction."""
+    """Use data from the CSV to generate financial advice."""
     try:
-        # Train model if it does not exist
+        # Train the model if it doesn't exist
         if not os.path.exists(MODEL_PATH):
             train_decision_tree()
 
         # Load the trained model
         model = joblib.load(MODEL_PATH)
-        df = pd.read_csv('user_budget_data.csv')
 
-        # Clean and preprocess the data
-        df.fillna(0, inplace=True)
-        df['TotalIncome'] = df['Amount'].where(df['Type'] == 'Incomes', 0)
-        df['TotalExpenses'] = df['Amount'].where(df['Type'] == 'Expenses', 0)
-        df['TotalSavings'] = df['Amount'].where(df['Type'] == 'Savings', 0)
-        df['TotalBudgets'] = df['Amount'].where(df['Type'] == 'Budgets', 0)
-
-        # Aggregate data by date
-        grouped_data = df.groupby('Date').agg({
-            'TotalIncome': 'sum',
-            'TotalExpenses': 'sum',
-            'TotalSavings': 'sum',
-            'TotalBudgets': 'sum'
-        }).reset_index()
-
-        # Check if the dataset is empty
-        if grouped_data.empty:
-            logger.error("No data available for predictions after aggregation.")
-            return None
+        # Preprocess the data
+        grouped_data = preprocess_data()
 
         # Use the latest data for prediction
         latest_data = grouped_data.iloc[-1]
 
-        # Validate the required keys exist
-        required_keys = ['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']
-        if not all(key in latest_data.index for key in required_keys):
-            logger.error(f"Missing required keys in latest data: {required_keys}")
-            return None
-
         # Prepare the input for prediction
+        required_keys = ['TotalIncome', 'TotalExpenses', 'TotalSavings', 'TotalBudgets']
         data = pd.DataFrame([latest_data[required_keys]])
 
         # Perform prediction

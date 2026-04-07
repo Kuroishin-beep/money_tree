@@ -54,3 +54,11 @@ To get started with the project locally, ensure you have Flutter installed on yo
 ## Contributors
 
 This project was built by a collaborative team of 7 university students.
+
+Julia Abasolo
+Sean Almendral
+Eisha Alva
+Mark Dayrit
+Kiara Laxamana
+Gabriel Ocampo
+Angelica Tadique
